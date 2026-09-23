@@ -142,6 +142,76 @@ ${formularioLocal()}
 </html>`
 }
 
+// Roda dentro da página. Mede o acabamento que se vê nas capturas e costuma escapar: título virando
+// parede, frase curta espremida, colunas desproporcionais, botão quebrado. Não substitui olhar.
+function medirAcabamento(largura) {
+  const achados = []
+  const nome = (el) => `<${el.tagName.toLowerCase()}${el.className && typeof el.className === 'string' ? ` class="${el.className.split(' ')[0]}"` : ''}>`
+  const texto = (el) => el.innerText.replace(/\s+/g, ' ').trim()
+  const visivel = (el) => { const c = el.getBoundingClientRect(); return c.width > 0 && c.height > 0 && getComputedStyle(el).visibility !== 'hidden' }
+  const linhas = (el) => { const e = getComputedStyle(el); const lh = parseFloat(e.lineHeight) || parseFloat(e.fontSize) * 1.2; return Math.round(el.getBoundingClientRect().height / lh) }
+
+  for (const el of document.querySelectorAll('h1, h2, h3, blockquote')) {
+    if (!visivel(el)) continue
+    const n = linhas(el)
+    const limite = el.tagName === 'H3' ? 4 : 3
+    if (n > limite) achados.push(`título em ${n} linhas: ${nome(el)} "${texto(el).slice(0, 60)}…" — encurte ou diminua (acabamento.md)`)
+    if (/^H[12]$/.test(el.tagName) && n > 1 && !/balance|pretty/.test(getComputedStyle(el).textWrap || '')) achados.push(`título sem text-wrap: balance: ${nome(el)} "${texto(el).slice(0, 40)}…"`)
+  }
+
+  for (const el of document.querySelectorAll('p, figcaption, li, blockquote, h2, h3')) {
+    if (!visivel(el) || !el.parentElement) continue
+    // Item de uma grade ou fileira com vários lado a lado é estreito de propósito.
+    const irmaos = [...el.parentElement.children].filter((f) => f !== el && visivel(f))
+    if (/grid|flex/.test(getComputedStyle(el.parentElement).display) && irmaos.some((f) => Math.abs(f.getBoundingClientRect().top - el.getBoundingClientRect().top) < 12)) continue
+    const t = texto(el)
+    const n = linhas(el)
+    const caixa = el.getBoundingClientRect().width
+    const pai = el.parentElement.getBoundingClientRect().width
+    if (t.length < 170 && n >= 3 && caixa < pai * 0.62) achados.push(`frase curta espremida em ${n} linhas (${Math.round(caixa)}px num bloco de ${Math.round(pai)}px): ${nome(el)} "${t.slice(0, 50)}…"`)
+  }
+
+  for (const el of document.querySelectorAll('a, button')) {
+    if (!visivel(el) || !texto(el) || texto(el).length > 60) continue
+    const e = getComputedStyle(el)
+    if (e.display === 'block' && el.getBoundingClientRect().width > largura * 0.9) continue
+    if (linhas(el) >= 2 && el.getBoundingClientRect().height > (parseFloat(e.lineHeight) || 20) * 1.8 + parseFloat(e.paddingTop) + parseFloat(e.paddingBottom)) {
+      achados.push(`botão ou link quebrado em duas linhas: "${texto(el).slice(0, 40)}"`)
+    }
+  }
+
+  for (const el of document.querySelectorAll('body *')) {
+    const d = getComputedStyle(el).display
+    if (!/grid|flex/.test(d) || !visivel(el)) continue
+    const filhos = [...el.children].filter(visivel).map((f) => f.getBoundingClientRect())
+    if (filhos.length < 2) continue
+    const mesmaLinha = filhos.filter((c) => Math.abs(c.top - filhos[0].top) < 12)
+    if (mesmaLinha.length < 2) continue
+    const alturas = mesmaLinha.map((c) => c.height)
+    const maior = Math.max(...alturas)
+    const menor = Math.min(...alturas)
+    if (menor > 80 && maior / menor > 1.45 && maior - menor > 220) achados.push(`colunas desproporcionais lado a lado (${Math.round(maior)}px × ${Math.round(menor)}px): ${nome(el)} — equilibre (acabamento.md, "proporção")`)
+  }
+
+  const tamanhos = new Set()
+  const familias = new Set()
+  for (const el of document.querySelectorAll('body *')) {
+    if (!visivel(el) || ![...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())) continue
+    const e = getComputedStyle(el)
+    tamanhos.add(Math.round(parseFloat(e.fontSize)))
+    familias.add(e.fontFamily.split(',')[0].replace(/["']/g, '').trim())
+  }
+  if (tamanhos.size > 7) achados.push(`${tamanhos.size} tamanhos de letra diferentes (${[...tamanhos].sort((a, b) => a - b).join(', ')}px) — use uma escala de no máximo cinco`)
+  if (familias.size > 3) achados.push(`${familias.size} famílias de fonte: ${[...familias].join(', ')} — três é o teto`)
+
+  const primeiraTela = [...document.querySelectorAll('input, select, textarea, a, button')]
+    .some((el) => { const c = el.getBoundingClientRect(); return visivel(el) && c.top < window.innerHeight && !el.closest('header, nav') && texto(el).length < 60 && (el.tagName !== 'A' || getComputedStyle(el).backgroundColor !== 'rgba(0, 0, 0, 0)') })
+  const noShadow = [...document.querySelectorAll('*')].some((el) => el.shadowRoot && el.getBoundingClientRect().top < window.innerHeight && el.shadowRoot.querySelector('input, button'))
+  if (!primeiraTela && !noShadow) achados.push('nenhum botão nem formulário na primeira tela — a ação tem que aparecer sem rolar')
+
+  return [...new Set(achados)].slice(0, 12)
+}
+
 const TIPOS = { '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml', '.gif': 'image/gif', '.css': 'text/css', '.js': 'text/javascript', '.woff2': 'font/woff2' }
 
 const servidor = createServer((pedido, resposta) => {
@@ -219,6 +289,7 @@ if (opcoes.capturar) {
     // O Cubo não zera a margem do body: sem o reset no CSS da página, ela vai ao ar com uma borda.
     const margem = await pagina.evaluate(() => getComputedStyle(document.body).margin)
     if (margem !== '0px') problemas.push(`[${nome}] a página tem uma borda em volta (margem do body: ${margem}) — ponha html, body { margin: 0 } no CSS da página: o template do Cubo não zera para página em HTML`)
+    for (const achado of await pagina.evaluate(medirAcabamento, viewport.width)) problemas.push(`[${nome}] ${achado}`)
     const semAlt = await pagina.evaluate(() => [...document.images].filter((i) => !i.hasAttribute('alt')).length)
     if (semAlt) problemas.push(`[${nome}] ${semAlt} imagem(ns) sem alt`)
 

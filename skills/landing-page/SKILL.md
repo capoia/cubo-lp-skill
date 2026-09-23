@@ -52,6 +52,10 @@ Valem sempre, e estão aqui (e não só nas referências) de propósito:
 6. **Texto de gente**: palavra do dia a dia, a do cliente final quando der; nada de "solução
    inovadora", trio de adjetivos ou frase de efeito no fim de cada parágrafo.
 7. **Nada inventado**: número, depoimento, prazo, nome de cliente. Lacuna marcada é melhor.
+8. **Acabamento de quem desenha**: um par de fontes que contraste (a da marca no texto, uma de título
+   que case com ela), uma escala de tamanhos e de espaços em tokens, título de até 50 caracteres e
+   no máximo 3 linhas, `text-wrap: balance` nos títulos, colunas lado a lado de altura parecida,
+   rodapé com formato ([references/acabamento.md](references/acabamento.md)).
 
 O porquê de cada uma, com as fontes: [references/conversao.md](references/conversao.md) e
 [references/design.md](references/design.md).
@@ -74,21 +78,22 @@ meio da publicação que falta uma peça é o que mais frustra quem usa.
 Endereço do Cubo e chave de API, guardados com `cubo.mjs configurar` e conferidos com
 `cubo.mjs check`. Onde pegar e o que marcar: [references/acesso.md](references/acesso.md).
 
-### 2. Raio-x da marca
+### 2. O dossiê
 
-Se existe site, landing antiga, loja ou blog do cliente — no briefing, na conversa, na assinatura —
-leia **antes** da entrevista. E, se houver concorrentes citados, eles também:
+Página genérica é falta de contexto. **Antes** da entrevista, junte tudo o que dá para saber e
+escreva em `dossie/contexto.md` ([references/dossie.md](references/dossie.md)):
 
 ```bash
-node "<scripts>/marca.mjs" https://site-do-cliente https://lp-antiga-do-cliente
-node "<scripts>/marca.mjs" https://concorrente-a https://concorrente-b --pasta=concorrentes
+node "<scripts>/marca.mjs" https://site-do-cliente https://lp-antiga --pasta=dossie/marca
+node "<scripts>/marca.mjs" https://concorrente-a https://concorrente-b --pasta=dossie/concorrentes
+node "<scripts>/anuncios.mjs" "Nome Completo do Concorrente" "categoria + oferta" --pasta=dossie/anuncios
 ```
 
-E **abra as capturas que ele gravar**: é nelas que aparece o elemento da marca, o uso da cor e o
-estilo de foto. Resuma a identidade em poucas linhas e confirme com a pessoa; dos concorrentes, tire
-**o que todos fazem** e **o que ninguém faz**. Junte também frases reais de clientes (depoimentos,
-avaliações) — é a matéria-prima do texto. Como fazer tudo isso:
-[references/marca.md](references/marca.md).
+Mais 3 a 5 **páginas bem feitas da mesma categoria**, achadas por busca na web e passadas pelo
+`marca.mjs`, e as frases reais de clientes (depoimentos, avaliações). **Abra as capturas** — é nelas
+que aparece o elemento da marca, o uso da cor, o estilo de foto e o que a categoria faz bem. Mostre
+à pessoa um resumo de cinco linhas: a identidade, a oportunidade contra os concorrentes e o que
+falta. Como ler cada peça: [references/marca.md](references/marca.md).
 
 ### 3. Entrevista
 
@@ -130,10 +135,12 @@ Sempre pela API ([references/api.md](references/api.md)):
    node "<scripts>/previa.mjs" corpo.html cabeca.html --capturar
    ```
 
-   **Abra as capturas** (`previa/*-topo.jpg` e `*-pagina.jpg`, celular e computador) e corrija o que
-   o script apontar: página rolando para o lado, formulário que não desenhou, imagem sem `alt`,
-   trechos em rascunho. Para a pessoa ver no navegador dela: `node "<scripts>/previa.mjs" corpo.html
-   cabeca.html` (serve até Ctrl+C). O envio do formulário na prévia não cria negociação.
+   Corrija tudo que o script apontar (ele mede acabamento também: título em linhas demais, frase
+   espremida, colunas desproporcionais, tamanhos de letra demais).
+6. **A rodada de crítica** — abra as capturas (`previa/*-topo.jpg` e `*-pagina.jpg`, celular e
+   computador), dê as notas e passe a lista de [references/critica.md](references/critica.md).
+   Corrija, capture de novo. **Só depois** mostre à pessoa: `node "<scripts>/previa.mjs" corpo.html
+   cabeca.html` serve até Ctrl+C. O envio do formulário na prévia não cria negociação.
 
 Ajuste até a pessoa dizer **"pode publicar"**.
 
@@ -187,7 +194,10 @@ guarda. Nesse caso, diga isso à pessoa em vez de escrever por cima.
 |---|---|
 | [references/requisitos.md](references/requisitos.md) | Node, chave do PageSpeed, instalação por sistema |
 | [references/acesso.md](references/acesso.md) | Chave da API, endereço do CRM, permissões |
+| [references/dossie.md](references/dossie.md) | O dossiê: marca, concorrentes, anúncios, referências da categoria, provas |
 | [references/marca.md](references/marca.md) | Raio-x da marca e dos concorrentes, e a linguagem do cliente final |
+| [references/acabamento.md](references/acabamento.md) | Tipos, quebras de linha, espaço, proporção, rodapé, contraste |
+| [references/critica.md](references/critica.md) | A rodada de crítica antes de mostrar |
 | [references/questionario.md](references/questionario.md) | Os seis blocos da entrevista |
 | [references/estruturas.md](references/estruturas.md) | As estruturas de página, e qual oferecer para cada negócio |
 | [references/conversao.md](references/conversao.md) | O que converte, com a evidência e a fonte |

@@ -57,9 +57,9 @@ Ou chamar direto: `/cubo-landing:landing-page`.
 A skill vai:
 
 1. **conferir os requisitos** e pedir o acesso ao Cubo, ensinando onde criar a chave;
-2. **ler o site e a página antiga do cliente, e os concorrentes**: tira capturas, mede cores,
-   fontes, logotipo e fotos, mostra a identidade que encontrou e o que os concorrentes todos fazem
-   (e o que nenhum faz);
+2. **montar o dossiê**: lê o site e a página antiga do cliente, os concorrentes, os anúncios que a
+   categoria está rodando na Meta e as melhores páginas do ramo; tira capturas, mede cores, fontes,
+   logotipo e fotos, e mostra a identidade e a oportunidade que encontrou;
 3. **entrevistar**, perguntando só o que o briefing e o site não responderam;
 4. **propor o plano** — três estruturas de página bem diferentes para você escolher (e não o molde
    de sempre), a direção visual e a promessa principal;
@@ -86,7 +86,8 @@ A skill adapta, reescritas para landing page de captação em português, ideias
 - [frontend-design](https://github.com/anthropics/skills/tree/main/skills/frontend-design), da
   Anthropic (Apache-2.0) — a lista do visual genérico e o "gaste a ousadia em um lugar só";
 - [Hallmark](https://github.com/Nutlope/hallmark) (MIT) — escolher a estrutura da página inteira
-  entre opções bem diferentes, antes de qualquer cor;
+  entre opções bem diferentes, antes de qualquer cor; e o acabamento: par de fontes, escalas de
+  tipo e espaço, formatos de rodapé e a checagem antes de entregar;
 - [Impeccable](https://github.com/pbakaus/impeccable) (Apache-2.0) — a lista objetiva do que
   recusar, e o cuidado com o que o navegador pinta sozinho;
 - [marketingskills](https://github.com/coreyhaines31/marketingskills) (MIT) — achar a linguagem do
@@ -100,10 +101,10 @@ As regras de conversão citam a pesquisa de onde vêm, em `references/conversao.
 .claude-plugin/       plugin.json + marketplace.json
 skills/landing-page/
   SKILL.md            o fluxo
-  references/         requisitos, acesso, marca, questionário, estruturas, conversão,
-                      rascunho, design, html, formulário, api, seo, pagespeed
-  scripts/            Node: requisitos, cubo (API), marca (raio-x), imagem, previa,
-                      backup e pagespeed
+  references/         requisitos, acesso, dossiê, marca, questionário, estruturas, conversão,
+                      rascunho, design, acabamento, crítica, html, formulário, api, seo, pagespeed
+  scripts/            Node: requisitos, cubo (API), marca (raio-x), anuncios (Biblioteca
+                      de Anúncios da Meta), imagem, previa, backup e pagespeed
 testes/fumaca.mjs     teste dos scripts, que o CI roda em Windows, macOS e Linux
 ```
 

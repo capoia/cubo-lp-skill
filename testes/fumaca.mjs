@@ -209,6 +209,17 @@ await caso('previa: porta ocupada cai numa livre, e acusa recurso http:// que a 
   confere(/endereço http:\/\/ na página/.test(r.saida), `não acusou o http://:\n${r.saida}`)
 })
 
+await caso('previa: acusa título em linhas demais e colunas desproporcionais', async () => {
+  writeFileSync(join(PASTA, 'pagina', 'feio.html'), `<style>html,body{margin:0} .g{display:grid;grid-template-columns:1fr 1fr;gap:20px} h1{font-size:60px;max-width:420px}</style>
+<main><h1>Um título comprido demais que vai quebrar em muitas linhas na tela do computador</h1>
+<div class="g"><div style="height:300px">pouco texto</div><div style="height:900px">formulário enorme</div></div>
+<a href="#" style="background:#333;color:#fff;padding:10px">Quero</a></main>`)
+  const r = await roda('previa.mjs', [join('pagina', 'feio.html'), '--capturar'])
+  confere(r.codigo === 0, r.saida)
+  confere(/\[desktop\] título em \d+ linhas/.test(r.saida), `não acusou o título:\n${r.saida}`)
+  confere(/colunas desproporcionais/.test(r.saida), `não acusou as colunas:\n${r.saida}`)
+})
+
 await caso('marca: mede cor, fonte, logotipo e foto de fundo com degradê por cima', async () => {
   const r = await roda('marca.mjs', [`${BASE}/marca`, '--pasta=raio-x'])
   confere(r.codigo === 0, r.saida)
