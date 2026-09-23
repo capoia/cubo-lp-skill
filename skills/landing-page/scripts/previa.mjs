@@ -24,6 +24,9 @@ if (!corpoArquivo) {
   sem opção    serve em http://127.0.0.1:<porta>/ até Ctrl+C, para a pessoa abrir no navegador
   --capturar   tira as capturas em ./previa/ e encerra (junte --servir para continuar servindo)
   --limpa      esconde os números dos trechos em rascunho (a lista sai no terminal de qualquer jeito)
+  --formulario=arquivo.json
+               desenha o formulário do Cubo de verdade no #form, a partir de uma definição local,
+               antes de ele existir no CRM (veja references/formulario.md)
 
 Imagem com caminho relativo (ex.: imagens/topo.webp) é servida da pasta do corpo.html.`)
   process.exit(2)
@@ -98,6 +101,26 @@ addEventListener('load', function () {
 })
 </script>`
 
+// Formulário ainda não criado no Cubo: o SDK publicado no npm desenha a partir da definição local,
+// em modo prévia — sem rede e sem envio. É o mesmo modo que a pré-visualização do CRM usa.
+const SDK_PUBLICO = 'https://cdn.jsdelivr.net/npm/@cubosuite/form@1/dist/form.umd.js'
+
+function formularioLocal() {
+  if (!opcoes.formulario) return ''
+  if (!existsSync(opcoes.formulario)) falha(`${opcoes.formulario} não existe`, 2)
+  const configuracao = JSON.parse(readFileSync(opcoes.formulario, 'utf8'))
+  if (!configuracao.definition?.fields?.length) falha(`${opcoes.formulario} precisa ter "definition" com "fields"`, 2)
+  return `<script src="${SDK_PUBLICO}"></script>
+<script>
+addEventListener('DOMContentLoaded', function () {
+  var alvo = document.querySelector('#form')
+  if (!alvo) return console.error('previa: a página não tem <div id="form">')
+  alvo.innerHTML = ''
+  new Form(Object.assign({ minHeight: 420, inheritPageStyles: true }, ${JSON.stringify(configuracao)}, { target: alvo, preview: true }))
+})
+</script>`
+}
+
 function documento() {
   const corpo = readFileSync(corpoArquivo, 'utf8')
   const cabeca = cabecaArquivo ? readFileSync(cabecaArquivo, 'utf8') : ''
@@ -114,6 +137,7 @@ ${opcoes.limpa ? '' : MARCA_RASCUNHO}
 </head>
 <body>
 ${corpo}
+${formularioLocal()}
 </body>
 </html>`
 }
@@ -176,7 +200,12 @@ if (opcoes.capturar) {
       .slice(0, 3)
       .map((el) => `<${el.tagName.toLowerCase()}${el.className ? ` class="${el.className}"` : ''}> até ${Math.round(el.getBoundingClientRect().right)}px`), viewport.width)
     if (vazando.length) problemas.push(`[${nome}] a página rola para o lado (tela de ${viewport.width}px): ${vazando.join('; ')}`)
-    const campos = await pagina.evaluate(() => document.querySelectorAll('form input, form select, form textarea').length)
+    // O SDK desenha dentro de um shadow DOM: sem descer nele, todo formulário real pareceria ausente.
+    const campos = await pagina.evaluate(() => {
+      const conta = (raiz) => raiz.querySelectorAll('input, select, textarea').length +
+        [...raiz.querySelectorAll('*')].reduce((total, el) => total + (el.shadowRoot ? conta(el.shadowRoot) : 0), 0)
+      return conta(document)
+    })
     if (!campos) problemas.push(`[${nome}] nenhum campo de formulário apareceu — o SDK carregou? o id do formulário está certo?`)
     // O Cubo não zera a margem do body: sem o reset no CSS da página, ela vai ao ar com uma borda.
     const margem = await pagina.evaluate(() => getComputedStyle(document.body).margin)

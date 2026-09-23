@@ -189,6 +189,16 @@ await caso('previa: captura, lista os rascunhos e acusa rolagem lateral', async 
   confere(/borda em volta \(margem do body: 8px\)/.test(r.saida), `não acusou a borda do body:\n${r.saida}`)
 })
 
+await caso('previa: desenha o formulário do Cubo pela definição local e enxerga dentro do shadow DOM', async () => {
+  writeFileSync(join(PASTA, 'pagina', 'form.html'), '<style>html,body{margin:0}</style><main><div id="form"></div></main>')
+  writeFileSync(join(PASTA, 'pagina', 'formulario.json'), JSON.stringify({
+    definition: { id: 'frm_previa', type: 'create', fields: [{ key: 'title', kind: 'text', label: 'Nome', required: true }] },
+  }))
+  const r = await roda('previa.mjs', [join('pagina', 'form.html'), `--formulario=${join('pagina', 'formulario.json')}`, '--capturar', '--porta=0'])
+  confere(r.codigo === 0, r.saida)
+  confere(!/nenhum campo de formulário/.test(r.saida), `formulário não apareceu (ou o detector não enxerga o shadow DOM):\n${r.saida}`)
+})
+
 await caso('marca: mede cor, fonte, logotipo e foto de fundo com degradê por cima', async () => {
   const r = await roda('marca.mjs', [`${BASE}/marca`, '--pasta=raio-x'])
   confere(r.codigo === 0, r.saida)
