@@ -1,0 +1,14 @@
+{
+  "name": "cubo",
+  "owner": { "name": "Cubo Suite" },
+  "plugins": [
+    {
+      "name": "cubo-landing",
+      "source": "./",
+      "version": "1.0.0",
+      "description": "Cria, publica e edita landing pages no Cubo, com formulário, SEO e nota do PageSpeed.",
+      "author": { "name": "Cubo Suite" },
+      "license": "UNLICENSED"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "cubo-landing",
+  "version": "1.0.0",
+  "description": "Cria, publica e edita landing pages no Cubo: entrevista, escreve a página em HTML, monta o formulário, publica no domínio e mede o PageSpeed.",
+  "author": { "name": "Cubo Suite" },
+  "homepage": "https://github.com/capoia/cubo-lp-skill",
+  "repository": "https://github.com/capoia/cubo-lp-skill",
+  "license": "UNLICENSED",
+  "keywords": ["landing page", "cubo", "crm", "formulário", "seo", "pagespeed"]
+}
