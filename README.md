@@ -60,6 +60,10 @@ Também edita página que já existe: `edita a landing //promo, troca a chamada 
   personalizados (a skill confere e diz se faltar alguma);
 - um **domínio** apontado para o Cubo, ou vontade de apontar um (a skill cadastra e entrega o CNAME).
 
+Para as imagens, **`cwebp`** (`brew install webp` no macOS, `apt install webp` no Linux): a skill
+converte tudo para webp e aperta o peso antes de subir, porque o Cubo recusa arquivo acima de 1 MB e
+cada imagem consome a cota de armazenamento da empresa.
+
 Opcional: `PAGESPEED_API_KEY` no ambiente. Sem ela a medição usa a cota pública do Google, que é
 compartilhada e às vezes estoura.
 
@@ -77,7 +81,7 @@ rastreamento, porque isso faria o evento contar duas vezes.
 skills/landing-page/
   SKILL.md            o fluxo
   references/         acesso, questionário, design, html, formulário, api, seo, pagespeed
-  scripts/            cubo.sh (cliente da API) e pagespeed.sh (medição)
+  scripts/            cubo.sh (API), imagem.sh (webp + peso) e pagespeed.sh (medição)
 ```
 
 Os arquivos de `references/` são lidos sob demanda: o `SKILL.md` fica curto e o detalhe só entra no

@@ -112,12 +112,44 @@ Em `head`, num `<style>` só. Regras práticas:
 
 ## Imagens
 
-Suba pelo `POST /api/landings/assets` e use a URL que ele devolve — assim a imagem fica no mesmo
-lugar do resto e não some quando alguém apagar um Drive. Limite de 1 MB por arquivo.
+**Toda imagem passa pelo `imagem.sh` antes de subir. Sem exceção.**
 
-Antes de subir: redimensione para o tamanho em que a imagem vai aparecer (foto de topo raramente
-precisa passar de 1600px de largura) e prefira `webp`. Uma foto de 3 MB tirada do celular é o que
-mais derruba a nota do PageSpeed.
+```bash
+"${CLAUDE_PLUGIN_ROOT}/skills/landing-page/scripts/imagem.sh" foto.jpg topo
+"${CLAUDE_PLUGIN_ROOT}/skills/landing-page/scripts/imagem.sh" equipe.png conteudo
+"${CLAUDE_PLUGIN_ROOT}/skills/landing-page/scripts/imagem.sh" logo.png logo
+```
+
+Ele redimensiona, converte para **webp** e aperta a qualidade até caber no orçamento. Devolve o
+caminho do arquivo pronto, que é o que vai para o `POST /api/landings/assets`.
+
+| Papel | Largura máxima | Alvo |
+| --- | --- | --- |
+| `topo` — a imagem grande do começo | 1600px | 200 KB |
+| `conteudo` — qualquer outra | 1200px | 100 KB |
+| `logo` | 480px | 40 KB |
+
+Três limites que não são opinião:
+
+- **1 MB por arquivo** é o teto do Cubo (`landingUploadAssetValidator`). Acima disso a API recusa
+  com 422, não importa o formato;
+- **cada imagem consome a cota de armazenamento da empresa** — é o mesmo balde dos anexos. Subir
+  três versões "para escolher depois" gasta cota de verdade;
+- **`webp` sempre.** O mesmo conteúdo costuma sair com um terço do peso de um jpg, e é aceito em
+  todo navegador que importa há anos. A única exceção é **SVG**, que já é vetor: sobe como está.
+
+O alvo de 200 KB para a imagem do topo não é arbitrário — é ela que o Lighthouse mede como LCP, a
+métrica que mais mexe na nota de desempenho no celular. O script avisa quando não conseguiu chegar
+lá; quando avisar, o caminho é cortar a imagem ou pedir uma com menos detalhe, não subir assim
+mesmo.
+
+**Se o `cwebp` não estiver instalado**, o script para e ensina a instalar (`brew install webp` no
+macOS, `apt install webp` no Linux). Não contorne subindo o jpg original: é exatamente o que ele
+existe para impedir. O `sips` do macOS *lê* webp mas não escreve, e um `ffmpeg` sem libwebp também
+não serve — medido, não suposto.
+
+No HTML, toda imagem leva `width`, `height` e `alt`; a do topo leva `fetchpriority="high"` e as
+demais, `loading="lazy"`.
 
 ## Script de terceiro
 

@@ -17,9 +17,10 @@ Quem instala roda:
 /plugin install cubo-landing@cubo
 ```
 
-O repositório é **privado**, então o clone é por SSH e quem instala precisa de acesso. Se um dia for
-distribuído para cliente ou parceiro, precisa virar público — não há nada de interno aqui dentro
-(só documentação de API pública e dois scripts), mas a decisão é do Wellington.
+O repositório é **público** desde 2026-09-23 — é o que permite instalar sem dar acesso ao GitHub. A
+skill não vai para tenant: quem precisar, copia ou forka. Não há nada de interno aqui dentro (só
+documentação de API pública e os scripts), e a varredura antes de abrir confirmou: nenhuma chave,
+nenhum host interno.
 
 ## Estrutura
 
@@ -30,7 +31,7 @@ distribuído para cliente ou parceiro, precisa virar público — não há nada 
 skills/landing-page/
   SKILL.md           o FLUXO, curto de propósito
   references/*.md    o detalhe, lido sob demanda
-  scripts/*.sh       cliente da API e medição
+  scripts/*.sh       cliente da API, preparo de imagem e medição
 ```
 
 **O `SKILL.md` fica curto e os `references/` carregam sob demanda.** Não é preferência de estilo: o
@@ -123,6 +124,10 @@ Quem já instalou atualiza com `/plugin update cubo-landing` (ou `claude plugin 
   shell — a skill roda a partir do diretório do usuário, não do plugin.
 - **Os scripts precisam do bit de execução** (`chmod +x`) no commit. Sem ele, a cópia instalada não
   roda e o erro só aparece na mão de quem instalou.
+- **`sips` do macOS não escreve webp** — lê, mas não escreve ("Can't write format:
+  org.webmproject.webp"); e um `ffmpeg` sem libwebp também não serve. Medido nas duas ferramentas. O
+  `imagem.sh` depende de `cwebp` e para com instrução de instalação quando ele falta, em vez de
+  cair num caminho que entrega jpg pesado.
 - **A cota pública do PageSpeed estoura com frequência.** O `pagespeed.sh` já explica os dois
   caminhos (chave gratuita ou Lighthouse local) quando devolve 429; não troque isso por um "tente
   de novo".

@@ -67,19 +67,21 @@ qualquer coisa: [references/design.md](references/design.md) diz o que evitar e 
 
 Nesta ordem, sempre pela API ([references/api.md](references/api.md)):
 
-1. **Campos personalizados** que faltarem (e-mail, por exemplo, é campo personalizado, não campo
+1. **Imagens**, se houver: passe cada uma pelo `scripts/imagem.sh` (webp, tamanho e peso certos) e
+   suba com `POST /api/landings/assets`. Regras e limites em [references/html.md](references/html.md).
+2. **Campos personalizados** que faltarem (e-mail, por exemplo, é campo personalizado, não campo
    base) — `GET /api/customfields`, `POST /api/customfields`.
-2. **Formulário** — `POST /api/forms`, com o funil e a etapa de destino. Guarde o `publicId`
+3. **Formulário** — `POST /api/forms`, com o funil e a etapa de destino. Guarde o `publicId`
    (`frm_…`): é ele que vai no trecho do SDK. Regras de campo em
    [references/formulario.md](references/formulario.md).
-3. **Domínio** — `GET /api/domains`. Se o que a pessoa quer não existe, cadastre com
+4. **Domínio** — `GET /api/domains`. Se o que a pessoa quer não existe, cadastre com
    `POST /api/domains` e entregue o CNAME para ela apontar; confira com
    `POST /api/domains/:id/verify`. Publicar em domínio que ainda não resolve é página no ar que
    ninguém alcança.
-4. **Caminho livre** — `GET /api/landings/path-check`. O caminho é único entre landing pages **e**
+5. **Caminho livre** — `GET /api/landings/path-check`. O caminho é único entre landing pages **e**
    formulários hospedados do mesmo domínio.
-5. **Página** — `POST /api/landings`. Ela nasce **fora do ar**, de propósito.
-6. **Pré-visualização** — `POST /api/landings/:id/preview` devolve um endereço temporário. Abra,
+6. **Página** — `POST /api/landings`. Ela nasce **fora do ar**, de propósito.
+7. **Pré-visualização** — `POST /api/landings/:id/preview` devolve um endereço temporário. Abra,
    confira no celular e no computador, e **mande o link para a pessoa aprovar**. O formulário na
    pré-visualização não cria negociação, então pode testar à vontade.
 
@@ -118,6 +120,8 @@ Nesse caso, diga isso à pessoa em vez de escrever por cima.
   qualquer outro dado é campo personalizado.
 - **Usar `lazy` no formulário.** O formulário é o motivo da página existir. Use `minHeight`.
 - **Deixar a nota do PageSpeed para depois.** Ela faz parte da entrega.
+- **Subir imagem sem passar pelo `imagem.sh`.** Uma foto de celular tem 3 MB; o Cubo recusa acima de
+  1 MB, e mesmo o que passa derruba a nota e gasta a cota de armazenamento do cliente.
 
 ## Referências
 

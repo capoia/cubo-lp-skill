@@ -95,11 +95,20 @@ não cria negociação. Pode mandar para a pessoa aprovar.
 
 ### Imagem
 
-`POST /api/landings/assets`, multipart, campo `file`, até 1 MB → `{"url": "https://…"}`
+`POST /api/landings/assets`, multipart, campo `file`, **até 1 MB** → `{"url": "https://…"}`
 
 ```bash
-"$CUBO" upload /api/landings/assets caminho/da/imagem.webp
+# sempre nesta ordem: preparar, depois subir
+PRONTA=$("${CLAUDE_PLUGIN_ROOT}/skills/landing-page/scripts/imagem.sh" foto.jpg topo | head -1)
+"$CUBO" upload /api/landings/assets "$PRONTA"
 ```
+
+Formatos aceitos pela API: `jpg`, `jpeg`, `png`, `gif`, `svg`, `webp` — mas **a skill sobe webp**
+(ou SVG, quando for vetor). Veja [html.md](html.md).
+
+⚠️ **Cada arquivo consome a cota de armazenamento da empresa**, o mesmo balde dos anexos: a chamada
+passa por `checkStorageQuota` e registra o arquivo. Estourando, vem 422 com
+`E_STORAGE_QUOTA_EXCEEDED` — e quem resolve é a pessoa, liberando espaço ou contratando mais.
 
 ### Excluir
 

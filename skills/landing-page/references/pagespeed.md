@@ -49,9 +49,10 @@ está segurando e por quê, em vez de entregar um número sem explicação.
 
 ## O que costuma derrubar, em ordem
 
-1. **Imagem grande.** É a causa em quase todo caso. Redimensione para o tamanho de exibição
-   (raramente passa de 1600px de largura), salve em `webp`, e ponha `width`/`height` no `<img>`. A
-   imagem do topo merece `fetchpriority="high"`; todas as outras, `loading="lazy"`.
+1. **Imagem grande.** É a causa em quase todo caso — e é por isso que existe o `imagem.sh`, que
+   redimensiona, converte para webp e aperta até caber no orçamento (200 KB no topo, 100 KB nas
+   demais). No HTML, `width`/`height` em todas, `fetchpriority="high"` na do topo e
+   `loading="lazy"` no resto.
 2. **Fonte.** Cada família e cada peso é um arquivo. Use uma família e dois pesos no máximo, com
    `display=swap` e `preconnect`. Fonte do sistema custa zero.
 3. **Deslocamento de layout (CLS).** Imagem sem dimensão, e formulário sem altura reservada. Use
