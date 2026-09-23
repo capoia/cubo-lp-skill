@@ -32,6 +32,8 @@ Chute fundamentado é melhor que página vaga.
 7. **Por que acreditar?** Números, anos de casa, quantidade de clientes, depoimento (peça o texto e
    o nome), caso com resultado, certificação, garantia, logotipo de cliente conhecido.
    **Insista aqui.** É o que separa uma página que converte de um panfleto bonito.
+   Pergunte também **onde os clientes falam deles** (Google, Reclame Aqui, comentários): é de lá que
+   sai a linguagem da página ([marca.md](marca.md), "a linguagem do cliente final").
 8. **Quais são as três objeções mais ouvidas?** Preço, prazo, "será que funciona pra mim", "já tentei
    e não deu certo". Cada objeção vira um trecho da página.
 9. **Preço e condição** aparecem na página, ou é "sob consulta"?
@@ -41,7 +43,9 @@ Chute fundamentado é melhor que página vaga.
 ## Bloco 3 — A conversão
 
 11. **Quais dados pedir?** Padrão que funciona: nome + WhatsApp. Cada campo a mais derruba a
-    conversão; só peça o que alguém vai usar na próxima hora.
+    conversão; só peça o que alguém vai usar na próxima hora. Pergunta de qualificação (faixa de
+    investimento, cidade) só se o comercial descarta lead por ela — explique o custo
+    ([conversao.md](conversao.md), "formulário").
 12. **Para qual funil e etapa** o lead vai? Liste os funis (`GET /api/pipes`) e deixe ela escolher.
 13. **O que acontece depois de enviar?** Mensagem de obrigado na própria página, ou redirecionar
     para outro endereço (página de obrigado, WhatsApp, agenda)? Se for WhatsApp, peça o número e o
@@ -57,18 +61,22 @@ Se o raio-x rodou, **mostre o que ele achou e peça só a confirmação** dos it
 16. **Cores da marca** — as que o raio-x mediu; senão, em hexadecimal se ela tiver, ou tiradas do
     logotipo e confirmadas.
 17. **Tipografia** — a do site, se houver. Senão você escolhe, e explica a escolha.
-18. **Referências** — 1 a 3 endereços de páginas que ela acha boas, **e o que gosta em cada uma**
-    ("o jeito que apresenta o preço", "a foto grande logo no começo"). Abra cada uma e olhe antes de
-    desenhar.
+18. **Referências e concorrentes** — 1 a 3 endereços de páginas que ela acha boas, **e o que gosta
+    em cada uma** ("o jeito que apresenta o preço", "a foto grande logo no começo"). E os 2 ou 3
+    **concorrentes** com quem o cliente final compara. Rode o raio-x em todos e olhe antes de
+    desenhar ([marca.md](marca.md), "concorrentes").
 19. **O que ela NÃO quer.** Pergunta curta, resposta valiosa: "muito colorido", "cara de template",
     "parecido com o concorrente X".
 20. **Tom de voz** — próximo e direto, técnico, institucional, divertido. Combine com o público do
     bloco 1, não com o gosto de quem está pedindo.
-21. **Imagens** — foto real de quem atende, do lugar, do produto vale mais que qualquer banco de
-    imagens. As que o cliente já usa no site e na LP antiga servem (o `imagem.mjs` baixa pelo
-    endereço): mostre quais pretende usar e confirme. Do Instagram, peça que ela mande os arquivos —
-    ele exige login. Pergunte se imagem com cara de render é foto real ou projeto. Sem nenhuma foto
-    própria, a página sai sem foto de gente em vez de foto de banco genérica.
+21. **Gente de verdade** — **peça ativamente**, não espere oferecerem: foto de quem atende, da
+    fundadora ou do dono, da equipe, do lugar funcionando, de clientes reais (com o depoimento e a
+    autorização deles). É a imagem que o olho procura primeiro ([conversao.md](conversao.md)).
+    Procure também nas fontes que já existem: site, LP antiga, matérias na imprensa (o `imagem.mjs`
+    baixa pelo endereço). Do Instagram, peça os arquivos — ele exige login. Pergunte se imagem com
+    cara de render é foto real ou projeto.
+    Foto de banco genérica continua proibida. Sem nenhuma foto de gente, **diga que isso custa
+    conversão** e deixe a página mais curta, em vez de compensar com cartões e números.
 
 ## Bloco 5 — SEO e compartilhamento
 

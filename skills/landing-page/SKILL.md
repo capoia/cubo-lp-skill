@@ -33,6 +33,27 @@ Nas referências esse caminho aparece como `<scripts>`. **Escreva-o por inteiro 
 (`node "${CLAUDE_PLUGIN_ROOT}/skills/landing-page/scripts/cubo.mjs" check`): variável de shell não
 sobrevive de um comando para o outro, e `$CLAUDE_PLUGIN_ROOT` não existe no terminal.
 
+## O que faz a página não parecer feita por IA
+
+Valem sempre, e estão aqui (e não só nas referências) de propósito:
+
+1. **A estrutura é escolhida, não sai sozinha.** No plano, ofereça **três estruturas de famílias
+   diferentes** do catálogo ([references/estruturas.md](references/estruturas.md)), com um desenho
+   em texto de cada uma. O "texto de um lado, imagem do outro, até o rodapé" é o molde que denuncia.
+2. **Duas seções seguidas nunca têm a mesma composição.**
+3. **Proibido, a não ser que a marca peça:** faixa de números grandes com legenda, grade de cartões
+   iguais com ícone, rótulo pequeno acima do título, "01/02/03" no que não é sequência, carrossel de
+   depoimentos, menu de navegação.
+4. **Gente real.** Peça e procure foto de quem atende, do lugar, de clientes reais. Banco de imagem
+   genérico, nunca; sem foto de gente, avise que isso custa conversão.
+5. **Prova cedo e o botão sem rolar.** Promessa, ação e uma prova cabem na primeira tela do celular.
+6. **Texto de gente**: palavra do dia a dia, a do cliente final quando der; nada de "solução
+   inovadora", trio de adjetivos ou frase de efeito no fim de cada parágrafo.
+7. **Nada inventado**: número, depoimento, prazo, nome de cliente. Lacuna marcada é melhor.
+
+O porquê de cada uma, com as fontes: [references/conversao.md](references/conversao.md) e
+[references/design.md](references/design.md).
+
 ## Fluxo
 
 ### 0. Requisitos — antes de qualquer pergunta
@@ -53,15 +74,18 @@ Endereço do Cubo e chave de API, guardados com `cubo.mjs configurar` e conferid
 ### 2. Raio-x da marca
 
 Se existe site, landing antiga, loja ou blog do cliente — no briefing, na conversa, na assinatura —
-leia **antes** da entrevista:
+leia **antes** da entrevista. E, se houver concorrentes citados, eles também:
 
 ```bash
 node "<scripts>/marca.mjs" https://site-do-cliente https://lp-antiga-do-cliente
+node "<scripts>/marca.mjs" https://concorrente-a https://concorrente-b --pasta=concorrentes
 ```
 
 E **abra as capturas que ele gravar**: é nelas que aparece o elemento da marca, o uso da cor e o
-estilo de foto. Resuma a identidade em poucas linhas e confirme com a pessoa. Como ler, e o que não
-serve mesmo sendo do cliente: [references/marca.md](references/marca.md).
+estilo de foto. Resuma a identidade em poucas linhas e confirme com a pessoa; dos concorrentes, tire
+**o que todos fazem** e **o que ninguém faz**. Junte também frases reais de clientes (depoimentos,
+avaliações) — é a matéria-prima do texto. Como fazer tudo isso:
+[references/marca.md](references/marca.md).
 
 ### 3. Entrevista
 
@@ -76,9 +100,15 @@ depoimento, prazo e nome de cliente **nunca** se inventam.
 
 ### 4. Plano
 
-Antes de escrever uma linha: estrutura de seções, direção visual (paleta com valores, tipografia com
-nomes, o elemento que carrega a personalidade — de preferência um que o raio-x achou) e a promessa
-principal. Peça o "pode ir". O que evitar: [references/design.md](references/design.md).
+Antes de escrever uma linha:
+
+1. **três estruturas** de famílias diferentes ([references/estruturas.md](references/estruturas.md)),
+   cada uma com o desenho em texto da primeira dobra e uma frase de por que serve — a pessoa escolhe;
+2. a direção visual: paleta com valores, tipografia com nomes, o elemento que carrega a
+   personalidade (de preferência um que o raio-x achou);
+3. a promessa principal, e em que o concorrente fica para trás.
+
+Peça o "pode ir". O que evitar: [references/design.md](references/design.md).
 
 ### 5. Construção e prévia
 
@@ -150,8 +180,10 @@ guarda. Nesse caso, diga isso à pessoa em vez de escrever por cima.
 |---|---|
 | [references/requisitos.md](references/requisitos.md) | Node, chave do PageSpeed, instalação por sistema |
 | [references/acesso.md](references/acesso.md) | Chave da API, endereço do CRM, permissões |
-| [references/marca.md](references/marca.md) | Raio-x da marca: rodar, ler as capturas, divergências |
+| [references/marca.md](references/marca.md) | Raio-x da marca e dos concorrentes, e a linguagem do cliente final |
 | [references/questionario.md](references/questionario.md) | Os seis blocos da entrevista |
+| [references/estruturas.md](references/estruturas.md) | As estruturas de página, e qual oferecer para cada negócio |
+| [references/conversao.md](references/conversao.md) | O que converte, com a evidência e a fonte |
 | [references/rascunho.md](references/rascunho.md) | Quando falta conteúdo: o que escrever e o que nunca inventar |
 | [references/design.md](references/design.md) | Direção visual, e o visual genérico a evitar |
 | [references/html.md](references/html.md) | O que escrever (e o que jamais escrever) no HTML |

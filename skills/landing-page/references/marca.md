@@ -82,6 +82,51 @@ Divergências: telefone de contato, nome do segundo formato
 Com isso, metade do bloco 4 da entrevista ([questionario.md](questionario.md)) já está respondida:
 pergunte só o que ficou faltando.
 
+## Concorrentes
+
+Com 2 ou 3 concorrentes (o briefing costuma trazer; senão, pergunte "quem o seu cliente compara
+com vocês?"), rode o mesmo raio-x:
+
+```bash
+node "<scripts>/marca.mjs" https://concorrente-a.com.br/franquia https://concorrente-b.com.br/franquia --pasta=concorrentes
+```
+
+Abra as capturas e monte, para você e para a pessoa, uma tabela curta:
+
+| | Promessa do título | Como provam | Estrutura da página | Cor e tom |
+|---|---|---|---|---|
+| Concorrente A | … | … | … | … |
+| Concorrente B | … | … | … | … |
+
+E tire dela duas listas:
+
+- **o que todos fazem** — é o padrão da categoria. A página não precisa fugir de tudo, mas se fizer
+  igual, vai parecer mais uma;
+- **o que ninguém faz** — é a oportunidade: uma prova que só este cliente tem, um medo que ninguém
+  responde, uma forma de mostrar que ninguém usa.
+
+**Nunca copie** texto, foto ou layout de concorrente. O estudo serve para diferenciar, não para
+imitar — e página parecida com a do concorrente trabalha para ele.
+
+## A linguagem do cliente final
+
+O melhor título quase nunca é escrito: é **achado** na boca de quem compra. Antes de escrever, junte
+frases reais de clientes — do jeito que eles falam, sem corrigir:
+
+- depoimentos e avaliações no **próprio site** (o `marca.json` traz os parágrafos da página);
+- avaliações do **Google** e do **Reclame Aqui** do cliente e dos concorrentes (as reclamações dos
+  concorrentes são a lista de medos que a página pode responder);
+- comentários do **YouTube**; do Instagram, peça prints à pessoa (exige login).
+
+Agrupe por tema (a dor, o medo, o resultado que querem, o que quase os fez desistir) e guarde as
+frases exatas. Um tema que aparece em **três fontes diferentes** é forte; em uma só, é palpite —
+não construa a página em cima dele. Use as frases no título, nas perguntas e respostas e nas
+objeções. **Não invente** depoimento a partir delas: frase de avaliação vira linguagem da página,
+não "depoimento de fulano".
+
+> Método adaptado de `customer-research`, da
+> [marketingskills](https://github.com/coreyhaines31/marketingskills) (MIT).
+
 ## Contraste herdado
 
 A marca manda na cor, não no contraste. Se o site usa texto branco sobre um rosé claro (contraste de

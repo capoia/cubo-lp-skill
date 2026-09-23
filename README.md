@@ -57,10 +57,12 @@ Ou chamar direto: `/cubo-landing:landing-page`.
 A skill vai:
 
 1. **conferir os requisitos** e pedir o acesso ao Cubo, ensinando onde criar a chave;
-2. **ler o site e a página antiga do cliente**: tira capturas, mede cores, fontes, logotipo e fotos,
-   e mostra a identidade que encontrou para você confirmar;
+2. **ler o site e a página antiga do cliente, e os concorrentes**: tira capturas, mede cores,
+   fontes, logotipo e fotos, mostra a identidade que encontrou e o que os concorrentes todos fazem
+   (e o que nenhum faz);
 3. **entrevistar**, perguntando só o que o briefing e o site não responderam;
-4. **propor o plano** — estrutura, direção visual e a promessa principal;
+4. **propor o plano** — três estruturas de página bem diferentes para você escolher (e não o molde
+   de sempre), a direção visual e a promessa principal;
 5. **escrever e pré-visualizar** na sua máquina, olhando a página no celular e no computador. O que
    depende do cliente (depoimento, número a confirmar, prazo) fica **marcado como rascunho** e vira
    uma lista de pendências — nunca é inventado;
@@ -77,14 +79,29 @@ deduplicado com a API de Conversões, GTM, GA4, Clarity, enriquecimento de dados
 metatags, favicon e robots. A skill escreve só o corpo da página e o formulário — e **nunca** escreve
 rastreamento, porque isso faria o evento contar duas vezes.
 
+## De onde vieram as ideias
+
+A skill adapta, reescritas para landing page de captação em português, ideias destes projetos:
+
+- [frontend-design](https://github.com/anthropics/skills/tree/main/skills/frontend-design), da
+  Anthropic (Apache-2.0) — a lista do visual genérico e o "gaste a ousadia em um lugar só";
+- [Hallmark](https://github.com/Nutlope/hallmark) (MIT) — escolher a estrutura da página inteira
+  entre opções bem diferentes, antes de qualquer cor;
+- [Impeccable](https://github.com/pbakaus/impeccable) (Apache-2.0) — a lista objetiva do que
+  recusar, e o cuidado com o que o navegador pinta sozinho;
+- [marketingskills](https://github.com/coreyhaines31/marketingskills) (MIT) — achar a linguagem do
+  cliente final em avaliações e comentários.
+
+As regras de conversão citam a pesquisa de onde vêm, em `references/conversao.md`.
+
 ## Estrutura
 
 ```
 .claude-plugin/       plugin.json + marketplace.json
 skills/landing-page/
   SKILL.md            o fluxo
-  references/         requisitos, acesso, marca, questionário, rascunho, design, html,
-                      formulário, api, seo, pagespeed
+  references/         requisitos, acesso, marca, questionário, estruturas, conversão,
+                      rascunho, design, html, formulário, api, seo, pagespeed
   scripts/            Node: requisitos, cubo (API), marca (raio-x), imagem, previa,
                       backup e pagespeed
 testes/fumaca.mjs     teste dos scripts, que o CI roda em Windows, macOS e Linux

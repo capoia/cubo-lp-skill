@@ -72,6 +72,17 @@ claude plugin details cubo-landing
   que é contornável — foi assim com a checagem de `<script src>`. Skill que mente sobre a garantia
   faz o agente confiar onde não devia.
 
+## As regras que mais importam moram no `SKILL.md`
+
+Medido por terceiros na Hallmark (ablação com `claude-haiku-4-5`, 2026): regras que ficavam **só**
+nos arquivos de referência **nunca foram abertas** pelo modelo em 28 execuções. Por isso as sete
+regras contra a "cara de IA" estão no próprio `SKILL.md`, e as referências trazem o porquê e as
+fontes. Não mova essas regras para fora para "economizar" o `SKILL.md`. Medido com Haiku — vale
+conferir se o Opus se comporta igual.
+
+A pesquisa que fundamentou a 2.0 (16 skills avaliadas, fontes de CRO) está resumida em
+`references/conversao.md` e nos créditos do README.
+
 ## A fonte da verdade da API é o CRM, não este repositório
 
 `references/api.md` e `references/formulario.md` descrevem endpoints que vivem em
