@@ -76,22 +76,12 @@ A resposta traz `publicUrl`, já montado.
 
 Publicar recusa (422) quando a página não tem conteúdo ou quando o domínio não está `active`.
 
-### Pré-visualizar
+**Caminho ocupado** também é 422, na criação e na atualização: _"Já existe uma landing page ou
+formulário com este domínio e caminho"_. Não existe endpoint para conferir antes — a resposta do
+`POST` já diz. Leia a mensagem, proponha outro caminho e siga.
 
-`POST /api/landings/:id/preview` →
-
-```json
-{ "url": "https://SEU-CRM/public/landings/preview/eyJ…", "expiresAt": "2026-09-24T12:00:00.000-03:00" }
-```
-
-Endereço temporário (24 h), sem rastreamento nenhum, com o formulário em modo de teste — envio ali
-não cria negociação. Pode mandar para a pessoa aprovar.
-
-### Caminho livre
-
-`GET /api/landings/path-check?domainId=7&path=turma-marco` → `{"available": true}`
-
-Único entre landing pages **e** formulários hospedados do mesmo domínio.
+**Para mostrar ao cliente antes de valer**, publique num caminho descartável e depois troque a
+`url` com um `PUT`. A prévia de verdade é local (`scripts/previa.sh`), sem passar pelo Cubo.
 
 ### Imagem
 

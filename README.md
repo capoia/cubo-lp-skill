@@ -81,7 +81,7 @@ rastreamento, porque isso faria o evento contar duas vezes.
 skills/landing-page/
   SKILL.md            o fluxo
   references/         acesso, questionário, design, html, formulário, api, seo, pagespeed
-  scripts/            cubo.sh (API), imagem.sh (webp + peso) e pagespeed.sh (medição)
+  scripts/            cubo.sh (API), previa.sh (prévia local), imagem.sh e pagespeed.sh
 ```
 
 Os arquivos de `references/` são lidos sob demanda: o `SKILL.md` fica curto e o detalhe só entra no

@@ -31,7 +31,7 @@ nenhum host interno.
 skills/landing-page/
   SKILL.md           o FLUXO, curto de propósito
   references/*.md    o detalhe, lido sob demanda
-  scripts/*.sh       cliente da API, preparo de imagem e medição
+  scripts/*.sh       cliente da API, prévia local, preparo de imagem e medição
 ```
 
 **O `SKILL.md` fica curto e os `references/` carregam sob demanda.** Não é preferência de estilo: o

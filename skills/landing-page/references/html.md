@@ -112,6 +112,15 @@ Em `head`, num `<style>` só. Regras práticas:
 
 ## Imagens
 
+**Toda imagem que a pessoa mandar vira arquivo no Cubo.** Se ela anexou uma foto, mandou link do
+Drive, apontou uma imagem do site antigo ou colou no chat: baixe, prepare e **suba pelo
+`POST /api/landings/assets`**, usando a URL que ele devolve.
+
+Nunca aponte o `<img src>` para endereço de terceiro. Link do Drive não funciona como imagem, link
+do site antigo quebra quando ele sai do ar, e imagem hospedada fora não entra na cota nem no backup
+do cliente — some sem aviso, e a página quebra semanas depois, quando ninguém liga mais uma coisa à
+outra.
+
 **Toda imagem passa pelo `imagem.sh` antes de subir. Sem exceção.**
 
 ```bash

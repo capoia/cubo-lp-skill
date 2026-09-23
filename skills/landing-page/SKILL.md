@@ -78,15 +78,25 @@ Nesta ordem, sempre pela API ([references/api.md](references/api.md)):
    `POST /api/domains` e entregue o CNAME para ela apontar; confira com
    `POST /api/domains/:id/verify`. Publicar em domínio que ainda não resolve é página no ar que
    ninguém alcança.
-5. **Caminho livre** — `GET /api/landings/path-check`. O caminho é único entre landing pages **e**
-   formulários hospedados do mesmo domínio.
-6. **Página** — `POST /api/landings`. Ela nasce **fora do ar**, de propósito.
-7. **Pré-visualização** — `POST /api/landings/:id/preview` devolve um endereço temporário. Abra,
-   confira no celular e no computador, e **mande o link para a pessoa aprovar**. O formulário na
-   pré-visualização não cria negociação, então pode testar à vontade.
+5. **Prévia local**, antes de criar qualquer coisa no Cubo:
 
-Corrija o que ela pedir com `PUT /api/landings/:id` e gere a pré-visualização de novo. Só avance
-com um "pode publicar" explícito.
+   ```bash
+   "${CLAUDE_PLUGIN_ROOT}/skills/landing-page/scripts/previa.sh" corpo.html cabeca.html
+   ```
+
+   Monta o documento, serve num endereço local e abre. O formulário desenha de verdade (o SDK vem
+   do CRM), mas o envio é interceptado na própria página — pode preencher e mandar à vontade.
+   Confira no celular e no computador, ajuste, e mostre para a pessoa.
+
+6. **Página** — `POST /api/landings`, só depois de a prévia estar boa. Ela nasce **fora do ar**.
+   Se o caminho já estiver ocupado, vem 422 com "Já existe uma landing page ou formulário com este
+   domínio e caminho" — proponha outro e siga, sem drama.
+
+Corrija o que ela pedir e faça a prévia de novo. Só avance com um "pode publicar" explícito.
+
+**Se ela quiser mostrar ao cliente antes de valer**, publique num caminho descartável
+(`/previa-turma-marco`), mande o endereço, e depois troque a `url` para a definitiva com um `PUT`.
+Não invente endpoint nem serviço de hospedagem para isso.
 
 ### 5. Publicação e medição
 
