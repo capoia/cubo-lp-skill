@@ -102,6 +102,8 @@ await caso('requisitos: sem acesso ao Cubo, aponta FALTA e sai com erro', async 
 
 // O sharp só existe depois que o `requisitos` instalou as dependências.
 sharp = createRequire(join(SCRIPTS, 'package.json'))('sharp')
+// No Windows o cache do sharp mantém o arquivo aberto, e a faxina do fim não consegue apagar a pasta.
+sharp.cache(false)
 png = await sharp({ create: { width: 3000, height: 2000, channels: 3, background: '#7f9c90' } })
   .composite([{ input: Buffer.from('<svg width="3000" height="2000"><circle cx="1500" cy="1000" r="800" fill="#ea9e95"/></svg>') }])
   .png()
@@ -200,4 +202,10 @@ await caso('marca: mede cor, fonte, logotipo e foto de fundo com degradê por ci
 
 servidor.close()
 console.log(`fumaça em ${process.platform} (Node ${process.versions.node})\n${resultados.join('\n')}`)
-if (!process.exitCode) rmSync(PASTA, { recursive: true, force: true })
+if (!process.exitCode) {
+  try {
+    rmSync(PASTA, { recursive: true, force: true, maxRetries: 5, retryDelay: 300 })
+  } catch (erro) {
+    console.log(`(não consegui apagar ${PASTA}: ${erro.code} — não afeta o resultado)`)
+  }
+}
