@@ -1,13 +1,18 @@
 {
   "name": "cubo",
-  "owner": { "name": "Cubo Suite" },
+  "owner": {
+    "name": "Cubo Suite"
+  },
+  "description": "Skills do Cubo Suite para o Claude Code.",
   "plugins": [
     {
       "name": "cubo-landing",
       "source": "./",
       "version": "1.0.0",
       "description": "Cria, publica e edita landing pages no Cubo, com formulário, SEO e nota do PageSpeed.",
-      "author": { "name": "Cubo Suite" },
+      "author": {
+        "name": "Cubo Suite"
+      },
       "license": "UNLICENSED"
     }
   ]
