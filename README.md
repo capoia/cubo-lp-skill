@@ -1,8 +1,27 @@
 # Landing page no Cubo — skill do Claude Code
 
-Skill que faz a landing page inteira: entrevista, escreve a página, cria o formulário que gera a
-negociação no funil, publica no domínio e mede o PageSpeed. Tudo pela API do Cubo — nada de copiar e
-colar HTML no painel.
+Skill que faz a landing page inteira: lê o site do cliente para pegar a identidade, entrevista,
+escreve a página, cria o formulário que gera a negociação no funil, publica no domínio e mede o
+PageSpeed. Tudo pela API do Cubo — nada de copiar e colar HTML no painel.
+
+Funciona em **Windows, macOS e Linux**, numa instalação limpa do Claude Code, sem nenhum MCP.
+
+## Antes de instalar: o que você precisa ter
+
+| O quê | Como conseguir |
+|---|---|
+| **Node.js 20.9 ou mais novo** | Windows: `winget install OpenJS.NodeJS.LTS` no PowerShell (ou o instalador LTS de https://nodejs.org). macOS: instalador LTS de https://nodejs.org. Depois, **feche e abra o Claude Code**. |
+| **Cubo** com os módulos de landing pages, formulários e domínios | a sua conta do Cubo |
+| **Chave de API do Cubo** com permissões de landing pages, formulários, domínios e campos personalizados | no Cubo, **Configurações → Chaves de API** — a skill ensina o passo a passo e confere as permissões |
+| **Chave do PageSpeed** (grátis, sem cartão) | a skill ensina a pegar em 2 minutos. Sem ela, a nota final falha quase todo dia |
+| um **domínio** apontado para o Cubo, ou vontade de apontar um | a skill cadastra e entrega o CNAME |
+
+O resto — conversão de imagem, navegador para as capturas — a skill instala sozinha na primeira vez,
+sem pedir senha de administrador. Chrome ou Edge ajudam (o Edge já vem no Windows); sem nenhum dos
+dois, ela baixa um navegador (~150 MB).
+
+Na primeira conversa, a skill roda uma conferência e diz exatamente o que falta, antes de fazer
+qualquer pergunta.
 
 ## Instalar
 
@@ -13,61 +32,43 @@ No Claude Code:
 /plugin install cubo-landing@cubo
 ```
 
-Repositório privado, por SSH:
+## Atualizar
+
+Quem instalou uma versão anterior **não recebe as novas sozinho**. No terminal:
 
 ```
-/plugin marketplace add git@github.com:capoia/cubo-lp-skill.git
-/plugin install cubo-landing@cubo
+claude plugin marketplace update cubo
+claude plugin update cubo-landing@cubo
 ```
 
-De uma pasta local (para testar antes de publicar):
+e **reinicie o Claude Code** — a versão nova só vale depois disso.
 
-```
-/plugin marketplace add /caminho/para/cubo-lp-skill
-/plugin install cubo-landing@cubo
-```
+A 2.0 muda o que a skill precisa (Node no lugar de `cwebp`/`python3`) e para de usar rotas do Cubo
+que não existem mais: **as versões 1.x falham ao publicar**.
 
 ## Usar
 
 Depois de instalada, basta pedir:
 
-> cria uma landing page pra captar leads do curso de inglês
+> cria uma landing page pra captar leads do curso de inglês — o site da escola é escoladeingles.com.br
 
 Ou chamar direto: `/cubo-landing:landing-page`.
 
 A skill vai:
 
-1. **pedir o acesso** — o endereço do seu Cubo e uma chave de API, e ensinar onde criar a chave com
-   as permissões certas;
-2. **entrevistar** — seis blocos curtos: oferta, público, prova, objeções, conversão, marca,
-   referências, SEO e publicação. Ela pede referências de páginas que você gosta, e o que você **não**
-   quer;
-3. **propor o plano** — estrutura, direção visual e a promessa principal, para você aprovar antes de
-   qualquer código;
-4. **construir** — campos personalizados que faltarem, o formulário com funil e etapa de destino, o
-   domínio (com o CNAME para apontar, se for novo) e a página, que **nasce fora do ar**;
-5. **pré-visualizar** — link temporário de 24 h, sem rastreamento, com o formulário em modo de teste.
-   Dá para mandar para o cliente aprovar;
-6. **publicar e medir** — publica e devolve as notas do PageSpeed (desempenho, acessibilidade, boas
-   práticas e SEO), consertando o que derrubar a nota.
+1. **conferir os requisitos** e pedir o acesso ao Cubo, ensinando onde criar a chave;
+2. **ler o site e a página antiga do cliente**: tira capturas, mede cores, fontes, logotipo e fotos,
+   e mostra a identidade que encontrou para você confirmar;
+3. **entrevistar**, perguntando só o que o briefing e o site não responderam;
+4. **propor o plano** — estrutura, direção visual e a promessa principal;
+5. **escrever e pré-visualizar** na sua máquina, olhando a página no celular e no computador. O que
+   depende do cliente (depoimento, número a confirmar, prazo) fica **marcado como rascunho** e vira
+   uma lista de pendências — nunca é inventado;
+6. **publicar e medir** — cria formulário e página no Cubo, confere o domínio e devolve as notas do
+   PageSpeed, consertando o que derrubar a nota.
 
-Também edita página que já existe: `edita a landing //promo, troca a chamada principal` — e, antes
-de mexer, **guarda a versão atual na sua máquina**, para desfazer com um comando se algo sair
-errado.
-
-## O que você precisa ter
-
-- **Cubo** com os módulos de landing pages, formulários e domínios ativos;
-- **chave de API** com as permissões de landing pages, formulários, domínios e campos
-  personalizados (a skill confere e diz se faltar alguma);
-- um **domínio** apontado para o Cubo, ou vontade de apontar um (a skill cadastra e entrega o CNAME).
-
-Para as imagens, **`cwebp`** (`brew install webp` no macOS, `apt install webp` no Linux): a skill
-converte tudo para webp e aperta o peso antes de subir, porque o Cubo recusa arquivo acima de 1 MB e
-cada imagem consome a cota de armazenamento da empresa.
-
-Opcional: `PAGESPEED_API_KEY` no ambiente. Sem ela a medição usa a cota pública do Google, que é
-compartilhada e às vezes estoura.
+Também edita página que já existe: `edita a landing /promo, troca a chamada principal` — e, antes
+de mexer, **guarda a versão atual na sua máquina**, para desfazer com um comando.
 
 ## Por que a página fica guardada no Cubo
 
@@ -82,8 +83,11 @@ rastreamento, porque isso faria o evento contar duas vezes.
 .claude-plugin/       plugin.json + marketplace.json
 skills/landing-page/
   SKILL.md            o fluxo
-  references/         acesso, questionário, design, html, formulário, api, seo, pagespeed
-  scripts/            cubo.sh (API), backup.sh, previa.sh (prévia local), imagem.sh e pagespeed.sh
+  references/         requisitos, acesso, marca, questionário, rascunho, design, html,
+                      formulário, api, seo, pagespeed
+  scripts/            Node: requisitos, cubo (API), marca (raio-x), imagem, previa,
+                      backup e pagespeed
+testes/fumaca.mjs     teste dos scripts, que o CI roda em Windows, macOS e Linux
 ```
 
 Os arquivos de `references/` são lidos sob demanda: o `SKILL.md` fica curto e o detalhe só entra no

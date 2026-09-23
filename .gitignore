@@ -1,3 +1,4 @@
 .cubo.env
 lh.json
 .DS_Store
+node_modules/

@@ -143,7 +143,9 @@ form.on('redirect', ({ url, preventDefault }) => { /* dá para cancelar */ })
 
 ## Testar sem sujar o funil
 
-A pré-visualização da landing (`POST /api/landings/:id/preview`) já coloca o formulário em modo de
-teste: pode enviar à vontade, nada é criado. Para testar de verdade **depois de publicar**, combine
-com a pessoa: mande um lead real, confira a negociação no funil e apague. É o único jeito de provar
-que o caminho inteiro funciona.
+A prévia local (`previa.mjs`) desenha o formulário de verdade — ele vem do CRM — mas responde o
+envio na própria página: pode preencher e mandar à vontade, nenhuma negociação é criada. Para isso
+o formulário **já precisa existir** no Cubo (é o `publicId` dele que vai no trecho do SDK).
+
+Para testar de verdade **depois de publicar**, combine com a pessoa: mande um lead real, confira a
+negociação no funil e apague. É o único jeito de provar que o caminho inteiro funciona.

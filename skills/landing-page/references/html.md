@@ -121,16 +121,22 @@ do site antigo quebra quando ele sai do ar, e imagem hospedada fora não entra n
 do cliente — some sem aviso, e a página quebra semanas depois, quando ninguém liga mais uma coisa à
 outra.
 
-**Toda imagem passa pelo `imagem.sh` antes de subir. Sem exceção.**
+**Toda imagem passa pelo `imagem.mjs` antes de subir. Sem exceção.**
 
 ```bash
-"${CLAUDE_PLUGIN_ROOT}/skills/landing-page/scripts/imagem.sh" foto.jpg topo
-"${CLAUDE_PLUGIN_ROOT}/skills/landing-page/scripts/imagem.sh" equipe.png conteudo
-"${CLAUDE_PLUGIN_ROOT}/skills/landing-page/scripts/imagem.sh" logo.png logo
+node "<scripts>/imagem.mjs" foto.jpg topo topo.webp
+node "<scripts>/imagem.mjs" https://site-do-cliente.com.br/fachada.png conteudo fachada.webp
+node "<scripts>/imagem.mjs" logo.png logo logo.webp
 ```
 
-Ele redimensiona, converte para **webp** e aperta a qualidade até caber no orçamento. Devolve o
-caminho do arquivo pronto, que é o que vai para o `POST /api/landings/assets`.
+Ele aceita arquivo ou **endereço** — é assim que se aproveita a foto que o cliente já usa no site
+(o `marca.mjs` lista as que achou). Redimensiona, converte para **webp** e aperta a qualidade até
+caber no orçamento; no papel `logo`, também apara a margem transparente em volta. A primeira linha
+da saída é o arquivo pronto, que é o que vai para o `POST /api/landings/assets`.
+
+Ele avisa quando a original é **estreita demais** para o papel (uma foto de 1024px como `topo` vai
+aparecer esticada no computador): nesse caso, use a imagem em meia largura em vez de tela
+inteira.
 
 | Papel | Largura máxima | Alvo |
 | --- | --- | --- |
@@ -152,10 +158,13 @@ métrica que mais mexe na nota de desempenho no celular. O script avisa quando n
 lá; quando avisar, o caminho é cortar a imagem ou pedir uma com menos detalhe, não subir assim
 mesmo.
 
-**Se o `cwebp` não estiver instalado**, o script para e ensina a instalar (`brew install webp` no
-macOS, `apt install webp` no Linux). Não contorne subindo o jpg original: é exatamente o que ele
-existe para impedir. O `sips` do macOS *lê* webp mas não escreve, e um `ffmpeg` sem libwebp também
-não serve — medido, não suposto.
+**Se o script disser que a dependência não está instalada**, rode o `requisitos.mjs`
+([requisitos.md](requisitos.md)). Não contorne subindo o jpg original: é exatamente o que ele
+existe para impedir.
+
+**Durante a prévia**, antes de subir, o `<img src>` pode apontar para o arquivo local com caminho
+relativo (`imagens/topo.webp`): o `previa.mjs` serve a pasta do `corpo.html`. Na hora de criar a
+página no Cubo, troque cada um pela URL que o `POST /api/landings/assets` devolveu.
 
 No HTML, toda imagem leva `width`, `height` e `alt`; a do topo leva `fetchpriority="high"` e as
 demais, `loading="lazy"`.

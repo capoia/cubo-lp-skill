@@ -1,0 +1,24 @@
+name: fumaca
+
+# Prova que os scripts da skill rodam nos três sistemas. Quem instala a skill não é de
+# desenvolvimento e quase sempre está no Windows: aqui é o único lugar onde o Windows é testado.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  scripts:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+        node: ['20', '22']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: fumaça
+        run: node testes/fumaca.mjs

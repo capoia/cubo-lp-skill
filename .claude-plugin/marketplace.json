@@ -8,8 +8,8 @@
     {
       "name": "cubo-landing",
       "source": "./",
-      "version": "1.3.0",
-      "description": "Cria, publica e edita landing pages no Cubo, com formulário, SEO e nota do PageSpeed.",
+      "version": "2.0.0",
+      "description": "Cria, publica e edita landing pages no Cubo, com a identidade do cliente, formulário, SEO e nota do PageSpeed.",
       "author": {
         "name": "Cubo Suite"
       },

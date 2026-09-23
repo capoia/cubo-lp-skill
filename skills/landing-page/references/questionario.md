@@ -5,7 +5,8 @@ escolha e não texto livre — é o que faz a pessoa responder em vez de travar.
 repita de volta o que entendeu antes de seguir.
 
 **Pule o que já sabe.** Se a pessoa entregou um briefing, uma página antiga, um anúncio ou um site,
-leia primeiro e pergunte só o que ficou faltando. Perguntar o que já está na mesa cansa.
+leia primeiro — e rode o raio-x da marca nos endereços ([marca.md](marca.md)) — e pergunte só o que
+ficou faltando. Perguntar o que já está na mesa cansa.
 
 **Se ela travar numa pergunta,** proponha uma resposta plausível e peça só o "sim" ou "não é isso".
 Chute fundamentado é melhor que página vaga.
@@ -49,9 +50,13 @@ Chute fundamentado é melhor que página vaga.
 
 ## Bloco 4 — Marca e referência
 
-15. **Logotipo** — peça o arquivo ou o endereço. Sem logotipo, a página parece de ninguém.
-16. **Cores da marca** — em hexadecimal se ela tiver; senão, tire do logotipo e confirme.
-17. **Tipografia** — se houver fonte da marca, use. Senão você escolhe, e explica a escolha.
+Se o raio-x rodou, **mostre o que ele achou e peça só a confirmação** dos itens 15 a 17 e 21.
+
+15. **Logotipo** — o do site serve (o raio-x traz); senão, peça o arquivo. Sem logotipo, a página
+    parece de ninguém.
+16. **Cores da marca** — as que o raio-x mediu; senão, em hexadecimal se ela tiver, ou tiradas do
+    logotipo e confirmadas.
+17. **Tipografia** — a do site, se houver. Senão você escolhe, e explica a escolha.
 18. **Referências** — 1 a 3 endereços de páginas que ela acha boas, **e o que gosta em cada uma**
     ("o jeito que apresenta o preço", "a foto grande logo no começo"). Abra cada uma e olhe antes de
     desenhar.
@@ -59,9 +64,11 @@ Chute fundamentado é melhor que página vaga.
     "parecido com o concorrente X".
 20. **Tom de voz** — próximo e direto, técnico, institucional, divertido. Combine com o público do
     bloco 1, não com o gosto de quem está pedindo.
-21. **Imagens** — ela tem fotos próprias? Foto real de quem atende, do lugar, do produto vale mais
-    que qualquer banco de imagens. Se não tiver, diga que a página vai sair sem foto de gente em vez
-    de colocar foto de banco genérica.
+21. **Imagens** — foto real de quem atende, do lugar, do produto vale mais que qualquer banco de
+    imagens. As que o cliente já usa no site e na LP antiga servem (o `imagem.mjs` baixa pelo
+    endereço): mostre quais pretende usar e confirme. Do Instagram, peça que ela mande os arquivos —
+    ele exige login. Pergunte se imagem com cara de render é foto real ou projeto. Sem nenhuma foto
+    própria, a página sai sem foto de gente em vez de foto de banco genérica.
 
 ## Bloco 5 — SEO e compartilhamento
 
@@ -76,8 +83,10 @@ Chute fundamentado é melhor que página vaga.
 
 27. **Qual domínio?** Liste os cadastrados (`GET /api/domains`). Se o que ela quer não existe,
     cadastre e entregue o CNAME.
-28. **Qual caminho?** `/promo`, `/turma-marco`. Curto, sem acento, com hífen. Confira se está livre.
-29. **Publicar agora ou deixar pronto e fora do ar?**
+28. **Qual caminho?** `/promo`, `/turma-marco`. Curto, sem acento, com hífen. Se estiver ocupado, a
+    criação volta 422 dizendo — aí proponha outro.
+29. **Publicar assim que aprovar, ou deixar pronto e fora do ar?** (`status` `active` ou
+    `deactivated` na criação.)
 
 ---
 
@@ -85,4 +94,8 @@ Chute fundamentado é melhor que página vaga.
 
 Você tem o suficiente quando consegue escrever, sem inventar: a promessa principal, três motivos
 para acreditar, a resposta para as três objeções, o que a pessoa ganha ao enviar o formulário, e
-para onde o lead vai. Faltando qualquer um, pergunte mais. Sobrando, pare e mostre o plano.
+para onde o lead vai. Sobrando, pare e mostre o plano.
+
+Faltando, pergunte **uma vez**. Se a pessoa não tiver a resposta ("o cliente não mandou"), não
+trave: siga com rascunho e deixe o buraco marcado ([rascunho.md](rascunho.md)). Só o destino do lead
+(funil e etapa) e o domínio são indispensáveis antes de criar qualquer coisa no Cubo.
