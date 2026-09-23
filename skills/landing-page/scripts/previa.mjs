@@ -165,11 +165,20 @@ const servidor = createServer((pedido, resposta) => {
   resposta.end(readFileSync(arquivo))
 })
 
-const porta = Number(opcoes.porta || 8799)
-await new Promise((pronto, erro) => servidor.once('error', erro).listen(porta, '127.0.0.1', pronto)).catch((erro) =>
-  falha(erro.code === 'EADDRINUSE' ? `a porta ${porta} está ocupada. Use --porta=<outra>.` : erro.message),
-)
+// Porta ocupada (outra prévia aberta, outro programa) não pode parar o trabalho: cai numa livre.
+const escutar = (porta) => new Promise((pronto, erro) => servidor.once('error', erro).listen(porta, '127.0.0.1', pronto))
+const portaPedida = Number(opcoes.porta || 8799)
+await escutar(portaPedida).catch(async (erro) => {
+  if (erro.code !== 'EADDRINUSE') falha(erro.message)
+  console.log(`(a porta ${portaPedida} está ocupada; usando outra)`)
+  await escutar(0)
+})
 const endereco = `http://127.0.0.1:${servidor.address().port}/`
+
+// Página publicada é https: qualquer recurso http:// é bloqueado pelo navegador (imagem some,
+// formulário não carrega) — e na prévia local, que é http, isso passa despercebido.
+const inseguros = [...new Set([...`${readFileSync(corpoArquivo, 'utf8')}${cabecaArquivo ? readFileSync(cabecaArquivo, 'utf8') : ''}`
+  .matchAll(/(?:src|href)\s*=\s*["'](http:\/\/[^"']+)/gi)].map((m) => m[1]))]
 
 const rascunhos = [...readFileSync(corpoArquivo, 'utf8').matchAll(/data-rascunho="([^"]*)"/g)].map((m) => m[1])
 
@@ -222,6 +231,7 @@ if (opcoes.capturar) {
   console.log(`capturas em ${SAIDA}:`)
   for (const nome of ['desktop-topo', 'desktop-pagina', 'celular-topo', 'celular-pagina']) console.log(`  ${join(SAIDA, `${nome}.jpg`)}`)
   console.log('')
+  if (inseguros.length) problemas.push(`endereço http:// na página (a publicada é https e o navegador bloqueia): ${inseguros.slice(0, 4).join(', ')}`)
   console.log(problemas.length ? `o que achei:\n  ${[...new Set(problemas)].join('\n  ')}` : 'nenhum problema técnico encontrado.')
   console.log('')
   console.log(rascunhos.length ? `trechos em RASCUNHO (${rascunhos.length}) — precisam de conteúdo real antes de publicar:\n${rascunhos.map((texto, indice) => `  R${indice + 1}  ${texto}`).join('\n')}` : 'nenhum trecho em rascunho.')

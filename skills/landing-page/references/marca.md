@@ -84,8 +84,9 @@ pergunte só o que ficou faltando.
 
 ## Concorrentes
 
-Com 2 ou 3 concorrentes (o briefing costuma trazer; senão, pergunte "quem o seu cliente compara
-com vocês?"), rode o mesmo raio-x:
+Com **todos** os concorrentes que o briefing citar (senão, pergunte "quem o seu cliente compara com
+vocês?" e peça 2 ou 3), rode o mesmo raio-x. Concorrente citado "como referência de estrutura" é o
+mais importante de olhar, não o primeiro a ser pulado:
 
 ```bash
 node "<scripts>/marca.mjs" https://concorrente-a.com.br/franquia https://concorrente-b.com.br/franquia --pasta=concorrentes

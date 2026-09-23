@@ -199,6 +199,16 @@ await caso('previa: desenha o formulário do Cubo pela definição local e enxer
   confere(!/nenhum campo de formulário/.test(r.saida), `formulário não apareceu (ou o detector não enxerga o shadow DOM):\n${r.saida}`)
 })
 
+await caso('previa: porta ocupada cai numa livre, e acusa recurso http:// que a página https bloquearia', async () => {
+  writeFileSync(join(PASTA, 'pagina', 'http.html'), '<style>html,body{margin:0}</style><img src="http://exemplo.test/foto.webp" alt="x" width="10" height="10">')
+  const ocupante = createServer().listen(8799, '127.0.0.1')
+  await new Promise((pronto) => ocupante.once('listening', pronto).once('error', pronto))
+  const r = await roda('previa.mjs', [join('pagina', 'http.html'), '--capturar'])
+  ocupante.close()
+  confere(r.codigo === 0, `não caiu numa porta livre:\n${r.saida}`)
+  confere(/endereço http:\/\/ na página/.test(r.saida), `não acusou o http://:\n${r.saida}`)
+})
+
 await caso('marca: mede cor, fonte, logotipo e foto de fundo com degradê por cima', async () => {
   const r = await roda('marca.mjs', [`${BASE}/marca`, '--pasta=raio-x'])
   confere(r.codigo === 0, r.saida)

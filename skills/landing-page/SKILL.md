@@ -44,8 +44,10 @@ Valem sempre, e estão aqui (e não só nas referências) de propósito:
 3. **Proibido, a não ser que a marca peça:** faixa de números grandes com legenda, grade de cartões
    iguais com ícone, rótulo pequeno acima do título, "01/02/03" no que não é sequência, carrossel de
    depoimentos, menu de navegação.
-4. **Gente real.** Peça e procure foto de quem atende, do lugar, de clientes reais. Banco de imagem
-   genérico, nunca; sem foto de gente, avise que isso custa conversão.
+4. **Gente e coisa real.** Peça e procure foto de quem atende, do lugar, de clientes reais — e use as
+   **fotos de produto** do próprio site, que são reais e dão vida à página. Procure depoimentos
+   públicos (YouTube e Google do cliente). Banco de imagem genérico, nunca; sem foto de gente, avise
+   que isso custa conversão.
 5. **Prova cedo e o botão sem rolar.** Promessa, ação e uma prova cabem na primeira tela do celular.
 6. **Texto de gente**: palavra do dia a dia, a do cliente final quando der; nada de "solução
    inovadora", trio de adjetivos ou frase de efeito no fim de cada parágrafo.
@@ -63,8 +65,9 @@ node --version && node "${CLAUDE_PLUGIN_ROOT}/skills/landing-page/scripts/requis
 ```
 
 Sem Node, ou com algo como `FALTA`, **pare e resolva primeiro**, com o texto pronto de
-[references/requisitos.md](references/requisitos.md). Descobrir no meio da publicação que falta uma
-peça é o que mais frustra quem usa.
+[references/requisitos.md](references/requisitos.md). Com `aviso` (a chave do PageSpeed, por
+exemplo), **diga à pessoa agora**, com o passo a passo, e siga — não guarde para o fim. Descobrir no
+meio da publicação que falta uma peça é o que mais frustra quem usa.
 
 ### 1. Acesso
 
@@ -136,7 +139,11 @@ Ajuste até a pessoa dizer **"pode publicar"**.
 
 ### 6. Publicação e medição
 
-1. Sobrou `data-rascunho` no HTML? Liste o que falta e pergunte antes ([rascunho.md](references/rascunho.md)).
+1. Sobrou `data-rascunho` no HTML? Liste o que falta e **recomende criar a página fora do ar**
+   (`"status": "deactivated"`) até resolver ([rascunho.md](references/rascunho.md)). Duas coisas
+   nunca vão ao ar sem um "sim" explícito: **número marcado como "a validar"** (em franquia,
+   investimento e retorno são compromisso jurídico) e **imagem que você suspeitou ser render** — no
+   topo, então, jamais. Na dúvida, troque por uma foto real ou tire a seção.
 2. Confira que o domínio está `active` (`GET /api/domains`). **A API não confere**: página em
    domínio que não resolve fica "no ar" onde ninguém alcança.
 3. `POST /api/landings` — **a página nasce no ar** (`status: "active"`). Para deixar pronta e fora
