@@ -54,8 +54,10 @@ A listagem **não traz o HTML** (é grande). Para o conteúdo, leia uma página.
 }
 ```
 
-- **nasce fora do ar** (`status: "deactivated"`). Mandar `"status": "active"` publica na hora — não
-  faça isso antes de a pessoa aprovar a pré-visualização;
+- **nasce fora do ar**, sempre. A API **não aceita `status`**: publicar é `POST /:id/publish`, que
+  confere conteúdo e domínio ativo;
+- **a API não aceita `css`.** O CSS vai dentro do `head`, num `<style>` — a página publicada ignora
+  a coluna `css`;
 - `url` é o caminho dentro do domínio, sem barra no começo. `"/"` é a raiz;
 - `integrations` é opcional: ids de integração da Meta (API de Conversões) para a página. Pegue em
   `GET /api/landings` de uma página que já funcione, ou pergunte;

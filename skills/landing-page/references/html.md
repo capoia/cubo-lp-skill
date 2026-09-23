@@ -125,6 +125,7 @@ O conteúdo passa por uma checagem: `<script src>` apontando para um domínio fo
 (jsDelivr, cdnjs, unpkg, Google Fonts, GTM, Facebook, jQuery) é **recusado** com 422 dizendo qual
 origem foi barrada. Script escrito na própria página continua liberado.
 
-Se a pessoa precisar mesmo de um script de outro domínio, ele vai em `codeHead`/`codeBody` — e
-vale a mesma checagem. Quando for recusado, explique por que existe a trava em vez de procurar um
-jeito de contorná-la.
+A checagem vale para `html`, `head`, `codeHead` e `codeBody`. Quando for recusado, explique por que
+existe a trava em vez de procurar um jeito de contorná-la — inclusive porque **dá** para contorná-la
+(script embutido é liberado, e ele carrega o que quiser). Contornar uma trava que existe para
+proteger a página do cliente é traição de confiança, não esperteza.
