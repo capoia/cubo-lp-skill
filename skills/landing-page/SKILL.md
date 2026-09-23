@@ -116,6 +116,20 @@ Não invente endpoint nem serviço de hospedagem para isso.
 
 ## Editar uma página que já existe
 
+**Antes de qualquer alteração, guarde a versão atual.** Página no ar é anúncio rodando: desfazer
+precisa ser mais rápido que explicar.
+
+```bash
+"${CLAUDE_PLUGIN_ROOT}/skills/landing-page/scripts/backup.sh" guardar <id>
+```
+
+Guarda o JSON completo e, ao lado, o `.html` e o `.head.html` soltos, para ler e comparar. Se algo
+sair errado:
+
+```bash
+"${CLAUDE_PLUGIN_ROOT}/skills/landing-page/scripts/backup.sh" restaurar <arquivo.json>
+```
+
 `GET /api/landings` lista. `GET /api/landings/:id` traz o HTML inteiro. Edite, pré-visualize,
 publique. **Só edite pela API páginas com `builderVersion: "html"`** — as de `"1"` ou `"2"` foram
 feitas no construtor visual do Cubo, e sobrescrever o HTML delas apaga o que o construtor guarda.
@@ -130,6 +144,8 @@ Nesse caso, diga isso à pessoa em vez de escrever por cima.
   qualquer outro dado é campo personalizado.
 - **Usar `lazy` no formulário.** O formulário é o motivo da página existir. Use `minHeight`.
 - **Deixar a nota do PageSpeed para depois.** Ela faz parte da entrega.
+- **Editar uma página que já existe sem guardar antes.** O `backup.sh` leva dois segundos; refazer
+  à mão uma página que alguém aprovou leva a tarde.
 - **Subir imagem sem passar pelo `imagem.sh`.** Uma foto de celular tem 3 MB; o Cubo recusa acima de
   1 MB, e mesmo o que passa derruba a nota e gasta a cota de armazenamento do cliente.
 
