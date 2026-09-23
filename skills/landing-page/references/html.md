@@ -91,7 +91,10 @@ Três coisas sobre o trecho do formulário:
 
 Em `head`, num `<style>` só. Regras práticas:
 
-- prefixe tudo (`.lp-`): o CSS convive com o que o Cubo injeta;
+- **zere a margem da página**: `html, body { margin: 0; padding: 0 }`. As páginas do construtor
+  visual trazem esse reset no próprio CSS; a sua, em HTML, não — e o template do Cubo não zera. Sem
+  ele, sobra uma borda branca de 8px em volta. O `previa.mjs --capturar` acusa;
+- prefixe o resto (`.lp-`): o CSS convive com o que o Cubo injeta;
 - **não estilize o formulário por CSS da página** — ele desenha em shadow DOM e nada vaza para
   dentro. Para mudar a aparência dele, use as configurações do formulário
   ([formulario.md](formulario.md));

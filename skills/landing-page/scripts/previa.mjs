@@ -23,7 +23,7 @@ if (!corpoArquivo) {
 
   sem opção    serve em http://127.0.0.1:<porta>/ até Ctrl+C, para a pessoa abrir no navegador
   --capturar   tira as capturas em ./previa/ e encerra (junte --servir para continuar servindo)
-  --limpa      esconde a marcação dos trechos de rascunho (para mostrar ao cliente)
+  --limpa      esconde os números dos trechos em rascunho (a lista sai no terminal de qualquer jeito)
 
 Imagem com caminho relativo (ex.: imagens/topo.webp) é servida da pasta do corpo.html.`)
   process.exit(2)
@@ -72,10 +72,9 @@ const TRAVAS = `<script>
 // nem ::after no elemento marcado: a página costuma usar os dois, e a regra se funde com a dela
 // (foi assim que um selo laranja cobriu a foto inteira de um arco).
 const MARCA_RASCUNHO = `<style>
-[data-rascunho] { outline: 2px dashed #d97706 !important; outline-offset: -2px; }
-.previa-selo { position: absolute; z-index: 2147483647; font: 700 10px/18px system-ui, sans-serif; color: #fff;
-  background: #b45309; min-width: 22px; height: 18px; padding: 0 4px; border-radius: 9px; text-align: center;
-  pointer-events: none; box-sizing: border-box; box-shadow: 0 0 0 2px #fff; }
+.previa-selo { position: absolute; z-index: 2147483647; font: 600 9px/15px system-ui, sans-serif; color: #fff;
+  background: rgba(180, 83, 9, .82); min-width: 15px; height: 15px; padding: 0 3px; border-radius: 8px;
+  text-align: center; box-sizing: border-box; cursor: help; }
 </style>
 <script>
 addEventListener('load', function () {
@@ -87,8 +86,8 @@ addEventListener('load', function () {
       selo.className = 'previa-selo'
       selo.textContent = 'R' + (indice + 1)
       selo.title = el.getAttribute('data-rascunho')
-      selo.style.left = Math.max(0, caixa.left + scrollX - 8) + 'px'
-      selo.style.top = Math.max(0, caixa.top + scrollY - 9) + 'px'
+      selo.style.left = Math.max(0, caixa.left + scrollX - 4) + 'px'
+      selo.style.top = Math.max(0, caixa.top + scrollY - 6) + 'px'
       document.body.appendChild(selo)
     })
   }
@@ -179,6 +178,9 @@ if (opcoes.capturar) {
     if (vazando.length) problemas.push(`[${nome}] a página rola para o lado (tela de ${viewport.width}px): ${vazando.join('; ')}`)
     const campos = await pagina.evaluate(() => document.querySelectorAll('form input, form select, form textarea').length)
     if (!campos) problemas.push(`[${nome}] nenhum campo de formulário apareceu — o SDK carregou? o id do formulário está certo?`)
+    // O Cubo não zera a margem do body: sem o reset no CSS da página, ela vai ao ar com uma borda.
+    const margem = await pagina.evaluate(() => getComputedStyle(document.body).margin)
+    if (margem !== '0px') problemas.push(`[${nome}] a página tem uma borda em volta (margem do body: ${margem}) — ponha html, body { margin: 0 } no CSS da página: o template do Cubo não zera para página em HTML`)
     const semAlt = await pagina.evaluate(() => [...document.images].filter((i) => !i.hasAttribute('alt')).length)
     if (semAlt) problemas.push(`[${nome}] ${semAlt} imagem(ns) sem alt`)
 

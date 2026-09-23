@@ -50,8 +50,9 @@ Todo trecho que depende de confirmação leva `data-rascunho="o que falta"`:
 A descrição diz **o que a pessoa precisa mandar**, não "texto provisório". Ela vira a lista de
 pendências.
 
-Na prévia (`previa.mjs`), cada trecho marcado ganha um contorno tracejado e um selo numerado (`R1`,
-`R2`…), e o terminal lista o que é cada um. Para mostrar ao cliente sem as marcas, `--limpa`.
+Na prévia (`previa.mjs`), cada trecho marcado ganha um número pequeno no canto (`R1`, `R2`… — passar
+o mouse mostra o que falta), discreto o bastante para não atrapalhar a leitura do visual. O terminal
+lista o que é cada um. Para mostrar ao cliente sem os números, `--limpa`.
 
 ## Entregar o rascunho
 

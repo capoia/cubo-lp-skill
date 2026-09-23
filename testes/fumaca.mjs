@@ -186,6 +186,7 @@ await caso('previa: captura, lista os rascunhos e acusa rolagem lateral', async 
   }
   confere(/R1\s+texto do cliente/.test(r.saida), `rascunho não listado:\n${r.saida}`)
   confere(/\[celular\] a página rola para o lado/.test(r.saida), `não acusou a rolagem:\n${r.saida}`)
+  confere(/borda em volta \(margem do body: 8px\)/.test(r.saida), `não acusou a borda do body:\n${r.saida}`)
 })
 
 await caso('marca: mede cor, fonte, logotipo e foto de fundo com degradê por cima', async () => {
