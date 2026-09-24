@@ -56,6 +56,7 @@ const paginaDaMarca = `<!doctype html><html><head><title>Marca Teste</title><met
 <nav><a href="/produtos/lavadora">Lavadoras</a> <a href="/contato">Fale</a></nav>
 <section style="width:600px;height:400px;background-image:linear-gradient(#0000,#0000),url('/foto.png')"></section>
 <style>.chega{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}.chega.visto{opacity:1;transform:none}</style>
+<div id="aviso-cookies" style="position:fixed;inset:auto 0 0 0;height:300px;background:#ff00ff;z-index:99">Usamos cookies para melhorar sua experiência</div>
 <div style="height:900px"></div><div class="chega" style="width:400px;height:120px;background:#fff">chega ao rolar</div>
 <script>new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting)i.target.classList.add('visto')})}).observe(document.querySelector('.chega'))</script>
 </body></html>`
@@ -278,6 +279,7 @@ await caso('marca: mede cor, fonte, logotipo e foto de fundo com degradê por ci
   confere(medidas.sistema.raio.cartao.some((r) => r.startsWith('16px')), `não mediu o canto do cartão: ${JSON.stringify(medidas.sistema.raio)}`)
   confere(medidas.sistema.chegada.elementos >= 1 && /aparece e sobe 24px em 0.6s/.test(medidas.sistema.chegada.efeitos.join()), `não viu a chegada ao rolar: ${JSON.stringify(medidas.sistema.chegada)}`)
   confere(/o jeito do site/.test(r.saida), r.saida)
+  confere(!medidas.fundos.some((f) => f.valor === '#ff00ff'), `o banner de cookies entrou na medida: ${JSON.stringify(medidas.fundos)}`)
 })
 
 await caso('previa: monta o lado a lado com o site e acusa a fonte do site que não carregou', async () => {
@@ -287,6 +289,19 @@ await caso('previa: monta o lado a lado com o site e acusa a fonte do site que n
   confere(r.codigo === 0, r.saida)
   confere(existsSync(join(PASTA, 'previa', 'lado-a-lado.jpg')), `não montou o lado a lado:\n${r.saida}`)
   confere(/fonte que não carregou.*Da Marca/.test(r.saida), `não acusou a fonte:\n${r.saida}`)
+})
+
+await caso('previa: compara com o site (canto, borda superior) e aceita lorem ipsum só dentro de rascunho', async () => {
+  writeFileSync(join(PASTA, 'pagina', 'divergente.html'), `<style>html,body{margin:0} .c{width:320px;height:180px;background:#fff;border-top:4px solid #007481;border-radius:0}</style>
+<main><section><h1>Oi</h1><a href="#" style="background:#333;color:#fff;padding:9px">Quero</a>
+<div style="display:flex;gap:20px"><div class="c">um</div><div class="c">dois</div></div>
+<p data-rascunho="depoimento real">Lorem ipsum dolor sit amet marcado</p><p>Lorem ipsum solto</p></section></main>`)
+  const r = await roda('previa.mjs', [join('pagina', 'divergente.html'), '--capturar', '--porta=0', '--site=raio-x'])
+  confere(r.codigo === 0, r.saida)
+  confere(/comparada com o jeito do site/.test(r.saida), `não comparou:\n${r.saida}`)
+  confere(/canto de cartão: o site usa 16px, a landing reto/.test(r.saida), `não acusou o canto:\n${r.saida}`)
+  confere(/borda superior grossa em 2 cartão/.test(r.saida), `não acusou a borda superior:\n${r.saida}`)
+  confere(/lorem ipsum fora de rascunho em 1 lugar/.test(r.saida), `lorem ipsum: devia acusar só o solto:\n${r.saida}`)
 })
 
 await caso('icone: procura pelo nome e entrega o <svg> no padrão da página', async () => {

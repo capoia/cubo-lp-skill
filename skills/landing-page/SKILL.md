@@ -103,7 +103,7 @@ node "<scripts>/anuncios.mjs" "Nome Completo do Concorrente" "categoria + oferta
 ```
 
 O `marca.mjs` lista as **páginas internas** do site que parecem ter matéria-prima (produtos,
-serviços, cases, galeria): rode-o nelas também, e anote no dossiê a **matéria-prima** — o que existe
+serviços, cases, galeria): rode-o nelas também, **na mesma pasta** (`--pasta=dossie/marca`), e anote no dossiê a **matéria-prima** — o que existe
 de real e em que bloco pode virar ([references/riqueza.md](references/riqueza.md)).
 
 Mais 3 a 5 **páginas bem feitas da mesma categoria**, achadas por busca na web e passadas pelo
@@ -119,8 +119,8 @@ perguntas. **Pergunte só o que o briefing e o raio-x não responderam.** Puxe c
 **referências** (e o que ela *não* quer) e **prova** (número, depoimento, caso). Página sem prova é
 panfleto.
 
-Faltou conteúdo? **Não pare e não use lorem ipsum.** Escreva o rascunho a partir do briefing e do
-site, e marque o que depende do cliente: [references/rascunho.md](references/rascunho.md). Número,
+Faltou conteúdo? **Não pare.** Escreva o rascunho a partir do briefing e do site, e marque o que
+depende do cliente (lorem ipsum só se a pessoa pedir, e sempre dentro de `data-rascunho`): [references/rascunho.md](references/rascunho.md). Número,
 depoimento, prazo e nome de cliente **nunca** se inventam.
 
 ### 4. Plano
@@ -140,6 +140,16 @@ Peça o "pode ir". O que evitar: [references/design.md](references/design.md).
 
 ### 5. Construção e prévia
 
+**Antes da primeira linha de HTML, leia inteiros, com a ferramenta Read:**
+[html.md](references/html.md), [marca.md](references/marca.md) ("o sistema do site"),
+[riqueza.md](references/riqueza.md), [movimento.md](references/movimento.md),
+[acabamento.md](references/acabamento.md) e [design.md](references/design.md). Não é opcional: numa
+rodada em que essas leituras foram puladas, a página saiu com borda grossa nos cartões, cantos
+diferentes dos do site e quase sem ícone — tudo o que elas proíbem.
+
+Com site próprio, o CSS começa pelo `:root` com os **tokens medidos** do site (cantos de botão,
+cartão e imagem, sombra, caixa dos títulos, coluna, cores), copiados do raio-x — não de memória.
+
 Sempre pela API ([references/api.md](references/api.md)):
 
 1. **Imagens, vídeo e ícones**: ícones pelo `icone.mjs` (o `<svg>` pronto, da mesma família); toda imagem passa pelo `imagem.mjs` (aceita arquivo ou endereço; devolve webp
@@ -153,11 +163,12 @@ Sempre pela API ([references/api.md](references/api.md)):
 5. **Prévia local**, com captura:
 
    ```bash
-   node "<scripts>/previa.mjs" corpo.html cabeca.html --capturar --site=dossie/marca/<pasta-do-site>
+   node "<scripts>/previa.mjs" corpo.html cabeca.html --capturar --site=dossie/marca
    ```
 
-   Com `--site`, ele também monta `previa/lado-a-lado.jpg`: o topo do site e o da landing, um ao
-   lado do outro.
+   Com `--site`, ele mede a landing com a mesma régua do raio-x e **acusa o que ela faz diferente do
+   site** (canto de botão, cartão e imagem; caixa dos títulos; sombra; borda superior grossa), e monta
+   `previa/lado-a-lado.jpg`: o topo do site e o da landing, um ao lado do outro.
 
    Corrija tudo que o script apontar (ele mede acabamento também: título em linhas demais, frase
    espremida, colunas desproporcionais, tamanhos de letra demais) e confira a linha "o que a página

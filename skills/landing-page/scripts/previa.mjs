@@ -8,9 +8,10 @@
 // Com --capturar, tira as capturas de celular e de computador e diz o que achou de errado: é assim
 // que o Claude "olha" a página, já que ele não tem tela.
 import { createServer } from 'node:http'
-import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, extname, join, normalize, resolve } from 'node:path'
 import { abrirNavegador, argumentos, dependencia, falha } from './lib.mjs'
+import { comparar, consolidar, medirSistema } from './sistema.mjs'
 
 const { posicionais, opcoes } = argumentos()
 const [corpoArquivo, cabecaArquivo] = posicionais
@@ -24,8 +25,10 @@ if (!corpoArquivo) {
   sem opção    serve em http://127.0.0.1:<porta>/ até Ctrl+C, para a pessoa abrir no navegador
   --capturar   tira as capturas em ./previa/ e encerra (junte --servir para continuar servindo)
   --limpa      esconde os números dos trechos em rascunho (a lista sai no terminal de qualquer jeito)
-  --site=pasta  a pasta do raio-x do site do cliente (dossie/marca/<site>): monta previa/lado-a-lado.jpg
-               com o topo do site e o da landing, para ver se ela parece uma página dele
+  --site=pasta[,pasta]
+               as pastas do raio-x do site do cliente (ex.: dossie/marca,dossie/internas). Mede a
+               landing com a mesma régua do marca.mjs e acusa o que ela faz diferente do site
+               (cantos, títulos, sombra, borda), e monta previa/lado-a-lado.jpg
   --formulario=arquivo.json
                desenha o formulário do Cubo de verdade em cada .lp-formulario (ou #form), a partir
                de uma definição local,
@@ -216,6 +219,10 @@ function medirAcabamento(largura) {
   })
   if (escondidos.length) achados.push(`${escondidos.length} elemento(s) da primeira tela invisíveis ao abrir (animação de chegada no topo?): ${escondidos.slice(0, 3).map(nome).join(', ')} — o topo não anima (movimento.md)`)
 
+  // Lorem ipsum vale para aprovar o desenho, mas só marcado: sem o data-rascunho ele não aparece na
+  // lista do que falta e pode ir ao ar.
+  const loremSolto = [...document.querySelectorAll('body *')].filter((el) => [...el.childNodes].some((n) => n.nodeType === 3 && /lorem ipsum|dolor sit amet/i.test(n.textContent)) && !el.closest('[data-rascunho]'))
+  if (loremSolto.length) achados.push(`lorem ipsum fora de rascunho em ${loremSolto.length} lugar(es) (${loremSolto.slice(0, 2).map(nome).join(', ')}) — ponha dentro de um data-rascunho dizendo o que entra ali (rascunho.md)`)
   const primeiraTela = [...document.querySelectorAll('input, select, textarea, a, button')]
     .some((el) => { const c = el.getBoundingClientRect(); return visivel(el) && c.top < window.innerHeight && !el.closest('header, nav') && texto(el).length < 60 && (el.tagName !== 'A' || getComputedStyle(el).backgroundColor !== 'rgba(0, 0, 0, 0)') })
   const noShadow = [...document.querySelectorAll('*')].some((el) => el.shadowRoot && el.getBoundingClientRect().top < window.innerHeight && el.shadowRoot.querySelector('input, button'))
@@ -240,6 +247,9 @@ function medirRiqueza() {
   if (blocos.length > 3 && formularios < 2) avisos.push('formulário só em um lugar — ponha também no último bloco (riqueza.md, "formulário no topo e no fim")')
   if (!svgs && document.querySelectorAll('li').length >= 3) avisos.push('nenhum ícone na página — lista de benefícios, recursos ou etapas leva ícone (icone.mjs)')
   if (blocos.length > 2 && !conta.chegada) avisos.push('página parada: nenhum bloco com a chegada suave (lp-revela, movimento.md)')
+  const listasSemIcone = [...document.querySelectorAll('section ul, section ol')]
+    .filter((l) => !l.closest('footer, nav, details') && l.querySelectorAll(':scope > li').length >= 3 && !l.querySelector('svg, img'))
+  if (listasSemIcone.length) avisos.push(`${listasSemIcone.length} lista(s) de 3 itens ou mais sem ícone — benefício, recurso e etapa levam ícone (icone.mjs)`)
   const acao = (s) => s.querySelector('a[href^="#"], button, .lp-formulario, #form')
   const semBotao = blocos.slice(1).filter((s) => !acao(s) && s.innerText.trim().length > 200).length
   if (semBotao >= 3) avisos.push(`${semBotao} blocos terminam sem botão — cada bloco que fecha um argumento leva ao formulário (movimento.md)`)
@@ -289,12 +299,30 @@ const rascunhos = [...readFileSync(corpoArquivo, 'utf8').matchAll(/data-rascunho
 if (opcoes.capturar) {
   const { navegador } = await abrirNavegador()
   const problemas = []
+  // O jeito do site, somado de todas as páginas lidas: a home engana (banner, carrossel), as
+  // páginas de produto mostram os cartões de verdade.
+  const pastasDoSite = String(opcoes.site || '').split(',').filter(Boolean).map((p) => resolve(p))
+  const marcas = []
+  const procura = (pasta) => {
+    if (!existsSync(pasta)) return problemas.push(`--site: ${pasta} não existe`)
+    for (const item of readdirSync(pasta, { withFileTypes: true })) {
+      if (item.isDirectory()) procura(join(pasta, item.name))
+      if (item.name === 'marca.json') marcas.push(join(pasta, item.name))
+    }
+  }
+  pastasDoSite.forEach(procura)
+  const sistemas = marcas.map((m) => JSON.parse(readFileSync(m, 'utf8')).sistema).filter(Boolean)
+  const doSite = sistemas.length ? consolidar(sistemas) : null
+  if (opcoes.site && !doSite) problemas.push('--site: nenhum marca.json com o jeito do site — rode o marca.mjs (versão nova) no site antes')
   let riqueza = null
   for (const [nome, viewport, movel] of [['desktop', { width: 1366, height: 860 }, false], ['celular', { width: 390, height: 844 }, true]]) {
     const pagina = await navegador.newPage({ viewport, isMobile: movel, hasTouch: movel })
-    pagina.on('console', (msg) => msg.type() === 'error' && problemas.push(`[${nome}] console: ${msg.text().slice(0, 200)}`))
+    // Fonte bloqueada gera três erros (console, rede, fonte); vira um aviso só, o de fonte. Aviso
+    // repetido ensina a ignorar a lista inteira.
+    const ehFonte = (texto) => /\.(ttf|otf|woff2?)(\?|$|')/i.test(texto) || /^Failed to load resource/.test(texto)
+    pagina.on('console', (msg) => msg.type() === 'error' && !ehFonte(msg.text()) && problemas.push(`[${nome}] console: ${msg.text().slice(0, 200)}`))
     pagina.on('pageerror', (erro) => problemas.push(`[${nome}] erro de script: ${erro.message.slice(0, 200)}`))
-    pagina.on('requestfailed', (req) => problemas.push(`[${nome}] não carregou: ${req.url().slice(0, 160)}`))
+    pagina.on('requestfailed', (req) => !ehFonte(req.url()) && problemas.push(`[${nome}] não carregou: ${req.url().slice(0, 160)}`))
     await pagina.goto(endereco, { waitUntil: 'load', timeout: 45_000 }).catch(() => {})
     // A captura da página inteira não rola a tela, então imagem com loading="lazy" nunca carregaria.
     await pagina.evaluate(async () => {
@@ -328,6 +356,9 @@ if (opcoes.capturar) {
     if (margem !== '0px') problemas.push(`[${nome}] a página tem uma borda em volta (margem do body: ${margem}) — ponha html, body { margin: 0 } no CSS da página: o template do Cubo não zera para página em HTML`)
     for (const achado of await pagina.evaluate(medirAcabamento, viewport.width)) problemas.push(`[${nome}] ${achado}`)
     if (!movel) {
+      const daPagina = consolidar([await pagina.evaluate(medirSistema)])
+      if (doSite) for (const aviso of comparar(doSite, daPagina)) problemas.push(aviso)
+      if (!doSite && daPagina.bordaTopo) problemas.push(`borda superior grossa em ${daPagina.bordaTopo} cartão(ões) — é a marca mais comum de página feita por IA (SKILL.md, regra 3); só fica se o site do cliente usa`)
       riqueza = await pagina.evaluate(medirRiqueza)
       for (const aviso of riqueza.avisos) problemas.push(aviso)
     }
@@ -345,13 +376,12 @@ if (opcoes.capturar) {
   await navegador.close()
 
   if (opcoes.site) {
-    const doSite = join(resolve(opcoes.site), 'desktop-topo.jpg')
-    if (!existsSync(doSite)) problemas.push(`--site: não achei ${doSite} (rode o marca.mjs no site antes)`)
-    if (existsSync(doSite)) {
+    const topoDoSite = marcas.map((m) => join(dirname(m), 'desktop-topo.jpg')).find(existsSync)
+    if (topoDoSite) {
       const sharp = (await dependencia('sharp')).default
       const metade = async (arquivo) => sharp(arquivo).resize({ width: 800, height: 504, fit: 'cover', position: 'top' }).toBuffer()
       await sharp({ create: { width: 1616, height: 504, channels: 3, background: '#888' } })
-        .composite([{ input: await metade(doSite), left: 0, top: 0 }, { input: await metade(join(SAIDA, 'desktop-topo.jpg')), left: 816, top: 0 }])
+        .composite([{ input: await metade(topoDoSite), left: 0, top: 0 }, { input: await metade(join(SAIDA, 'desktop-topo.jpg')), left: 816, top: 0 }])
         .jpeg({ quality: 75 }).toFile(join(SAIDA, 'lado-a-lado.jpg'))
     }
   }
@@ -359,6 +389,7 @@ if (opcoes.capturar) {
   for (const nome of ['desktop-topo', 'desktop-pagina', 'celular-topo', 'celular-pagina', ...(existsSync(join(SAIDA, 'lado-a-lado.jpg')) && opcoes.site ? ['lado-a-lado'] : [])]) console.log(`  ${join(SAIDA, `${nome}.jpg`)}`)
   console.log('')
   if (inseguros.length) problemas.push(`endereço http:// na página (a publicada é https e o navegador bloqueia): ${inseguros.slice(0, 4).join(', ')}`)
+  if (doSite) console.log(`comparada com o jeito do site (${doSite.paginas} página(s) lidas): botão ${doSite.botao[0]?.[0] || '—'}, cartão ${doSite.cartao[0]?.[0] || '—'}, imagem ${doSite.imagem[0]?.[0] || '—'}, títulos em ${doSite.h2[0]?.[0] || '—'}\n`)
   if (riqueza) {
     const c = riqueza.conta
     console.log(`o que a página usa: ${c.blocos} blocos · ${c.formularios} formulário(s) · ${c.icones} ícones · ${c.fotos} fotos · ${c.videos} vídeo(s) · ${c.chegada} com chegada · ${c.contadores} contador(es) · ${c.abas} abas · ${c.perguntas} perguntas`)
