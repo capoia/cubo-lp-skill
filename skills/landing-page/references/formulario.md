@@ -120,14 +120,19 @@ fora do Cubo.
 ## Na página
 
 ```html
-<div id="form"></div>
+<div class="lp-formulario"></div>   <!-- no topo, e de novo no último bloco -->
 <script src="https://SEU-CRM/sdk/form.js" defer></script>
 <script>
   addEventListener('DOMContentLoaded', function () {
-    new Form({ form: 'frm_XXXXXXXXXXXXXXXX', target: '#form', minHeight: 420, inheritPageStyles: true })
+    document.querySelectorAll('.lp-formulario').forEach(function (alvo) {
+      new Form({ form: 'frm_XXXXXXXXXXXXXXXX', target: alvo, minHeight: 420, inheritPageStyles: true })
+    })
   })
 </script>
 ```
+
+O mesmo formulário em dois lugares é o normal ([riqueza.md](riqueza.md)): o SDK desenha cada um e
+conta a visita uma vez só. `form.on(…)` vale por instância.
 
 Opções que valem a pena: `minHeight` (reserva a altura, evita o salto), `inheritPageStyles` (herda a
 fonte e a cor de texto da página), `values` (pré-preenche), `css` (CSS extra **dentro** do shadow).
@@ -172,7 +177,7 @@ formulário de verdade, em modo prévia, sem falar com nenhum CRM:
 node "<scripts>/previa.mjs" corpo.html cabeca.html --formulario=formulario.json --capturar
 ```
 
-No corpo, deixe só `<div id="form"></div>`. Na construção, os mesmos campos, textos e cores vão
+No corpo, deixe só os `<div class="lp-formulario"></div>` (a prévia desenha em todos). Na construção, os mesmos campos, textos e cores vão
 para o `POST /api/forms`, e o `<div>` ganha o trecho definitivo do SDK.
 
 ⚠️ **O botão do formulário tem texto sempre branco.** Com uma cor de marca clara (rosé, amarelo,

@@ -43,7 +43,7 @@ Valem sempre, e estão aqui (e não só nas referências) de propósito:
 2. **Duas seções seguidas nunca têm a mesma composição.**
 3. **Proibido, a não ser que a marca peça:** número solto sem fonte em faixa, grade de cartões
    iguais com ícone, borda superior grossa colorida nos cartões, rótulo pequeno acima do título,
-   "01/02/03" no que não é sequência, carrossel de depoimentos, menu de navegação.
+   "01/02/03" no que não é sequência, carrossel que roda sozinho, menu de navegação.
 4. **Gente e coisa real.** Peça e procure foto de quem atende, do lugar, de clientes reais — e use as
    **fotos de produto** do próprio site, que são reais e dão vida à página. Procure depoimentos
    públicos (YouTube e Google do cliente). Banco de imagem genérico, nunca; sem foto de gente, avise
@@ -60,6 +60,10 @@ Valem sempre, e estão aqui (e não só nas referências) de propósito:
    até o valor, o botão ao fim de cada bloco (e fixo no celular), tons da cor principal dando ritmo
    aos fundos, ícones de uma família só, vídeo da marca quando houver. Nada da primeira tela anima,
    e tudo desliga para quem pediu menos movimento ([references/movimento.md](references/movimento.md)).
+10. **Rica com o que é real**: todo material de verdade do cliente vira bloco — linha de produtos com
+   os dados de cada um, fotos das lojas, vídeo, depoimentos, dúvidas frequentes — e o formulário
+   aparece **no topo e no fim**. Nenhum bloco sem matéria-prima; nenhum item do inventário esquecido
+   sem motivo ([references/riqueza.md](references/riqueza.md)).
 
 O porquê de cada uma, com as fontes: [references/conversao.md](references/conversao.md) e
 [references/design.md](references/design.md).
@@ -93,6 +97,10 @@ node "<scripts>/marca.mjs" https://concorrente-a https://concorrente-b --pasta=d
 node "<scripts>/anuncios.mjs" "Nome Completo do Concorrente" "categoria + oferta" --pasta=dossie/anuncios
 ```
 
+O `marca.mjs` lista as **páginas internas** do site que parecem ter matéria-prima (produtos,
+serviços, cases, galeria): rode-o nelas também, e anote no dossiê a **matéria-prima** — o que existe
+de real e em que bloco pode virar ([references/riqueza.md](references/riqueza.md)).
+
 Mais 3 a 5 **páginas bem feitas da mesma categoria**, achadas por busca na web e passadas pelo
 `marca.mjs`, e as frases reais de clientes (depoimentos, avaliações). **Abra as capturas** — é nelas
 que aparece o elemento da marca, o uso da cor, o estilo de foto e o que a categoria faz bem. Mostre
@@ -118,7 +126,9 @@ Antes de escrever uma linha:
    cada uma com o desenho em texto da primeira dobra e uma frase de por que serve — a pessoa escolhe;
 2. a direção visual: paleta com valores, tipografia com nomes, o elemento que carrega a
    personalidade (de preferência um que o raio-x achou);
-3. a promessa principal, e em que o concorrente fica para trás.
+3. a promessa principal, e em que o concorrente fica para trás;
+4. **o mapa de blocos**: cada item da matéria-prima e o bloco em que ele entra (mostruário, galeria,
+   vídeo, depoimentos, perguntas…), e o que fica de fora, com o motivo.
 
 Peça o "pode ir". O que evitar: [references/design.md](references/design.md).
 
@@ -126,7 +136,7 @@ Peça o "pode ir". O que evitar: [references/design.md](references/design.md).
 
 Sempre pela API ([references/api.md](references/api.md)):
 
-1. **Imagens e vídeo**: toda imagem passa pelo `imagem.mjs` (aceita arquivo ou endereço; devolve webp
+1. **Imagens, vídeo e ícones**: ícones pelo `icone.mjs` (o `<svg>` pronto, da mesma família); toda imagem passa pelo `imagem.mjs` (aceita arquivo ou endereço; devolve webp
    no tamanho e peso certos), todo vídeo pelo `video.mjs` (mp4 comprimido e pôster), e sobem por
    `POST /api/landings/assets`. Regras em
    [references/html.md](references/html.md).
@@ -141,7 +151,9 @@ Sempre pela API ([references/api.md](references/api.md)):
    ```
 
    Corrija tudo que o script apontar (ele mede acabamento também: título em linhas demais, frase
-   espremida, colunas desproporcionais, tamanhos de letra demais).
+   espremida, colunas desproporcionais, tamanhos de letra demais) e confira a linha "o que a página
+   usa" contra a matéria-prima do dossiê. **Não mostre à pessoa com aviso em aberto**: corrija e
+   capture de novo; o que ficar de propósito, diga qual é e por quê.
 6. **A rodada de crítica** — abra as capturas (`previa/*-topo.jpg` e `*-pagina.jpg`, celular e
    computador), dê as notas e passe a lista de [references/critica.md](references/critica.md).
    Corrija, capture de novo. **Só depois** mostre à pessoa: `node "<scripts>/previa.mjs" corpo.html
@@ -204,6 +216,7 @@ guarda. Nesse caso, diga isso à pessoa em vez de escrever por cima.
 | [references/acabamento.md](references/acabamento.md) | Tipos, quebras de linha, espaço, proporção, rodapé, contraste |
 | [references/critica.md](references/critica.md) | A rodada de crítica antes de mostrar |
 | [references/movimento.md](references/movimento.md) | Chegada dos blocos, contador, botão fixo, tons, vídeo, parallax, ícones |
+| [references/riqueza.md](references/riqueza.md) | Matéria-prima → blocos: mostruário, galeria, depoimentos, perguntas, formulário no fim |
 | [references/questionario.md](references/questionario.md) | Os seis blocos da entrevista |
 | [references/estruturas.md](references/estruturas.md) | As estruturas de página, e qual oferecer para cada negócio |
 | [references/conversao.md](references/conversao.md) | O que converte, com a evidência e a fonte |

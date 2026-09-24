@@ -52,6 +52,7 @@ const paginaDaMarca = `<!doctype html><html><head><title>Marca Teste</title><met
 <header><a href="/"><img src="/logo.png" alt="Logo da Marca Teste" width="120" height="40"></a></header>
 <h1 style="color:#ffffff">Título da marca</h1><p style="color:#eeeeee">Um parágrafo com texto suficiente para contar como parágrafo.</p>
 <a class="btn" style="background:#ff8800;color:#000;padding:10px">Comprar agora</a>
+<nav><a href="/produtos/lavadora">Lavadoras</a> <a href="/contato">Fale</a></nav>
 <section style="width:600px;height:400px;background-image:linear-gradient(#0000,#0000),url('/foto.png')"></section>
 </body></html>`
 
@@ -190,13 +191,30 @@ await caso('previa: captura, lista os rascunhos e acusa rolagem lateral', async 
 })
 
 await caso('previa: desenha o formulário do Cubo pela definição local e enxerga dentro do shadow DOM', async () => {
-  writeFileSync(join(PASTA, 'pagina', 'form.html'), '<style>html,body{margin:0}</style><main><div id="form"></div></main>')
+  writeFileSync(join(PASTA, 'pagina', 'form.html'), '<style>html,body{margin:0}</style><main><div class="lp-formulario"></div><p style="height:1500px"></p><div class="lp-formulario"></div></main>')
   writeFileSync(join(PASTA, 'pagina', 'formulario.json'), JSON.stringify({
     definition: { id: 'frm_previa', type: 'create', fields: [{ key: 'title', kind: 'text', label: 'Nome', required: true }] },
   }))
   const r = await roda('previa.mjs', [join('pagina', 'form.html'), `--formulario=${join('pagina', 'formulario.json')}`, '--capturar', '--porta=0'])
   confere(r.codigo === 0, r.saida)
   confere(!/nenhum campo de formulário/.test(r.saida), `formulário não apareceu (ou o detector não enxerga o shadow DOM):\n${r.saida}`)
+  confere(/2 formulário\(s\)/.test(r.saida), `não contou os dois formulários:\n${r.saida}`)
+})
+
+await caso('previa: conta o que a página usa e cobra formulário no fim, ícone e chegada; galeria que rola de lado não é vazamento', async () => {
+  const bloco = (i) => `<section><h2>Bloco ${i}</h2><p>${'Texto do bloco com argumento. '.repeat(12)}</p></section>`
+  writeFileSync(join(PASTA, 'pagina', 'pobre.html'), `<style>html,body{margin:0} .g{display:grid;grid-auto-flow:column;grid-auto-columns:80%;overflow-x:auto}</style>
+<main><section><h1>Topo</h1><div class="lp-formulario"></div><a href="#x" style="background:#333;color:#fff;padding:9px">Quero</a></section>
+${[1, 2, 3, 4].map(bloco).join('')}<section><ul><li>um</li><li>dois</li><li>três</li></ul><div class="g"><figure>a</figure><figure>b</figure><figure>c</figure></div></section></main>`)
+  const r = await roda('previa.mjs', [join('pagina', 'pobre.html'), '--capturar', '--porta=0'])
+  confere(r.codigo === 0, r.saida)
+  confere(/o que a página usa: 6 blocos · 1 formulário/.test(r.saida), `não contou:\n${r.saida}`)
+  confere(/formulário só em um lugar/.test(r.saida), `não cobrou o formulário no fim:\n${r.saida}`)
+  confere(/nenhum ícone na página/.test(r.saida), `não cobrou ícone:\n${r.saida}`)
+  confere(/página parada/.test(r.saida), `não cobrou a chegada:\n${r.saida}`)
+  confere(/blocos terminam sem botão/.test(r.saida), `não cobrou o botão por bloco:\n${r.saida}`)
+  confere(/aviso\(s\) em aberto\. NÃO mostre/.test(r.saida), `não barrou a entrega:\n${r.saida}`)
+  confere(!/rola para o lado/.test(r.saida), `acusou a galeria como vazamento:\n${r.saida}`)
 })
 
 await caso('previa: porta ocupada cai numa livre, e acusa recurso http:// que a página https bloquearia', async () => {
@@ -250,6 +268,17 @@ await caso('marca: mede cor, fonte, logotipo e foto de fundo com degradê por ci
   confere(medidas.logotipos.some((l) => String(l.src).endsWith('/logo.png')), `logo: ${JSON.stringify(medidas.logotipos)}`)
   confere(medidas.imagens.some((i) => i.src.endsWith('/foto.png')), 'não achou a foto de fundo sob o degradê')
   confere(existsSync(join(pasta, 'celular-topo.jpg')), 'faltou a captura')
+  confere(medidas.paginas.some((p) => p.url.endsWith('/produtos/lavadora')), `não listou a página de produtos: ${JSON.stringify(medidas.paginas)}`)
+  confere(!medidas.paginas.some((p) => p.url.endsWith('/contato')), 'listou página sem matéria-prima')
+})
+
+await caso('icone: procura pelo nome e entrega o <svg> no padrão da página', async () => {
+  const busca = await roda('icone.mjs', ['buscar', 'timer'])
+  confere(busca.codigo === 0 && /timer:.*\btimer\b/.test(busca.saida), busca.saida)
+  const r = await roda('icone.mjs', ['timer', 'nao-existe-mesmo'])
+  confere(r.codigo === 0, r.saida)
+  confere(/<svg class="lp-icone"[^>]*stroke="currentColor"[^>]*aria-hidden="true">.*<circle/.test(r.saida), `svg fora do padrão:\n${r.saida}`)
+  confere(/nao-existe-mesmo: não existe/.test(r.saida), `não avisou do ícone inexistente:\n${r.saida}`)
 })
 
 servidor.close()

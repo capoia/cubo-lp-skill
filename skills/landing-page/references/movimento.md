@@ -96,8 +96,9 @@ que diz o que significa, não só um rótulo de duas palavras.
 ## Botão em cada bloco, e a barra no celular
 
 Cada seção que termina um argumento termina com o botão — **o mesmo verbo** da página toda, levando
-ao formulário (`href="#formulario"`). No celular, uma barra fixa embaixo com o botão aparece depois
-que o topo sai da tela e some quando o formulário está visível:
+ao formulário do fim (`href="#contato"`, o id do último bloco — ver o formulário duplo em
+[riqueza.md](riqueza.md)). No celular, uma barra fixa embaixo com o botão aparece depois que o topo
+sai da tela e some quando algum dos formulários está visível:
 
 ```css
 .lp-barra { position: fixed; inset: auto 0 0 0; z-index: 50; padding: .75rem 1rem calc(.75rem + env(safe-area-inset-bottom));
@@ -107,15 +108,20 @@ que o topo sai da tela e some quando o formulário está visível:
 ```
 
 ```html
-<div class="lp-barra" aria-hidden="true"><a class="lp-cta" href="#formulario" tabindex="-1">Quero meu estudo</a></div>
+<div class="lp-barra" aria-hidden="true"><a class="lp-cta" href="#contato" tabindex="-1">Quero meu estudo</a></div>
 <script>
 (function () {
-  var barra = document.querySelector('.lp-barra'), topo = document.querySelector('.lp-oferta'), form = document.querySelector('#formulario')
-  if (!barra || !topo || !form) return
-  var topoVisivel = true, formVisivel = false
-  function atualiza() { barra.classList.toggle('lp-mostra', !topoVisivel && !formVisivel) }
+  var barra = document.querySelector('.lp-barra'), topo = document.querySelector('.lp-oferta')
+  var forms = document.querySelectorAll('.lp-formulario')
+  if (!barra || !topo || !forms.length) return
+  var topoVisivel = true, formsVisiveis = new Set()
+  function atualiza() { barra.classList.toggle('lp-mostra', !topoVisivel && !formsVisiveis.size) }
   new IntersectionObserver(function (e) { topoVisivel = e[0].isIntersecting; atualiza() }).observe(topo)
-  new IntersectionObserver(function (e) { formVisivel = e[0].isIntersecting; atualiza() }).observe(form)
+  var olhoForm = new IntersectionObserver(function (itens) {
+    itens.forEach(function (i) { i.isIntersecting ? formsVisiveis.add(i.target) : formsVisiveis.delete(i.target) })
+    atualiza()
+  })
+  forms.forEach(function (f) { olhoForm.observe(f) })
 })()
 </script>
 ```
@@ -198,5 +204,12 @@ herdar a cor:
 </svg>
 ```
 
-Pegue o `<path>` do ícone certo em lucide.dev (botão "Copy SVG"). Ícone acompanha um item de
-lista ou um benefício — não vira enfeite de todo título.
+Não copie à mão: o `icone.mjs` procura e imprime o `<svg>` pronto, no padrão acima.
+
+```bash
+node "<scripts>/icone.mjs" buscar wash timer money     # os nomes vêm em inglês
+node "<scripts>/icone.mjs" washing-machine timer banknote
+```
+
+**Todo item de lista de benefícios, diferenciais, recursos ou etapas leva um ícone** — é o que faz o
+bloco ser lido de relance. Ícone não vira enfeite de título nem de parágrafo solto.

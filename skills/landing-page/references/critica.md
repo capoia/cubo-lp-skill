@@ -1,6 +1,7 @@
 # A rodada de crítica
 
-A primeira versão nunca é a que vai para a pessoa. Depois da prévia com `--capturar`, **abra as
+A primeira versão nunca é a que vai para a pessoa. **Aviso da prévia em aberto também não vai**: a
+crítica começa com a saída do `previa.mjs` zerada, ou com cada aviso que ficou justificado. Depois da prévia com `--capturar`, **abra as
 capturas e critique como um diretor de arte exigente** — é aqui que se pega o título quebrado em
 cinco linhas, o formulário desproporcional, o rodapé largado. Corrija, capture de novo, e só então
 mostre. Duas rodadas é o normal; três indica que o problema é o plano, não o acabamento.
@@ -20,6 +21,7 @@ volta para o trabalho** antes de seguir para a lista.
 | **Especificidade** | Parece **deste** cliente, ou de qualquer um da categoria? |
 | **Contenção** | Sobrou alguma coisa que só está ali porque ficou bonito? |
 | **Conversão** | A ação é óbvia, está visível sem rolar, e a prova aparece cedo? |
+| **Riqueza** | A página usa o que o cliente tem de real (produtos com dados, fotos, vídeo, depoimentos), ou parece feita só com o briefing? |
 
 ## 2. A lista — toda resposta tem que ser "não"
 
@@ -50,6 +52,12 @@ volta para o trabalho** antes de seguir para a lista.
      cor dando ritmo?
 16b. Algum conteúdo da primeira tela está escondido esperando animação?
 16c. Mais de um tipo de efeito na página, ou algum efeito que não desliga com `prefers-reduced-motion`?
+
+**Riqueza** ([riqueza.md](riqueza.md))
+16d. Algum item da matéria-prima do dossiê ficou de fora sem motivo escrito?
+16e. Formulário só no topo, numa página de mais de três blocos?
+16f. Lista de benefícios, recursos ou etapas sem ícone? Ícone de família misturada, ou emoji?
+16g. Algum bloco sem matéria-prima real (galeria de banco de imagem, ficha sem dado do site)?
 
 **Conteúdo**
 16. Algum número, prazo, depoimento ou compromisso que não veio do material do cliente?
