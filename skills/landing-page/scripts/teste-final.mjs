@@ -9,13 +9,13 @@ import { abrirNavegador, apiCubo, argumentos, configuracao, exigeAcesso, falha }
 const { posicionais, opcoes } = argumentos()
 const [endereco] = posicionais
 
-if (!endereco || !opcoes.telefone) {
-  console.log(`uso: teste-final.mjs <endereço publicado> --telefone="(11) 98888-7777"
+if (!endereco) {
+  console.log(`uso: teste-final.mjs <endereço publicado> [--telefone="(11) 98888-7777"]
 
 Envia UM lead de teste pela página publicada e confere a negociação criada.
 
---telefone  o WhatsApp de quem está testando. É obrigatório de propósito: as automações do funil
-            podem mandar mensagem para o lead, e o número de teste não pode ser o de um estranho.
+--telefone  opcional; sem ele vai ${'(11) 90000-0000'}. Use o seu se quiser receber o que as
+            automações do funil mandam para o lead.
 
 O lead sai com o nome "TESTE FINAL DE CONVERSÃO (pode apagar)" e a URL com as cinco UTMs
 (utm_source=teste-final…), para ninguém confundir com cliente de verdade. Apague a negociação depois.
@@ -25,6 +25,7 @@ Grava teste-final.json, que o entrega.mjs usa no checklist.`)
 
 const config = exigeAcesso(configuracao())
 const NOME = 'TESTE FINAL DE CONVERSÃO (pode apagar)'
+const TELEFONE = opcoes.telefone || '(11) 90000-0000'
 const UTM = { utm_source: 'teste-final', utm_medium: 'skill-landing', utm_campaign: 'validacao-da-pagina', utm_term: 'teste-de-conversao', utm_content: 'lead-de-teste' }
 const url = new URL(endereco)
 for (const [chave, valor] of Object.entries(UTM)) url.searchParams.set(chave, valor)
@@ -58,9 +59,9 @@ const hoje = new Date().toISOString().slice(0, 16)
 for (const campo of definicao.fields.filter((f) => !f.hidden)) {
   const controle = host.locator(`[name="${campo.key}"]`)
   if (campo.key === 'title') await controle.fill(NOME)
-  if (campo.key === 'phone') await controle.pressSequentially(String(opcoes.telefone).replace(/\D/g, ''))
+  if (campo.key === 'phone') await controle.pressSequentially(TELEFONE.replace(/\D/g, ''))
   if (campo.key === 'title' || campo.key === 'phone') {
-    preenchidos[campo.key] = campo.key === 'title' ? NOME : opcoes.telefone
+    preenchidos[campo.key] = campo.key === 'title' ? NOME : TELEFONE
     continue
   }
   if (campo.kind === 'state') {
