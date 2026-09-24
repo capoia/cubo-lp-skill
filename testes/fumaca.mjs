@@ -342,6 +342,20 @@ await caso('previa: formulário mais alto que o minHeight reservado é acusado',
   confere(/o formulário tem \d+px e o trecho reserva 420 — use minHeight/.test(r.saida), `não mandou reservar a altura do formulário:\n${r.saida}`)
 })
 
+await caso('entrega: junta prévia, PageSpeed e teste final num checklist em Markdown', async () => {
+  mkdirSync(join(PASTA, 'entrega', 'previa'), { recursive: true })
+  writeFileSync(join(PASTA, 'entrega', 'previa', 'resultado.json'), JSON.stringify({ telas: ['computador 1366px', 'celular 390px'], avisos: [], rolagemLateral: false, rascunhos: [] }))
+  writeFileSync(join(PASTA, 'entrega', 'pagespeed-mobile.json'), JSON.stringify({ notas: { Desempenho: 94, Acessibilidade: 100 } }))
+  writeFileSync(join(PASTA, 'entrega', 'teste-final.json'), JSON.stringify({ ok: true, negociacao: { id: 80, link: 'https://crm.teste/deals/80/edit', funil: 'Vendas', etapa: 'Novo', responsavel: 'Ana' }, campos: [{ nome: 'Nome', ok: true }], utms: { gravadas: 3, enviadas: 5 }, pixel: 'disparado' }))
+  const r = await roda('entrega.mjs', [`${BASE}/marca`, `--pasta=${join(PASTA, 'entrega')}`, '--titulo=Teste'])
+  confere(r.codigo === 0, r.saida)
+  confere(/\| ✅ \| Página no ar \| respondeu 200/.test(r.saida), `não conferiu a página no ar:\n${r.saida}`)
+  confere(/\| ✅ \| PageSpeed no celular \| Desempenho \*\*94\*\*/.test(r.saida), `sem a nota do celular:\n${r.saida}`)
+  confere(/\| ➖ \| PageSpeed no computador \| não medido/.test(r.saida), `devia dizer que o computador não foi medido:\n${r.saida}`)
+  confere(/\[negociação #80\]\(https:\/\/crm\.teste\/deals\/80\/edit\)/.test(r.saida), `sem o link do lead:\n${r.saida}`)
+  confere(/\| ⚠️ \| UTMs \| só 3 de 5/.test(r.saida), `não acusou UTM incompleta:\n${r.saida}`)
+})
+
 await caso('icone: procura pelo nome e entrega o <svg> no padrão da página', async () => {
   const busca = await roda('icone.mjs', ['buscar', 'timer'])
   confere(busca.codigo === 0 && /timer:.*\btimer\b/.test(busca.saida), busca.saida)

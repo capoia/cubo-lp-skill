@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Nota do PageSpeed Insights da página publicada. Celular por padrão: é de onde vem quase todo o
 // tráfego de anúncio, e é onde a nota costuma doer.
+import { writeFileSync } from 'node:fs'
 import { configuracao, falha } from './lib.mjs'
 
 const [url, estrategia = 'mobile'] = process.argv.slice(2)
@@ -39,10 +40,12 @@ const rotulos = { performance: 'Desempenho', accessibility: 'Acessibilidade', 'b
 
 console.log(`\nPageSpeed — ${estrategia}`)
 console.log(`URL: ${farol.finalUrl || '?'}\n`)
+const notas = {}
 for (const [chave, rotulo] of Object.entries(rotulos)) {
   const nota = categorias[chave]?.score
   if (nota === null || nota === undefined) continue
   const valor = Math.round(nota * 100)
+  notas[rotulo] = valor
   console.log(`  [${valor >= 90 ? 'OK  ' : valor >= 50 ? 'ATN ' : 'RUIM'}] ${rotulo.padEnd(16)} ${valor}`)
 }
 
@@ -70,3 +73,5 @@ const pesados = [
 
 if (pesados.length) console.log(`\n  o que está segurando\n${pesados.join('\n')}`)
 console.log('')
+// O entrega.mjs monta o checklist final a partir disto.
+writeFileSync(`pagespeed-${estrategia}.json`, JSON.stringify({ url: farol.finalUrl || url, estrategia, notas, medidoEm: new Date().toISOString() }, null, 2))

@@ -211,10 +211,20 @@ Ajuste até a pessoa dizer **"pode publicar"**.
    mensagem, e não pode ser para um estranho. Deu `FALTOU` ou `RECUSADO`, conserte (quase sempre:
    funil sem usuário, campo sem mapeamento, UTM não mapeada) e rode de novo. Mostre o resultado à
    pessoa e peça para apagar a negociação de teste.
-5. Meça: `node "<scripts>/pagespeed.mjs" https://dominio/caminho`. Abaixo de 90 no celular, conserte e
-   meça de novo ([references/pagespeed.md](references/pagespeed.md)).
-6. Entregue: endereço, as quatro notas, o resultado do teste final (campo por campo), funil e etapa
-   do lead, e o que ainda depende da pessoa.
+5. Meça no celular **e** no computador: `node "<scripts>/pagespeed.mjs" https://dominio/caminho` e
+   `… desktop`. Abaixo de 90 no celular, conserte e meça de novo
+   ([references/pagespeed.md](references/pagespeed.md)).
+6. **O checklist de entrega**, na mesma pasta em que rodou a prévia, o PageSpeed e o teste final:
+
+   ```bash
+   node "<scripts>/entrega.mjs" https://dominio/caminho --titulo="<nome da página>"
+   ```
+
+   Ele confere a página no ar e junta o que os outros gravaram: notas de celular e computador,
+   responsivo, a cara do site, o lead de teste com o link da negociação, campos, UTMs, pixel e
+   rascunhos. **Cole a saída inteira na sua mensagem final**, do jeito que veio (é Markdown e aparece
+   formatado para a pessoa), e acrescente só o que ainda depende dela. Tem ❌ ou ⚠️? Conserte o que for
+   seu e rode de novo antes de entregar.
 
 ## Editar uma página que já existe
 

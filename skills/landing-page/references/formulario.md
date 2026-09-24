@@ -162,8 +162,9 @@ A resposta traz `publicId` (`frm_…`) — é ele que vai no trecho do SDK na p�
 - **`lgpd`** — `source`: `url` (link para a política), `custom` (texto próprio em `customText`) ou
   `default`. O aceite fica gravado no campo personalizado de `customfieldId`, com data e origem.
 - **`tracking.utm`** — só o que estiver mapeado aqui é gravado. Sem mapeamento, a UTM **se perde**.
-  Se a página vai receber anúncio, mapeie ao menos `utm_source`, `utm_medium` e `utm_campaign`
-  (crie os campos personalizados se não existirem). Também dá para mapear `page_url` e `referrer`.
+  Se a página vai receber anúncio, mapeie as cinco — `utm_source`, `utm_medium`, `utm_campaign`,
+  `utm_term` e `utm_content` (crie os campos personalizados se não existirem). O teste final manda
+  as cinco e o checklist de entrega acusa as que não foram gravadas. Também dá para mapear `page_url` e `referrer`.
 - **`tracking.pageView`** — ver abaixo.
 - **`protection`** — deixe o honeypot ligado. `minFillSeconds` (0 a 60) segura envio rápido demais
   para ser gente. `allowedDomains` vazio libera qualquer origem; preencha se quiser travar no domínio

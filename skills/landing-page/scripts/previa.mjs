@@ -417,6 +417,15 @@ if (opcoes.capturar) {
     console.log('')
   }
   const unicos = [...new Set(problemas)]
+  writeFileSync(join(SAIDA, 'resultado.json'), JSON.stringify({
+    capturadoEm: new Date().toISOString(),
+    telas: ['computador 1366px', 'celular 390px'],
+    avisos: unicos,
+    rolagemLateral: unicos.some((u) => /rola para o lado/.test(u)),
+    rascunhos,
+    riqueza: riqueza?.conta ?? null,
+    comparadaComSite: !!doSite,
+  }, null, 2))
   console.log(unicos.length ? `o que achei (${unicos.length}):\n  ${unicos.join('\n  ')}` : 'nenhum problema encontrado.')
   if (unicos.length) console.log(`\n${unicos.length} aviso(s) em aberto. NÃO mostre à pessoa ainda: corrija e capture de novo. O que ficar de propósito, diga qual é e por quê ao mostrar.`)
   console.log('')
