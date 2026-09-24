@@ -248,7 +248,7 @@ Todas as opções do trecho:
 |---|---|
 | `form` | o `publicId` (`frm_…`). Obrigatório |
 | `target` | o elemento (ou seletor) onde desenha |
-| `minHeight` | reserva a altura antes de carregar — evita o salto (use sempre) |
+| `minHeight` | reserva a altura antes de carregar — evita o salto. Use a altura **real** do formulário, que o `previa.mjs --capturar` mede e acusa quando o valor está curto (a maior entre celular e computador). O SDK guarda a altura de cada visita e, da segunda em diante, acerta sozinho |
 | `inheritPageStyles` | copia o CSS da página para dentro do formulário (fonte, cor de texto) |
 | `css` | CSS extra **dentro** do formulário (`.lf-input`, `.lf-button`, `.lf-label`, `.lf-field`…) |
 | `values` | pré-preenche: `title`, `phone`, `cf_<id>` — e é o valor dos campos escondidos |

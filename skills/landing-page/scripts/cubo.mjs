@@ -87,6 +87,7 @@ switch (comando) {
       domains: '/api/domains',
       customfields: '/api/customfields?perPage=1',
       pipes: '/api/pipes?perPage=1',
+      deals: '/api/deals?perPage=1',
     }
     for (const [recurso, rota] of Object.entries(rotas)) {
       const { codigo } = await chamar('GET', rota)

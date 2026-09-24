@@ -378,6 +378,14 @@ if (opcoes.capturar) {
     // cai na alternativa e perde a cara do site sem ninguém notar.
     const fontesFalhas = await pagina.evaluate(() => [...new Set([...document.fonts].filter((f) => f.status === 'error').map((f) => `${f.family.replace(/["']/g, '')} ${f.weight}`))])
     if (fontesFalhas.length) problemas.push(`fonte que não carregou (ficou a alternativa): ${fontesFalhas.join(', ')} — o servidor do site bloqueia uso em outro domínio? Diga à pessoa qual alternativa ficou (html.md, "fontes do site")`)
+    // O minHeight do trecho é a altura que a página reserva antes de o formulário chegar: menor que
+    // o formulário de verdade, a página pula quando ele aparece.
+    const reserva = await pagina.evaluate(() => [...document.querySelectorAll('.lf-host')].map((host) => ({
+      reservado: parseFloat(host.style.minHeight) || 0,
+      real: Math.round(host.getBoundingClientRect().height),
+    })))
+    const curta = reserva.find((r) => r.real - r.reservado > 24)
+    if (curta) problemas.push(`[${nome}] o formulário tem ${curta.real}px e o trecho reserva ${curta.reservado || 'nada'} — use minHeight: ${curta.real} (ou o maior entre celular e computador), senão a página pula quando ele carrega`)
     const semAlt = await pagina.evaluate(() => [...document.images].filter((i) => !i.hasAttribute('alt')).length)
     if (semAlt) problemas.push(`[${nome}] ${semAlt} imagem(ns) sem alt`)
 

@@ -332,6 +332,16 @@ await caso('previa: formulário com canto diferente dos cartões e cidade em tex
   confere(/"Cidade \/ UF" em texto livre/.test(r.saida), `não acusou a cidade em texto:\n${r.saida}`)
 })
 
+await caso('previa: formulário mais alto que o minHeight reservado é acusado', async () => {
+  writeFileSync(join(PASTA, 'pagina', 'alto.html'), '<style>html,body{margin:0}</style><main><h1>Oi</h1><div class="lp-formulario"></div></main>')
+  writeFileSync(join(PASTA, 'pagina', 'alto.json'), JSON.stringify({
+    definition: { id: 'frm_previa', type: 'create', fields: Array.from({ length: 9 }, (_, i) => ({ key: `cf_${i + 1}`, kind: 'text', label: `Campo ${i + 1}` })) },
+  }))
+  const r = await roda('previa.mjs', [join('pagina', 'alto.html'), `--formulario=${join('pagina', 'alto.json')}`, '--capturar', '--porta=0'])
+  confere(r.codigo === 0, r.saida)
+  confere(/o formulário tem \d+px e o trecho reserva 420 — use minHeight/.test(r.saida), `não mandou reservar a altura do formulário:\n${r.saida}`)
+})
+
 await caso('icone: procura pelo nome e entrega o <svg> no padrão da página', async () => {
   const busca = await roda('icone.mjs', ['buscar', 'timer'])
   confere(busca.codigo === 0 && /timer:.*\btimer\b/.test(busca.saida), busca.saida)

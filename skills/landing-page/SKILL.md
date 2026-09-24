@@ -199,10 +199,22 @@ Ajuste até a pessoa dizer **"pode publicar"**.
 3. `POST /api/landings` — **a página nasce no ar** (`status: "active"`). Para deixar pronta e fora
    do ar, mande `"status": "deactivated"`; para publicar depois, `PUT` com `"status": "active"`.
    Caminho ocupado volta 422 com a mensagem: proponha outro e siga.
-4. Abra o endereço público e confira que responde e que o formulário desenha.
+4. **O teste final de conversão** — um lead de verdade pela página publicada:
+
+   ```bash
+   node "<scripts>/teste-final.mjs" https://dominio/caminho --telefone="<WhatsApp de quem testa>"
+   ```
+
+   Ele abre a página num navegador, preenche como uma pessoa (nome "TESTE FINAL DE CONVERSÃO (pode
+   apagar)", UTM `teste-final`), envia e segue o lead até a negociação: funil, etapa, responsável,
+   cada campo e as UTMs. **Peça o telefone à pessoa** — as automações do funil podem mandar
+   mensagem, e não pode ser para um estranho. Deu `FALTOU` ou `RECUSADO`, conserte (quase sempre:
+   funil sem usuário, campo sem mapeamento, UTM não mapeada) e rode de novo. Mostre o resultado à
+   pessoa e peça para apagar a negociação de teste.
 5. Meça: `node "<scripts>/pagespeed.mjs" https://dominio/caminho`. Abaixo de 90 no celular, conserte e
    meça de novo ([references/pagespeed.md](references/pagespeed.md)).
-6. Entregue: endereço, as quatro notas, funil e etapa do lead, e o que ainda depende da pessoa.
+6. Entregue: endereço, as quatro notas, o resultado do teste final (campo por campo), funil e etapa
+   do lead, e o que ainda depende da pessoa.
 
 ## Editar uma página que já existe
 
