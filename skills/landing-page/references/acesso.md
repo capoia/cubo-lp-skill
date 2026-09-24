@@ -23,6 +23,7 @@ Instrução para passar à pessoa, com estas palavras:
 > - **Formulários** — leitura, criar, atualizar
 > - **Domínios** — leitura, criar
 > - **Campos personalizados** — leitura, criar
+> - **Negócios** — leitura (só para o teste final conferir a negociação que o lead de teste criou)
 >
 > Salve e **copie a chave** (começa com `sk_`). Ela aparece inteira na tela de criação; depois dá
 > para revelar de novo pelo botão de mostrar.

@@ -106,7 +106,9 @@ skills/landing-page/
                       rascunho, design, acabamento, movimento, riqueza, crítica, html, formulário, api,
                       seo, pagespeed
   scripts/            Node: requisitos, cubo (API), marca (raio-x), anuncios (Biblioteca
-                      de Anúncios da Meta), imagem, video, icone (Lucide), previa, backup e pagespeed
+                      de Anúncios da Meta), imagem, video, icone (Lucide), previa, teste-final
+                      (lead de teste pela página publicada), entrega (checklist final), backup
+                      e pagespeed
 testes/fumaca.mjs     teste dos scripts, que o CI roda em Windows, macOS e Linux
 ```
 

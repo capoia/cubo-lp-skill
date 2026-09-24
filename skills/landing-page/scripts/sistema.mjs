@@ -48,7 +48,13 @@ export function medirSistema() {
     if (c.width < 150 || !visivel(img)) continue
     soma('imagemRaio', raio(getComputedStyle(img.closest('figure, picture') && raio(getComputedStyle(img)) === '0' ? img.closest('figure, picture') : img)))
   }
-  for (const el of document.querySelectorAll('input, select, textarea')) if (visivel(el)) soma('campoRaio', raio(getComputedStyle(el)))
+  // Campo de formulário de verdade: a caixa de busca do cabeçalho sozinha não diz como o site
+  // desenha um formulário.
+  for (const form of document.querySelectorAll('form')) {
+    const campos = [...form.querySelectorAll('input:not([type=hidden]):not([type=checkbox]):not([type=radio]):not([type=submit]):not([type=search]), select, textarea')].filter(visivel)
+    if (campos.length < 2) continue
+    for (const campo of campos) soma('campoRaio', raio(getComputedStyle(campo)))
+  }
 
   for (const nivel of ['h1', 'h2', 'h3']) {
     for (const el of document.querySelectorAll(nivel)) {
@@ -132,7 +138,7 @@ const itens = (lista = []) => lista.map((texto) => {
 // aparece nas páginas de produto. Vale o que se repete em mais lugares.
 export function consolidar(sistemas) {
   const grupos = {
-    botao: (s) => s.raio?.botao, cartao: (s) => s.raio?.cartao, imagem: (s) => s.raio?.imagem,
+    botao: (s) => s.raio?.botao, cartao: (s) => s.raio?.cartao, imagem: (s) => s.raio?.imagem, campo: (s) => s.raio?.campo,
     h2: (s) => s.caixa?.h2, sombra: (s) => s.sombra,
   }
   const saida = {
@@ -157,6 +163,25 @@ const forma = (raio) => {
   return `${Math.round(numero)}px`
 }
 const parecido = (a, b) => a === b || (/px$/.test(a) && /px$/.test(b) && Math.abs(parseFloat(a) - parseFloat(b)) <= 3)
+
+// O formulário do Cubo desenha em shadow DOM, com um raio só no tema: sem cuidado sai campo reto e
+// botão em pílula dentro de um cartão arredondado. O campo segue o campo do site; se o site não tem
+// formulário, segue o cartão (até 12px, campo muito redondo vira pílula e fica estranho com texto).
+export function compararFormulario(site, pagina, formulario) {
+  if (!formulario) return []
+  const avisos = []
+  const esperadoCampo = forma(site?.campo?.[0]?.[0]) ?? (() => {
+    const cartao = parseFloat(site?.cartao?.[0]?.[0] ?? pagina.cartao?.[0]?.[0] ?? '')
+    return Number.isNaN(cartao) ? null : forma(`${Math.min(cartao, 12)}px`)
+  })()
+  const campo = forma(formulario.campo)
+  if (esperadoCampo && campo && !parecido(esperadoCampo, campo)) avisos.push(`formulário: campo com canto ${campo}, ${site?.campo?.length ? 'o site usa' : 'os cartões pedem'} ${esperadoCampo} — acerte com theme.radius ou css ".lf-input{border-radius:…}" (formulario.md, "a cara do site")`)
+  const esperadoBotao = forma(site?.botao?.[0]?.[0] ?? pagina.botao?.[0]?.[0])
+  const botao = forma(formulario.botao)
+  if (esperadoBotao && botao && !parecido(esperadoBotao, botao)) avisos.push(`formulário: botão com canto ${botao}, os botões da página são ${esperadoBotao} — css ".lf-button{border-radius:…}"`)
+  if (formulario.localEmTexto.length) avisos.push(`formulário: "${formulario.localEmTexto.join('", "')}" em texto livre — use campo personalizado do tipo state/city, que vira lista e chega padronizado (formulario.md, "tipos de campo")`)
+  return avisos
+}
 
 // O que a landing faz diferente do site. Cada linha vira aviso na prévia.
 export function comparar(site, pagina) {

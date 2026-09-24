@@ -11,7 +11,7 @@ import { createServer } from 'node:http'
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, extname, join, normalize, resolve } from 'node:path'
 import { abrirNavegador, argumentos, dependencia, falha } from './lib.mjs'
-import { comparar, consolidar, medirSistema } from './sistema.mjs'
+import { comparar, compararFormulario, consolidar, medirSistema } from './sistema.mjs'
 
 const { posicionais, opcoes } = argumentos()
 const [corpoArquivo, cabecaArquivo] = posicionais
@@ -358,6 +358,18 @@ if (opcoes.capturar) {
     if (!movel) {
       const daPagina = consolidar([await pagina.evaluate(medirSistema)])
       if (doSite) for (const aviso of comparar(doSite, daPagina)) problemas.push(aviso)
+      const formulario = await pagina.evaluate(() => {
+        const raiz = [...document.querySelectorAll('*')].map((el) => el.shadowRoot).find((r) => r?.querySelector('.lf-input'))
+        if (!raiz) return null
+        const campo = raiz.querySelector('.lf-input')
+        const botao = raiz.querySelector('.lf-button')
+        const localEmTexto = [...raiz.querySelectorAll('label')]
+          .filter((rotulo) => /(^|[^a-zà-ú])(cidade|estado|uf)([^a-zà-ú]|$)/i.test(rotulo.textContent || ''))
+          .filter((rotulo) => { const alvo = rotulo.htmlFor ? raiz.getElementById(rotulo.htmlFor) : rotulo.parentElement?.querySelector('input, select'); return alvo?.tagName === 'INPUT' && !['checkbox', 'radio', 'hidden'].includes(alvo.type) })
+          .map((rotulo) => rotulo.textContent.replace(/\*/g, '').trim())
+        return { campo: getComputedStyle(campo).borderTopLeftRadius, botao: botao ? getComputedStyle(botao).borderTopLeftRadius : null, localEmTexto }
+      })
+      for (const aviso of compararFormulario(doSite, daPagina, formulario)) problemas.push(aviso)
       if (!doSite && daPagina.bordaTopo) problemas.push(`borda superior grossa em ${daPagina.bordaTopo} cartão(ões) — é a marca mais comum de página feita por IA (SKILL.md, regra 3); só fica se o site do cliente usa`)
       riqueza = await pagina.evaluate(medirRiqueza)
       for (const aviso of riqueza.avisos) problemas.push(aviso)
@@ -366,6 +378,14 @@ if (opcoes.capturar) {
     // cai na alternativa e perde a cara do site sem ninguém notar.
     const fontesFalhas = await pagina.evaluate(() => [...new Set([...document.fonts].filter((f) => f.status === 'error').map((f) => `${f.family.replace(/["']/g, '')} ${f.weight}`))])
     if (fontesFalhas.length) problemas.push(`fonte que não carregou (ficou a alternativa): ${fontesFalhas.join(', ')} — o servidor do site bloqueia uso em outro domínio? Diga à pessoa qual alternativa ficou (html.md, "fontes do site")`)
+    // O minHeight do trecho é a altura que a página reserva antes de o formulário chegar: menor que
+    // o formulário de verdade, a página pula quando ele aparece.
+    const reserva = await pagina.evaluate(() => [...document.querySelectorAll('.lf-host')].map((host) => ({
+      reservado: parseFloat(host.style.minHeight) || 0,
+      real: Math.round(host.getBoundingClientRect().height),
+    })))
+    const curta = reserva.find((r) => r.real - r.reservado > 24)
+    if (curta) problemas.push(`[${nome}] o formulário tem ${curta.real}px e o trecho reserva ${curta.reservado || 'nada'} — use minHeight: ${curta.real} (ou o maior entre celular e computador), senão a página pula quando ele carrega`)
     const semAlt = await pagina.evaluate(() => [...document.images].filter((i) => !i.hasAttribute('alt')).length)
     if (semAlt) problemas.push(`[${nome}] ${semAlt} imagem(ns) sem alt`)
 
@@ -397,6 +417,15 @@ if (opcoes.capturar) {
     console.log('')
   }
   const unicos = [...new Set(problemas)]
+  writeFileSync(join(SAIDA, 'resultado.json'), JSON.stringify({
+    capturadoEm: new Date().toISOString(),
+    telas: ['computador 1366px', 'celular 390px'],
+    avisos: unicos,
+    rolagemLateral: unicos.some((u) => /rola para o lado/.test(u)),
+    rascunhos,
+    riqueza: riqueza?.conta ?? null,
+    comparadaComSite: !!doSite,
+  }, null, 2))
   console.log(unicos.length ? `o que achei (${unicos.length}):\n  ${unicos.join('\n  ')}` : 'nenhum problema encontrado.')
   if (unicos.length) console.log(`\n${unicos.length} aviso(s) em aberto. NÃO mostre à pessoa ainda: corrija e capture de novo. O que ficar de propósito, diga qual é e por quê ao mostrar.`)
   console.log('')

@@ -143,7 +143,9 @@ Peça o "pode ir". O que evitar: [references/design.md](references/design.md).
 **Antes da primeira linha de HTML, leia inteiros, com a ferramenta Read:**
 [html.md](references/html.md), [marca.md](references/marca.md) ("o sistema do site"),
 [riqueza.md](references/riqueza.md), [movimento.md](references/movimento.md),
-[acabamento.md](references/acabamento.md) e [design.md](references/design.md). Não é opcional: numa
+[acabamento.md](references/acabamento.md), [design.md](references/design.md) e
+[formulario.md](references/formulario.md) (tudo o que o formulário do Cubo faz, e os tipos de campo).
+Não é opcional: numa
 rodada em que essas leituras foram puladas, a página saiu com borda grossa nos cartões, cantos
 diferentes dos do site e quase sem ícone — tudo o que elas proíbem.
 
@@ -159,8 +161,9 @@ Sempre pela API ([references/api.md](references/api.md)):
 2. **Campos personalizados** que faltarem — e-mail é campo personalizado, não campo base.
 3. **Formulário** — antes, `node "<scripts>/cubo.mjs" destino <funil> [etapa]`: funil sem usuário
    ativo (ou sem etapa) recusa **todo** envio, e só se descobre com a página no ar. Deu `PROBLEMA`,
-   avise a pessoa e não publique até resolver. Depois `POST /api/forms`, com funil e etapa. Guarde o
-   `publicId` (`frm_…`).
+   avise a pessoa e não publique até resolver. Depois `POST /api/forms`, com funil e etapa, os campos
+   do **tipo certo** (estado e cidade são `state` e `city`, nunca texto) e o tema com a cara do site.
+   Guarde o `publicId` (`frm_…`).
    [references/formulario.md](references/formulario.md).
 4. **Domínio** — `GET /api/domains`; se não existir, cadastre e entregue o CNAME.
 5. **Prévia local**, com captura:
@@ -196,10 +199,32 @@ Ajuste até a pessoa dizer **"pode publicar"**.
 3. `POST /api/landings` — **a página nasce no ar** (`status: "active"`). Para deixar pronta e fora
    do ar, mande `"status": "deactivated"`; para publicar depois, `PUT` com `"status": "active"`.
    Caminho ocupado volta 422 com a mensagem: proponha outro e siga.
-4. Abra o endereço público e confira que responde e que o formulário desenha.
-5. Meça: `node "<scripts>/pagespeed.mjs" https://dominio/caminho`. Abaixo de 90 no celular, conserte e
-   meça de novo ([references/pagespeed.md](references/pagespeed.md)).
-6. Entregue: endereço, as quatro notas, funil e etapa do lead, e o que ainda depende da pessoa.
+4. **O teste final de conversão** — um lead de verdade pela página publicada:
+
+   ```bash
+   node "<scripts>/teste-final.mjs" https://dominio/caminho --telefone="<WhatsApp de quem testa>"
+   ```
+
+   Ele abre a página num navegador, preenche como uma pessoa (nome "TESTE FINAL DE CONVERSÃO (pode
+   apagar)", UTM `teste-final`), envia e segue o lead até a negociação: funil, etapa, responsável,
+   cada campo e as UTMs. **Peça o telefone à pessoa** — as automações do funil podem mandar
+   mensagem, e não pode ser para um estranho. Deu `FALTOU` ou `RECUSADO`, conserte (quase sempre:
+   funil sem usuário, campo sem mapeamento, UTM não mapeada) e rode de novo. Mostre o resultado à
+   pessoa e peça para apagar a negociação de teste.
+5. Meça no celular **e** no computador: `node "<scripts>/pagespeed.mjs" https://dominio/caminho` e
+   `… desktop`. Abaixo de 90 no celular, conserte e meça de novo
+   ([references/pagespeed.md](references/pagespeed.md)).
+6. **O checklist de entrega**, na mesma pasta em que rodou a prévia, o PageSpeed e o teste final:
+
+   ```bash
+   node "<scripts>/entrega.mjs" https://dominio/caminho --titulo="<nome da página>"
+   ```
+
+   Ele confere a página no ar e junta o que os outros gravaram: notas de celular e computador,
+   responsivo, a cara do site, o lead de teste com o link da negociação, campos, UTMs, pixel e
+   rascunhos. **Cole a saída inteira na sua mensagem final**, do jeito que veio (é Markdown e aparece
+   formatado para a pessoa), e acrescente só o que ainda depende dela. Tem ❌ ou ⚠️? Conserte o que for
+   seu e rode de novo antes de entregar.
 
 ## Editar uma página que já existe
 

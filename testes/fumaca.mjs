@@ -317,6 +317,45 @@ await caso('previa: compara com o site (canto, borda superior) e aceita lorem ip
   confere(/lorem ipsum fora de rascunho em 1 lugar/.test(r.saida), `lorem ipsum: devia acusar só o solto:\n${r.saida}`)
 })
 
+await caso('previa: formulário com canto diferente dos cartões e cidade em texto livre são acusados', async () => {
+  writeFileSync(join(PASTA, 'pagina', 'form-destoa.html'), `<style>html,body{margin:0} .c{width:320px;height:180px;background:#fff;border-radius:16px}</style>
+<main><section><h1>Oi</h1><div style="display:flex;gap:20px"><div class="c">um</div><div class="c">dois</div></div><div class="lp-formulario"></div></section></main>`)
+  writeFileSync(join(PASTA, 'pagina', 'form-destoa.json'), JSON.stringify({
+    definition: { id: 'frm_previa', type: 'create', fields: [
+      { key: 'title', kind: 'text', label: 'Nome', required: true },
+      { key: 'cf_local', kind: 'text', label: 'Cidade / UF' },
+    ], settings: { theme: { radius: 0 } } },
+  }))
+  const r = await roda('previa.mjs', [join('pagina', 'form-destoa.html'), `--formulario=${join('pagina', 'form-destoa.json')}`, '--capturar', '--porta=0'])
+  confere(r.codigo === 0, r.saida)
+  confere(/formulário: campo com canto reto, os cartões pedem 12px/.test(r.saida), `não acusou o canto do campo:\n${r.saida}`)
+  confere(/"Cidade \/ UF" em texto livre/.test(r.saida), `não acusou a cidade em texto:\n${r.saida}`)
+})
+
+await caso('previa: formulário mais alto que o minHeight reservado é acusado', async () => {
+  writeFileSync(join(PASTA, 'pagina', 'alto.html'), '<style>html,body{margin:0}</style><main><h1>Oi</h1><div class="lp-formulario"></div></main>')
+  writeFileSync(join(PASTA, 'pagina', 'alto.json'), JSON.stringify({
+    definition: { id: 'frm_previa', type: 'create', fields: Array.from({ length: 9 }, (_, i) => ({ key: `cf_${i + 1}`, kind: 'text', label: `Campo ${i + 1}` })) },
+  }))
+  const r = await roda('previa.mjs', [join('pagina', 'alto.html'), `--formulario=${join('pagina', 'alto.json')}`, '--capturar', '--porta=0'])
+  confere(r.codigo === 0, r.saida)
+  confere(/o formulário tem \d+px e o trecho reserva 420 — use minHeight/.test(r.saida), `não mandou reservar a altura do formulário:\n${r.saida}`)
+})
+
+await caso('entrega: junta prévia, PageSpeed e teste final num checklist em Markdown', async () => {
+  mkdirSync(join(PASTA, 'entrega', 'previa'), { recursive: true })
+  writeFileSync(join(PASTA, 'entrega', 'previa', 'resultado.json'), JSON.stringify({ telas: ['computador 1366px', 'celular 390px'], avisos: [], rolagemLateral: false, rascunhos: [] }))
+  writeFileSync(join(PASTA, 'entrega', 'pagespeed-mobile.json'), JSON.stringify({ notas: { Desempenho: 94, Acessibilidade: 100 } }))
+  writeFileSync(join(PASTA, 'entrega', 'teste-final.json'), JSON.stringify({ ok: true, negociacao: { id: 80, link: 'https://crm.teste/deals/80/edit', funil: 'Vendas', etapa: 'Novo', responsavel: 'Ana' }, campos: [{ nome: 'Nome', ok: true }], utms: { gravadas: 3, enviadas: 5 }, pixel: 'disparado' }))
+  const r = await roda('entrega.mjs', [`${BASE}/marca`, `--pasta=${join(PASTA, 'entrega')}`, '--titulo=Teste'])
+  confere(r.codigo === 0, r.saida)
+  confere(/\| ✅ \| Página no ar \| respondeu 200/.test(r.saida), `não conferiu a página no ar:\n${r.saida}`)
+  confere(/\| ✅ \| PageSpeed no celular \| Desempenho \*\*94\*\*/.test(r.saida), `sem a nota do celular:\n${r.saida}`)
+  confere(/\| ➖ \| PageSpeed no computador \| não medido/.test(r.saida), `devia dizer que o computador não foi medido:\n${r.saida}`)
+  confere(/\[negociação #80\]\(https:\/\/crm\.teste\/deals\/80\/edit\)/.test(r.saida), `sem o link do lead:\n${r.saida}`)
+  confere(/\| ⚠️ \| UTMs \| só 3 de 5/.test(r.saida), `não acusou UTM incompleta:\n${r.saida}`)
+})
+
 await caso('icone: procura pelo nome e entrega o <svg> no padrão da página', async () => {
   const busca = await roda('icone.mjs', ['buscar', 'timer'])
   confere(busca.codigo === 0 && /timer:.*\btimer\b/.test(busca.saida), busca.saida)

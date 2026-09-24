@@ -31,7 +31,7 @@ nenhum host interno.
 skills/landing-page/
   SKILL.md           o FLUXO, curto de propósito
   references/*.md    o detalhe, lido sob demanda
-  scripts/*.mjs      Node: requisitos, cliente da API, raio-x da marca, anúncios, imagem, vídeo, ícone,
+  scripts/*.mjs      Node: requisitos, cliente da API, raio-x da marca, anúncios, imagem, vídeo, ícone, teste final,
                      prévia, backup e medição (package.json com sharp, playwright e ffmpeg-static)
 testes/fumaca.mjs    teste dos scripts contra um Cubo de mentira
 .github/workflows/   o CI que roda a fumaça em Windows, macOS e Linux
