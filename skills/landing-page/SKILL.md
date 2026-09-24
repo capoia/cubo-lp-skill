@@ -202,13 +202,13 @@ Ajuste até a pessoa dizer **"pode publicar"**.
 4. **O teste final de conversão** — um lead de verdade pela página publicada:
 
    ```bash
-   node "<scripts>/teste-final.mjs" https://dominio/caminho --telefone="<WhatsApp de quem testa>"
+   node "<scripts>/teste-final.mjs" https://dominio/caminho
    ```
 
    Ele abre a página num navegador, preenche como uma pessoa (nome "TESTE FINAL DE CONVERSÃO (pode
    apagar)", UTM `teste-final`), envia e segue o lead até a negociação: funil, etapa, responsável,
-   cada campo e as UTMs. **Peça o telefone à pessoa** — as automações do funil podem mandar
-   mensagem, e não pode ser para um estranho. Deu `FALTOU` ou `RECUSADO`, conserte (quase sempre:
+   cada campo e as UTMs. O telefone é `(11) 90000-0000`; se a pessoa quiser receber as mensagens
+   das automações do funil, passe o dela com `--telefone`. Deu `FALTOU` ou `RECUSADO`, conserte (quase sempre:
    funil sem usuário, campo sem mapeamento, UTM não mapeada) e rode de novo. Mostre o resultado à
    pessoa e peça para apagar a negociação de teste.
 5. Meça no celular **e** no computador: `node "<scripts>/pagespeed.mjs" https://dominio/caminho` e
