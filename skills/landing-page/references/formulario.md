@@ -141,9 +141,49 @@ form.on('success', ({ eventId }) => { /* já enviou */ })
 form.on('redirect', ({ url, preventDefault }) => { /* dá para cancelar */ })
 ```
 
+## Na prévia, antes de o formulário existir
+
+Enquanto a página ainda é rascunho (sem chave, ou antes de decidir campos e destino), **não use
+maquete**: o formulário é o elemento mais importante da página, e uma caixa de mentira não mostra
+como ele vai ficar. Escreva uma definição local e passe para a prévia — o SDK publicado desenha o
+formulário de verdade, em modo prévia, sem falar com nenhum CRM:
+
+```json
+{
+  "definition": {
+    "id": "frm_previa",
+    "type": "create",
+    "fields": [
+      { "key": "title", "kind": "text", "label": "Nome completo", "required": true },
+      { "key": "phone", "kind": "phone", "label": "WhatsApp", "required": true },
+      { "key": "cf_email", "kind": "text", "label": "E-mail", "inputType": "email" },
+      { "key": "cf_faixa", "kind": "selectbox", "label": "Quanto pode investir", "options": ["Até 100 mil", "Acima"] }
+    ],
+    "settings": {
+      "button": { "idle": "Quero avaliar minha região" },
+      "theme": { "primary": "#ea9e95", "text": "#1f2b27", "radius": 12, "buttonWidth": "full" }
+    }
+  },
+  "css": ".lf-button{color:#1f2b27}"
+}
+```
+
+```bash
+node "<scripts>/previa.mjs" corpo.html cabeca.html --formulario=formulario.json --capturar
+```
+
+No corpo, deixe só `<div id="form"></div>`. Na construção, os mesmos campos, textos e cores vão
+para o `POST /api/forms`, e o `<div>` ganha o trecho definitivo do SDK.
+
+⚠️ **O botão do formulário tem texto sempre branco.** Com uma cor de marca clara (rosé, amarelo,
+verde-água), fica ilegível. Passe `css: ".lf-button{color:#<cor escura>}"` — na prévia e no trecho
+definitivo.
+
 ## Testar sem sujar o funil
 
-A pré-visualização da landing (`POST /api/landings/:id/preview`) já coloca o formulário em modo de
-teste: pode enviar à vontade, nada é criado. Para testar de verdade **depois de publicar**, combine
-com a pessoa: mande um lead real, confira a negociação no funil e apague. É o único jeito de provar
-que o caminho inteiro funciona.
+A prévia local (`previa.mjs`) desenha o formulário de verdade — ele vem do CRM — mas responde o
+envio na própria página: pode preencher e mandar à vontade, nenhuma negociação é criada. Para isso
+o formulário **já precisa existir** no Cubo (é o `publicId` dele que vai no trecho do SDK).
+
+Para testar de verdade **depois de publicar**, combine com a pessoa: mande um lead real, confira a
+negociação no funil e apague. É o único jeito de provar que o caminho inteiro funciona.

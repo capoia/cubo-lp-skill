@@ -6,31 +6,31 @@ de ser lida — e o custo por lead sobe sem ninguém entender por quê.
 ## Como medir
 
 ```bash
-"${CLAUDE_PLUGIN_ROOT}/skills/landing-page/scripts/pagespeed.sh" https://dominio/caminho
+node "<scripts>/pagespeed.mjs" https://dominio/caminho
 ```
 
 Mede **celular** por padrão (é de onde vem a maior parte do tráfego de anúncio) e devolve as quatro
 notas mais as métricas que costumam explicar a de desempenho. Para o computador:
 
 ```bash
-"…/pagespeed.sh" https://dominio/caminho desktop
+node "<scripts>/pagespeed.mjs" https://dominio/caminho desktop
 ```
 
-A API é a do PageSpeed Insights do Google. **Sem chave, o limite é compartilhado entre todo mundo e
-estoura com frequência** (erro 429, "Queries per day"). Dois caminhos quando isso acontecer:
+A API é a do PageSpeed Insights do Google. **Sem chave, ela usa uma cota pública dividida com o mundo
+inteiro, que acaba todo dia** (erro 429, "Quota exceeded … Queries per day") — medido: numa tarde
+qualquer, a primeira chamada sem chave já voltou 429. Por isso o `requisitos.mjs` avisa quando a
+chave falta, e o passo a passo para a pessoa pegar a dela (grátis, sem cartão, dois minutos) está em
+[requisitos.md](requisitos.md#a-chave-do-pagespeed). O script lê `PAGESPEED_API_KEY` do `.cubo.env`.
 
-1. **Chave gratuita**, que resolve de vez: em `https://developers.google.com/speed/docs/insights/v5/get-started`
-   a pessoa cria um projeto no Google Cloud, ativa a *PageSpeed Insights API* e gera uma chave de
-   API. Depois basta `export PAGESPEED_API_KEY="…"` — o script usa sozinho. Não custa nada e não
-   pede cartão.
-2. **Medir localmente**, sem chave nenhuma:
+Sem chave e com pressa, dá para medir na própria máquina — **só se houver Google Chrome instalado**
+(o Lighthouse não usa o Edge nem o navegador que a skill baixa):
 
-   ```bash
-   npx --yes lighthouse@12 https://dominio/caminho --quiet --chrome-flags="--headless" \
-     --only-categories=performance,accessibility,best-practices,seo --output=json --output-path=./lh.json
-   ```
+```bash
+npx --yes lighthouse@12 https://dominio/caminho --quiet --chrome-flags="--headless" --only-categories=performance,accessibility,best-practices,seo --output=json --output-path=./lh.json
+```
 
-   Precisa de Chrome instalado na máquina. As notas saem em `lh.json`, em `categories.*.score`.
+As notas saem em `lh.json`, em `categories.*.score`. Não é a mesma medição do Google (a rede e a
+máquina são as da pessoa), então diga isso ao entregar.
 
 A página precisa estar **publicada e alcançável**: o Google busca de fora. Não dá para medir a
 pré-visualização.
@@ -49,7 +49,7 @@ está segurando e por quê, em vez de entregar um número sem explicação.
 
 ## O que costuma derrubar, em ordem
 
-1. **Imagem grande.** É a causa em quase todo caso — e é por isso que existe o `imagem.sh`, que
+1. **Imagem grande.** É a causa em quase todo caso — e é por isso que existe o `imagem.mjs`, que
    redimensiona, converte para webp e aperta até caber no orçamento (200 KB no topo, 100 KB nas
    demais). No HTML, `width`/`height` em todas, `fetchpriority="high"` na do topo e
    `loading="lazy"` no resto.

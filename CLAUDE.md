@@ -31,8 +31,23 @@ nenhum host interno.
 skills/landing-page/
   SKILL.md           o FLUXO, curto de propósito
   references/*.md    o detalhe, lido sob demanda
-  scripts/*.sh       cliente da API, backup, prévia local, preparo de imagem e medição
+  scripts/*.mjs      Node: requisitos, cliente da API, raio-x da marca, anúncios, imagem, vídeo,
+                     prévia, backup e medição (package.json com sharp, playwright e ffmpeg-static)
+testes/fumaca.mjs    teste dos scripts contra um Cubo de mentira
+.github/workflows/   o CI que roda a fumaça em Windows, macOS e Linux
 ```
+
+## Quem usa a skill, e o que isso exige
+
+Quem instala **não é de desenvolvimento, e quase sempre está no Windows**, numa instalação limpa do
+Claude Code, **sem nenhum MCP**. Decisão de 2026-09-23. Daí as regras dos scripts:
+
+- **só Node** (20.9+). Nada de `bash`, `python3`, `cwebp`, `sips`, `timeout`, `stat -f`, `curl` em
+  script — nenhum deles existe (ou se comporta igual) nos três sistemas;
+- dependência nova entra no `scripts/package.json`, com versão fixa, e o `requisitos.mjs` instala;
+- **todo requisito novo aparece no `requisitos.mjs` e no `references/requisitos.md`** — descobrir no
+  meio da entrega que falta algo é o que mais frustra quem usa;
+- a skill "olha" as páginas por **captura** (Playwright): é o único olho que existe sem MCP.
 
 **O `SKILL.md` fica curto e os `references/` carregam sob demanda.** Não é preferência de estilo: o
 `SKILL.md` entra em **toda** sessão de quem tem o plugin instalado (~163 tokens hoje), enquanto os
@@ -56,6 +71,17 @@ claude plugin details cubo-landing
 - **Nada de promessa que o código não cumpre.** Se uma trava do CRM é contornável, a referência diz
   que é contornável — foi assim com a checagem de `<script src>`. Skill que mente sobre a garantia
   faz o agente confiar onde não devia.
+
+## As regras que mais importam moram no `SKILL.md`
+
+Medido por terceiros na Hallmark (ablação com `claude-haiku-4-5`, 2026): regras que ficavam **só**
+nos arquivos de referência **nunca foram abertas** pelo modelo em 28 execuções. Por isso as sete
+regras contra a "cara de IA" estão no próprio `SKILL.md`, e as referências trazem o porquê e as
+fontes. Não mova essas regras para fora para "economizar" o `SKILL.md`. Medido com Haiku — vale
+conferir se o Opus se comporta igual.
+
+A pesquisa que fundamentou a 2.0 (16 skills avaliadas, fontes de CRO) está resumida em
+`references/conversao.md` e nos créditos do README.
 
 ## A fonte da verdade da API é o CRM, não este repositório
 
@@ -91,15 +117,22 @@ prometer `status` e `css`, que a API recusa de propósito.
    Precisa de sessão nova para carregar. Para voltar à versão do GitHub, remova o marketplace local
    (`/plugin marketplace remove cubo`) e adicione `capoia/cubo-lp-skill` de novo.
 
-3. **Exercite os scripts de verdade**, contra um CRM que responda:
+3. **Rode a fumaça**, que sobe um Cubo de mentira e exercita todos os scripts:
 
    ```bash
-   export CUBO_BASE_URL="http://127.0.0.1:3336" CUBO_API_KEY="sk_..."
-   ./skills/landing-page/scripts/cubo.sh check
+   node testes/fumaca.mjs
    ```
 
-   Um slot de worktree do `cubo-crm` (`pnpm dev:docker`) serve bem. Chave de API pela tela
-   `/apikeys`, com as permissões de landing pages, formulários, domínios e campos personalizados.
+   O CI roda a mesma coisa em Windows, macOS e Linux, com Node 20 e 22, em todo PR. **É a única
+   prova de que funciona no Windows** — não dá para dizer "funciona" sem ele verde. Script novo ou
+   comportamento novo ganha um `caso` lá, visto falhando antes.
+
+   Contra um CRM de verdade, um slot de worktree do `cubo-crm` (`pnpm dev:docker`) serve bem:
+
+   ```bash
+   node skills/landing-page/scripts/cubo.mjs configurar --base=http://127.0.0.1:3336 --chave=sk_...
+   node skills/landing-page/scripts/cubo.mjs check
+   ```
 
 4. **Rode a skill inteira uma vez** antes de dar por pronta. Ler o `SKILL.md` não mostra o que
    trava: o que trava é a entrevista longa demais, a referência que não responde a pergunta que
@@ -119,18 +152,36 @@ Quem já instalou atualiza com `/plugin update cubo-landing` (ou `claude plugin 
 
 - **Não rode `prettier` neste repositório.** Não há configuração aqui; o padrão dele reformata tudo
   com aspas duplas e ponto e vírgula, e vira um diff de mil linhas em cima de nada.
-- **`${CLAUDE_PLUGIN_ROOT}` é o único caminho confiável** para os scripts dentro do `SKILL.md`.
-  Caminho relativo funciona nos links de markdown entre os `references/`, mas não em comando de
-  shell — a skill roda a partir do diretório do usuário, não do plugin.
-- **Os scripts precisam do bit de execução** (`chmod +x`) no commit. Sem ele, a cópia instalada não
-  roda e o erro só aparece na mão de quem instalou.
-- **`sips` do macOS não escreve webp** — lê, mas não escreve ("Can't write format:
-  org.webmproject.webp"); e um `ffmpeg` sem libwebp também não serve. Medido nas duas ferramentas. O
-  `imagem.sh` depende de `cwebp` e para com instrução de instalação quando ele falta, em vez de
-  cair num caminho que entrega jpg pesado.
-- **A cota pública do PageSpeed estoura com frequência.** O `pagespeed.sh` já explica os dois
-  caminhos (chave gratuita ou Lighthouse local) quando devolve 429; não troque isso por um "tente
-  de novo".
+- **`${CLAUDE_PLUGIN_ROOT}` só existe no TEXTO do `SKILL.md`**, onde o Claude Code o substitui pelo
+  caminho absoluto. No terminal a variável **está vazia** (medido), e os `references/` são lidos sem
+  substituição. Por isso o `SKILL.md` dá o caminho uma vez e as referências escrevem `<scripts>`.
+  Comando com `"${CLAUDE_PLUGIN_ROOT}/…"` num `references/*.md` vira `"/skills/…"` e falha — foi
+  assim da 1.0 à 1.3.
+- **Variável de shell não sobrevive entre comandos do Claude Code.** Nem `S=…` num comando para usar
+  no seguinte, nem `!export CUBO_API_KEY=…` — o acesso mora no `.cubo.env` (`cubo.mjs configurar`).
+- **Corpo grande vai por arquivo** (`@pagina.json`). A linha de comando do Windows corta perto de 32
+  mil caracteres; uma landing passa disso. O `backup.mjs` chama a API no mesmo processo por isso.
+- **Quem instalou não recebe versão nova sozinho** — a cópia desta máquina ficou na 1.0.0 enquanto o
+  repositório estava na 1.3.0. Toda versão que muda requisito ou rota diz no README como atualizar
+  (`claude plugin marketplace update cubo` + `claude plugin update cubo-landing@cubo` + reiniciar).
+- **A cota pública do PageSpeed acaba todo dia** — sem chave, a primeira chamada de uma tarde já
+  voltou 429. Por isso a chave está no `requisitos.mjs`.
+- **Página de construtor não termina de carregar.** O Chrome headless puro com
+  `--virtual-time-budget` travou para sempre na LP da RD Station. O Playwright com
+  `domcontentloaded` + prazo curto para o `load` é o que funciona.
+- **Foto de fundo de construtor vem com degradê por cima**: `linear-gradient(...), url(...)`. Quem
+  procura só `url(` no começo perde a foto principal da página.
+- **Cor base costuma estar no `html`/`body`**, e o `querySelectorAll('*')` do `body` não os inclui.
+- **Marcação da prévia não pode usar `::before`/`::after`** no elemento marcado: a página usa os
+  dois, as regras se fundem, e um selo laranja cobriu a foto inteira de um arco. A marcação é uma
+  camada à parte, criada por script.
+- **Captura de página inteira não rola**: imagem com `loading="lazy"` sai vazia se ninguém rolar
+  antes. E no modo celular o navegador **alarga a janela até caber o conteúdo**, então medir rolagem
+  lateral com `innerWidth` nunca acusa nada — a régua é a largura pedida.
+- **No teste, `spawnSync` congela o Cubo de mentira** que roda no mesmo processo. A fumaça usa
+  `spawn` assíncrono de propósito.
+- **`sharp` 0.35 mudou a entrada para `dist/`.** Não importe caminho interno de pacote; resolva pelo
+  nome (`createRequire(...)('sharp')`).
 
 ## Repositórios irmãos
 

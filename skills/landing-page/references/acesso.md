@@ -32,18 +32,16 @@ está disponível nesse CRM — pare e avise, em vez de tentar chamar a API e co
 
 ## Onde guardar
 
-Ordem de preferência:
+Num arquivo `.cubo.env` na pasta onde a pessoa está trabalhando. **Não** em variável de ambiente: no
+Claude Code ela não sobrevive de um comando para o outro, e o acesso sumiria no passo seguinte.
 
-1. **Variável de ambiente na sessão** — o melhor. Peça para a pessoa rodar, no próprio terminal do
-   Claude Code (prefixo `!`):
+```bash
+node "<scripts>/cubo.mjs" configurar --base=https://crm.empresadela.com.br --chave=sk_...
+```
 
-   ```
-   !export CUBO_BASE_URL="https://crm.empresadela.com.br" && export CUBO_API_KEY="sk_..."
-   ```
-
-2. **Arquivo `.cubo.env` na pasta do projeto**, quando ela preferir não repetir a cada sessão. O
-   script cria com permissão `600` e **acrescenta `.cubo.env` ao `.gitignore`**. Confirme com ela
-   antes de gravar: é um segredo em disco.
+O script grava o arquivo com permissão só do dono, tira a barra do fim do endereço e, se a pasta for
+um repositório git, acrescenta `.cubo.env` ao `.gitignore`. Diga à pessoa que a chave ficou salva
+nesse arquivo, naquela pasta — é um segredo em disco, e ela precisa saber onde está.
 
 Nunca escreva a chave no HTML da página, num commit, num comentário, ou de volta no chat. Ela dá
 acesso de escrita ao CRM inteiro dentro dos escopos marcados.
@@ -51,10 +49,10 @@ acesso de escrita ao CRM inteiro dentro dos escopos marcados.
 ## Conferir
 
 ```bash
-"${CLAUDE_PLUGIN_ROOT}/skills/landing-page/scripts/cubo.sh" check
+node "<scripts>/cubo.mjs" check
 ```
 
-O script responde o nome da empresa, os módulos ativos e quais permissões a chave tem. Se disser
+O script responde os módulos ativos e quais permissões a chave tem. Se disser
 que falta alguma, peça para a pessoa editar a chave — é mais rápido que descobrir com um 403 no
 meio da publicação.
 

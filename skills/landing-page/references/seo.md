@@ -75,6 +75,6 @@ publicar.
 
 ## Depois de publicar
 
-O `pagespeed.sh` também devolve a nota de **SEO** do Lighthouse. Ela cobre o básico mecânico
+O `pagespeed.mjs` também devolve a nota de **SEO** do Lighthouse. Ela cobre o básico mecânico
 (título, descrição, `alt`, links rastreáveis, viewport). Abaixo de 90 é quase sempre alguma coisa
 desta página esquecida — leia o relatório antes de supor.

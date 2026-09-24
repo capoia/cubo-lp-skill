@@ -5,7 +5,8 @@ escolha e não texto livre — é o que faz a pessoa responder em vez de travar.
 repita de volta o que entendeu antes de seguir.
 
 **Pule o que já sabe.** Se a pessoa entregou um briefing, uma página antiga, um anúncio ou um site,
-leia primeiro e pergunte só o que ficou faltando. Perguntar o que já está na mesa cansa.
+leia primeiro — e rode o raio-x da marca nos endereços ([marca.md](marca.md)) — e pergunte só o que
+ficou faltando. Perguntar o que já está na mesa cansa.
 
 **Se ela travar numa pergunta,** proponha uma resposta plausível e peça só o "sim" ou "não é isso".
 Chute fundamentado é melhor que página vaga.
@@ -31,6 +32,8 @@ Chute fundamentado é melhor que página vaga.
 7. **Por que acreditar?** Números, anos de casa, quantidade de clientes, depoimento (peça o texto e
    o nome), caso com resultado, certificação, garantia, logotipo de cliente conhecido.
    **Insista aqui.** É o que separa uma página que converte de um panfleto bonito.
+   Pergunte também **onde os clientes falam deles** (Google, Reclame Aqui, comentários): é de lá que
+   sai a linguagem da página ([marca.md](marca.md), "a linguagem do cliente final").
 8. **Quais são as três objeções mais ouvidas?** Preço, prazo, "será que funciona pra mim", "já tentei
    e não deu certo". Cada objeção vira um trecho da página.
 9. **Preço e condição** aparecem na página, ou é "sob consulta"?
@@ -40,7 +43,9 @@ Chute fundamentado é melhor que página vaga.
 ## Bloco 3 — A conversão
 
 11. **Quais dados pedir?** Padrão que funciona: nome + WhatsApp. Cada campo a mais derruba a
-    conversão; só peça o que alguém vai usar na próxima hora.
+    conversão; só peça o que alguém vai usar na próxima hora. Pergunta de qualificação (faixa de
+    investimento, cidade) só se o comercial descarta lead por ela — explique o custo
+    ([conversao.md](conversao.md), "formulário").
 12. **Para qual funil e etapa** o lead vai? Liste os funis (`GET /api/pipes`) e deixe ela escolher.
 13. **O que acontece depois de enviar?** Mensagem de obrigado na própria página, ou redirecionar
     para outro endereço (página de obrigado, WhatsApp, agenda)? Se for WhatsApp, peça o número e o
@@ -49,19 +54,29 @@ Chute fundamentado é melhor que página vaga.
 
 ## Bloco 4 — Marca e referência
 
-15. **Logotipo** — peça o arquivo ou o endereço. Sem logotipo, a página parece de ninguém.
-16. **Cores da marca** — em hexadecimal se ela tiver; senão, tire do logotipo e confirme.
-17. **Tipografia** — se houver fonte da marca, use. Senão você escolhe, e explica a escolha.
-18. **Referências** — 1 a 3 endereços de páginas que ela acha boas, **e o que gosta em cada uma**
-    ("o jeito que apresenta o preço", "a foto grande logo no começo"). Abra cada uma e olhe antes de
-    desenhar.
+Se o raio-x rodou, **mostre o que ele achou e peça só a confirmação** dos itens 15 a 17 e 21.
+
+15. **Logotipo** — o do site serve (o raio-x traz); senão, peça o arquivo. Sem logotipo, a página
+    parece de ninguém.
+16. **Cores da marca** — as que o raio-x mediu; senão, em hexadecimal se ela tiver, ou tiradas do
+    logotipo e confirmadas.
+17. **Tipografia** — a do site, se houver. Senão você escolhe, e explica a escolha.
+18. **Referências e concorrentes** — 1 a 3 endereços de páginas que ela acha boas, **e o que gosta
+    em cada uma** ("o jeito que apresenta o preço", "a foto grande logo no começo"). E os 2 ou 3
+    **concorrentes** com quem o cliente final compara. Rode o raio-x em todos e olhe antes de
+    desenhar ([marca.md](marca.md), "concorrentes").
 19. **O que ela NÃO quer.** Pergunta curta, resposta valiosa: "muito colorido", "cara de template",
     "parecido com o concorrente X".
 20. **Tom de voz** — próximo e direto, técnico, institucional, divertido. Combine com o público do
     bloco 1, não com o gosto de quem está pedindo.
-21. **Imagens** — ela tem fotos próprias? Foto real de quem atende, do lugar, do produto vale mais
-    que qualquer banco de imagens. Se não tiver, diga que a página vai sair sem foto de gente em vez
-    de colocar foto de banco genérica.
+21. **Gente de verdade** — **peça ativamente**, não espere oferecerem: foto de quem atende, da
+    fundadora ou do dono, da equipe, do lugar funcionando, de clientes reais (com o depoimento e a
+    autorização deles). É a imagem que o olho procura primeiro ([conversao.md](conversao.md)).
+    Procure também nas fontes que já existem: site, LP antiga, matérias na imprensa (o `imagem.mjs`
+    baixa pelo endereço). Do Instagram, peça os arquivos — ele exige login. Pergunte se imagem com
+    cara de render é foto real ou projeto.
+    Foto de banco genérica continua proibida. Sem nenhuma foto de gente, **diga que isso custa
+    conversão** e deixe a página mais curta, em vez de compensar com cartões e números.
 
 ## Bloco 5 — SEO e compartilhamento
 
@@ -76,8 +91,10 @@ Chute fundamentado é melhor que página vaga.
 
 27. **Qual domínio?** Liste os cadastrados (`GET /api/domains`). Se o que ela quer não existe,
     cadastre e entregue o CNAME.
-28. **Qual caminho?** `/promo`, `/turma-marco`. Curto, sem acento, com hífen. Confira se está livre.
-29. **Publicar agora ou deixar pronto e fora do ar?**
+28. **Qual caminho?** `/promo`, `/turma-marco`. Curto, sem acento, com hífen. Se estiver ocupado, a
+    criação volta 422 dizendo — aí proponha outro.
+29. **Publicar assim que aprovar, ou deixar pronto e fora do ar?** (`status` `active` ou
+    `deactivated` na criação.)
 
 ---
 
@@ -85,4 +102,8 @@ Chute fundamentado é melhor que página vaga.
 
 Você tem o suficiente quando consegue escrever, sem inventar: a promessa principal, três motivos
 para acreditar, a resposta para as três objeções, o que a pessoa ganha ao enviar o formulário, e
-para onde o lead vai. Faltando qualquer um, pergunte mais. Sobrando, pare e mostre o plano.
+para onde o lead vai. Sobrando, pare e mostre o plano.
+
+Faltando, pergunte **uma vez**. Se a pessoa não tiver a resposta ("o cliente não mandou"), não
+trave: siga com rascunho e deixe o buraco marcado ([rascunho.md](rascunho.md)). Só o destino do lead
+(funil e etapa) e o domínio são indispensáveis antes de criar qualquer coisa no Cubo.

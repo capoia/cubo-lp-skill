@@ -1,17 +1,20 @@
 # A API do Cubo
 
 Tudo em `https://SEU-CRM/api/...`, com o cabeçalho `X-API-Key: sk_...` e
-`Accept: application/json`. O script `scripts/cubo.sh` já põe os dois:
+`Accept: application/json`. O `cubo.mjs` já põe os dois (troque `<scripts>` pelo caminho completo,
+como diz o `SKILL.md`):
 
 ```bash
-CUBO="${CLAUDE_PLUGIN_ROOT}/skills/landing-page/scripts/cubo.sh"
-
-"$CUBO" get  /api/pipes
-"$CUBO" post /api/landings '{"title":"…","url":"promo","domainId":7,"html":"<div>…</div>"}'
-"$CUBO" post /api/landings/12/publish
-"$CUBO" put  /api/landings/12 @pagina.json      # @arquivo lê o corpo de um arquivo
-"$CUBO" del  /api/landings/12
+node "<scripts>/cubo.mjs" get  /api/pipes
+node "<scripts>/cubo.mjs" post /api/landings @pagina.json
+node "<scripts>/cubo.mjs" put  /api/landings/12 @pagina.json
+node "<scripts>/cubo.mjs" del  /api/landings/12
+node "<scripts>/cubo.mjs" upload /api/landings/assets topo.webp
 ```
+
+**Corpo com HTML vai sempre por arquivo** (`@pagina.json`), nunca escrito no comando: no Windows a
+linha de comando corta por volta de 32 mil caracteres, e uma landing passa disso. Monte o JSON com a
+ferramenta de escrever arquivo e passe o caminho.
 
 Resposta de sucesso vem envelopada em `{"data": …}`. Erro vem como
 `{"errors":[{"message":"…"}]}`.
@@ -54,8 +57,9 @@ A listagem **não traz o HTML** (é grande). Para o conteúdo, leia uma página.
 }
 ```
 
-- **nasce fora do ar**, sempre. A API **não aceita `status`**: publicar é `POST /:id/publish`, que
-  confere conteúdo e domínio ativo;
+- **nasce no ar** (`status: "active"`), como na tela do Cubo. Para criar pronta e fora do ar, mande
+  `"status": "deactivated"`. Por isso: **só crie depois do "pode publicar"** — antes disso, a prévia
+  é local;
 - **a API não aceita `css`.** O CSS vai dentro do `head`, num `<style>` — a página publicada ignora
   a coluna `css`;
 - `url` é o caminho dentro do domínio, sem barra no começo. `"/"` é a raiz;
@@ -70,18 +74,29 @@ A resposta traz `publicUrl`, já montado.
 
 `PUT /api/landings/:id` — só o que vier no corpo muda.
 
-### Publicar / despublicar
+### Colocar no ar e tirar do ar
 
-`POST /api/landings/:id/publish` · `POST /api/landings/:id/unpublish`
+Não existe rota própria: é o `status` no `PUT`.
 
-Publicar recusa (422) quando a página não tem conteúdo ou quando o domínio não está `active`.
+```json
+{ "status": "active" }
+```
+
+`"active"` põe no ar; `"deactivated"` tira.
+
+⚠️ **A API não confere o domínio.** Ela deixa a página `active` num domínio que ainda está
+`validating` — e aí a página está "no ar" num endereço que não resolve. Antes de dizer que publicou,
+confira em `GET /api/domains` que o domínio está `active`, e abra o endereço público.
+
+`suspended` é da cobrança: só sai quando o pagamento normaliza, e o `PUT` não muda.
 
 **Caminho ocupado** também é 422, na criação e na atualização: _"Já existe uma landing page ou
 formulário com este domínio e caminho"_. Não existe endpoint para conferir antes — a resposta do
 `POST` já diz. Leia a mensagem, proponha outro caminho e siga.
 
-**Para mostrar ao cliente antes de valer**, publique num caminho descartável e depois troque a
-`url` com um `PUT`. A prévia de verdade é local (`scripts/previa.sh`), sem passar pelo Cubo.
+**Para mostrar ao cliente antes de valer**, a prévia é local (`previa.mjs`, sem passar pelo Cubo).
+Se ele precisar abrir de outro lugar, crie num caminho descartável e depois troque a `url` com um
+`PUT`.
 
 ### Imagem
 
@@ -89,12 +104,17 @@ formulário com este domínio e caminho"_. Não existe endpoint para conferir an
 
 ```bash
 # sempre nesta ordem: preparar, depois subir
-PRONTA=$("${CLAUDE_PLUGIN_ROOT}/skills/landing-page/scripts/imagem.sh" foto.jpg topo | head -1)
-"$CUBO" upload /api/landings/assets "$PRONTA"
+node "<scripts>/imagem.mjs" foto.jpg topo topo.webp
+node "<scripts>/cubo.mjs" upload /api/landings/assets topo.webp
 ```
 
-Formatos aceitos pela API: `jpg`, `jpeg`, `png`, `gif`, `svg`, `webp` — mas **a skill sobe webp**
-(ou SVG, quando for vetor). Veja [html.md](html.md).
+Formatos aceitos: imagem `jpg`, `jpeg`, `png`, `gif`, `svg`, `webp` até **1 MB** — a skill sobe
+webp (ou SVG, quando for vetor), veja [html.md](html.md); e **vídeo `mp4` ou `webm` até 25 MB**,
+sempre preparado pelo `video.mjs` antes ([movimento.md](movimento.md)). Arquivo acima do limite do
+seu tipo volta 422 com o motivo.
+
+Se o Cubo da pessoa ainda recusar o `mp4` por formato, ele é de antes do upload de vídeo: use o vídeo
+do YouTube do próprio cliente, com a capa no lugar e o player entrando só no clique.
 
 ⚠️ **Cada arquivo consome a cota de armazenamento da empresa**, o mesmo balde dos anexos: a chamada
 passa por `checkStorageQuota` e registra o arquivo. Estourando, vem 422 com

@@ -1,7 +1,7 @@
 {
   "name": "cubo-landing",
-  "version": "1.3.0",
-  "description": "Cria, publica e edita landing pages no Cubo: entrevista, escreve a página em HTML, monta o formulário, publica no domínio e mede o PageSpeed.",
+  "version": "2.0.0",
+  "description": "Cria, publica e edita landing pages no Cubo: lê o site do cliente para pegar a identidade, entrevista, escreve a página em HTML, monta o formulário, publica no domínio e mede o PageSpeed. Windows, macOS e Linux, só com Node.",
   "author": {
     "name": "Cubo Suite"
   },
