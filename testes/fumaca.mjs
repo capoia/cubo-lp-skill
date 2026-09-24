@@ -86,6 +86,10 @@ const servidor = createServer((pedido, resposta) => {
     if (pedido.url.startsWith('/api/landings/7') && pedido.method === 'GET') return json(200, { data: landing })
     if (pedido.url.startsWith('/api/landings/7') && pedido.method === 'PUT') return json(200, { data: { id: 7 } })
     if (pedido.url === '/api/landings/assets') return json(201, { data: { url: 'https://arquivos.test/a.webp' } })
+    if (pedido.url.startsWith('/api/pipes')) return json(200, { data: [
+      { id: 10, name: 'Vendas', stages: [{ id: 100 }], users: [{ id: 1, name: 'Ana' }] },
+      { id: 11, name: 'Girbau', stages: [{ id: 110 }], users: [] },
+    ], meta: { lastPage: 1 } })
     if (pedido.url === '/api/me/modules') return json(200, { data: ['landings'] })
     if (pedido.url.startsWith('/api/forms')) return json(403, { message: 'sem permissão' })
     return json(200, { data: [] })
@@ -158,6 +162,15 @@ await caso('cubo: upload vai como multipart com o arquivo', async () => {
 await caso('cubo: erro HTTP sai com código diferente de zero', async () => {
   const r = await roda('cubo.mjs', ['get', '/api/forms'], acesso)
   confere(r.codigo === 1 && /HTTP 403/.test(r.saida), r.saida)
+})
+
+await caso('cubo: destino aprova funil com etapa e usuário, e barra funil sem usuário ativo', async () => {
+  const bom = await roda('cubo.mjs', ['destino', '10', '100'], acesso)
+  confere(bom.codigo === 0 && /ok: o funil recebe leads/.test(bom.saida), bom.saida)
+  const vazio = await roda('cubo.mjs', ['destino', '11'], acesso)
+  confere(vazio.codigo === 1 && /PROBLEMA: o funil não tem nenhum usuário ativo/.test(vazio.saida), vazio.saida)
+  const etapaErrada = await roda('cubo.mjs', ['destino', '10', '999'], acesso)
+  confere(etapaErrada.codigo === 1 && /a etapa 999 não é deste funil/.test(etapaErrada.saida), etapaErrada.saida)
 })
 
 await caso('cubo: configurar grava o .cubo.env protegido e fora do git', async () => {

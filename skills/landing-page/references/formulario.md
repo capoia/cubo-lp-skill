@@ -68,6 +68,17 @@ mais, o caminho melhor é um segundo formulário (do tipo `update`) na página d
 
 ## Criar
 
+Antes, confira o destino:
+
+```bash
+node "<scripts>/cubo.mjs" destino <funil> [etapa]
+```
+
+O lead só entra se o funil tem **etapa** e **ao menos um usuário ativo** (é ele que fica como
+responsável da negociação). Funil recém-criado costuma nascer sem ninguém — e aí o formulário recusa
+todo envio com "o funil deste formulário não tem nenhum usuário ativo". Deu `PROBLEMA`, peça para
+adicionarem alguém ao funil antes de publicar.
+
 ```json
 {
   "name": "LP Turma de março",
