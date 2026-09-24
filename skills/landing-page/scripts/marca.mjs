@@ -8,6 +8,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { abrirNavegador, argumentos, falha } from './lib.mjs'
+import { medirSistema } from './sistema.mjs'
 
 const { posicionais, opcoes } = argumentos()
 if (!posicionais.length) {
@@ -28,11 +29,31 @@ ornamento, o jeito de usar a cor).`)
 const PASTA = resolve(opcoes.pasta || 'marca')
 const ALTURA_MAXIMA = 7000
 
+// Banner de cookies cobre metade da captura (o Cookiebot da Girbau cobria o topo inteiro) e a
+// comparação com a landing vira comparação com um pop-up. Some antes de medir e de capturar.
+async function tirarAvisoDeCookies(pagina) {
+  await pagina.evaluate(() => {
+    const conhecidos = '#CybotCookiebotDialog, #CybotCookiebotDialogBodyUnderlay, #onetrust-consent-sdk, #onetrust-banner-sdk, .cky-consent-container, .cky-overlay, #cookie-law-info-bar, .cc-window, #usercentrics-root, .cmplz-cookiebanner, #cookiescript_injected, #moove_gdpr_cookie_info_bar, .adopt-c-cMUDrl'
+    document.querySelectorAll(conhecidos).forEach((el) => el.remove())
+    const tela = window.innerWidth * window.innerHeight
+    for (const el of document.querySelectorAll('body *')) {
+      const e = getComputedStyle(el)
+      if (!/fixed|sticky/.test(e.position)) continue
+      const c = el.getBoundingClientRect()
+      if (c.width * c.height < tela * 0.06 || el.querySelector('nav')) continue
+      if (/cookie|consentimento|consent|lgpd|dados pessoais|privacidade/i.test(el.innerText || '')) el.remove()
+    }
+    for (const raiz of [document.documentElement, document.body]) raiz.style.setProperty('overflow', 'auto', 'important')
+  }).catch(() => {})
+}
+
 async function carregar(pagina, url) {
   await pagina.goto(url, { waitUntil: 'domcontentloaded', timeout: 45_000 })
   // Página de construtor (RD Station, Wix, Elementor) raramente chega ao "load" em tempo útil:
   // esperar por ele trava. Damos um prazo e seguimos com o que já desenhou.
   await pagina.waitForLoadState('load', { timeout: 10_000 }).catch(() => {})
+  await pagina.waitForTimeout(800)
+  await tirarAvisoDeCookies(pagina)
   // Antes de rolar, anota como está o que ainda não apareceu: depois de rolar dá para ver quem
   // chegou animando (opacidade, deslocamento) e como — é o jeito de se mexer do site.
   await pagina.evaluate(() => {
@@ -57,6 +78,7 @@ async function carregar(pagina, url) {
 }
 
 async function capturar(pagina, destino, prefixo) {
+  await tirarAvisoDeCookies(pagina)
   await pagina.screenshot({ path: join(destino, `${prefixo}-topo.jpg`), type: 'jpeg', quality: 72, timeout: 30_000 })
   const altura = await pagina.evaluate(() => document.documentElement.scrollHeight)
   const largura = pagina.viewportSize().width
@@ -211,124 +233,6 @@ function medir() {
     titulos: textoDe('h1, h2, h3', 40),
     chamadas: textoDe('a[class*="btn" i], a[class*="button" i], button, [role="button"]', 20),
     paragrafos: textoDe('p', 40).filter((t) => t.length > 40),
-  }
-}
-
-
-// Roda dentro da página. O "jeito" do site, além da cor e da fonte: o raio dos cantos, a sombra, o
-// botão, os títulos, a largura da coluna, como as coisas se mexem e de onde vêm as fontes e os
-// ícones. É o que faz a landing parecer uma página do próprio site, e não um tema de IA.
-function medirSistema() {
-  const conta = new Map()
-  const soma = (grupo, valor, peso = 1) => {
-    if (!valor) return
-    const mapa = conta.get(grupo) || new Map()
-    mapa.set(valor, (mapa.get(valor) || 0) + peso)
-    conta.set(grupo, mapa)
-  }
-  const top = (grupo, quantos = 3) => [...(conta.get(grupo) || new Map()).entries()].sort((a, b) => b[1] - a[1]).slice(0, quantos).map(([v, n]) => `${v} (${n}×)`)
-  const visivel = (el) => { const c = el.getBoundingClientRect(); const e = getComputedStyle(el); return c.width > 0 && c.height > 0 && e.display !== 'none' && e.visibility !== 'hidden' }
-  const raio = (e) => (e.borderTopLeftRadius === '0px' && e.borderBottomRightRadius === '0px' ? '0' : e.borderRadius)
-  const temFundo = (e) => !/rgba\(0, 0, 0, 0\)|transparent/.test(e.backgroundColor)
-
-  for (const el of document.querySelectorAll('a, button, [role="button"], input[type="submit"]')) {
-    if (!visivel(el)) continue
-    const e = getComputedStyle(el)
-    const c = el.getBoundingClientRect()
-    if (!temFundo(e) && e.borderTopWidth === '0px') continue
-    if (c.height < 28 || c.width < 60 || el.innerText.trim().length > 40) continue
-    soma('botaoRaio', raio(e))
-    soma('botaoForma', `${Math.round(c.height)}px de altura, padding ${e.paddingTop} ${e.paddingRight}, ${e.fontWeight} ${e.fontSize}${e.textTransform !== 'none' ? `, ${e.textTransform}` : ''}${e.letterSpacing !== 'normal' ? `, espaçamento ${e.letterSpacing}` : ''}${!temFundo(e) ? ', só contorno' : ''}`)
-    if (e.transitionDuration !== '0s') soma('botaoTransicao', `${e.transitionProperty} ${e.transitionDuration}`)
-  }
-
-  // Cartão: bloco médio com fundo próprio, borda ou sombra, com texto ou imagem dentro.
-  for (const el of document.querySelectorAll('body div, body article, body li, body a, body figure')) {
-    const c = el.getBoundingClientRect()
-    if (c.width < 160 || c.height < 120 || c.width > document.documentElement.clientWidth * 0.7 || !visivel(el)) continue
-    const e = getComputedStyle(el)
-    const sombra = e.boxShadow !== 'none'
-    if (!sombra && !temFundo(e) && e.borderTopWidth === '0px') continue
-    soma('cartaoRaio', raio(e))
-    if (sombra) soma('cartaoSombra', e.boxShadow)
-    if (e.borderTopWidth !== '0px') soma('cartaoBorda', `${e.borderTopWidth} ${e.borderTopStyle}`)
-    if (e.transitionDuration !== '0s') soma('cartaoTransicao', `${e.transitionProperty} ${e.transitionDuration} ${e.transitionTimingFunction}`)
-  }
-
-  for (const img of document.querySelectorAll('img, video')) {
-    const c = img.getBoundingClientRect()
-    if (c.width < 150 || !visivel(img)) continue
-    soma('imagemRaio', raio(getComputedStyle(img.closest('figure, picture') && raio(getComputedStyle(img)) === '0' ? img.closest('figure, picture') : img)))
-  }
-  for (const el of document.querySelectorAll('input, select, textarea')) if (visivel(el)) soma('campoRaio', raio(getComputedStyle(el)))
-
-  for (const nivel of ['h1', 'h2', 'h3']) {
-    for (const el of document.querySelectorAll(nivel)) {
-      if (!visivel(el)) continue
-      const e = getComputedStyle(el)
-      soma(nivel, `${e.fontFamily.split(',')[0].replace(/["']/g, '')} ${e.fontWeight} ${e.fontSize}/${e.lineHeight}${e.textTransform !== 'none' ? ` ${e.textTransform}` : ''}${e.letterSpacing !== 'normal' ? ` espaçamento ${e.letterSpacing}` : ''}`)
-    }
-  }
-
-  // Coluna de conteúdo: a largura em que o texto e as grades se alinham.
-  const largura = document.documentElement.clientWidth
-  for (const el of document.querySelectorAll('body *')) {
-    const c = el.getBoundingClientRect()
-    if (c.width < 700 || c.width > largura - 40 || Math.abs(c.left - (largura - c.right)) > 4 || el.children.length < 1) continue
-    soma('coluna', `${Math.round(c.width)}px`)
-  }
-
-  // Movimento: biblioteca de animação ao rolar, efeitos por classe, carrosséis e o que o CSS declara.
-  const movimento = []
-  const tem = (seletor) => document.querySelector(seletor)
-  if (tem('[data-aos]')) movimento.push(`AOS (animação ao rolar): ${[...new Set([...document.querySelectorAll('[data-aos]')].map((e) => e.dataset.aos))].slice(0, 6).join(', ')}`)
-  if (tem('.wow')) movimento.push('WOW.js (animação ao rolar)')
-  const elementor = [...document.querySelectorAll('[data-settings*="animation"]')].map((e) => (e.dataset.settings.match(/"_?animation":"([^"]+)"/) || [])[1]).filter(Boolean)
-  if (elementor.length) movimento.push(`Elementor, chegada ao rolar: ${[...new Set(elementor)].slice(0, 6).join(', ')} (${elementor.length} elementos)`)
-  if (tem('[class*="animate__"], .animated')) movimento.push('animate.css')
-  if (window.gsap || window.TweenMax || window.ScrollTrigger) movimento.push('GSAP')
-  if (window.lottie || tem('lottie-player, dotlottie-player')) movimento.push('Lottie (animação desenhada)')
-  if (tem('.swiper, .swiper-container')) movimento.push('carrossel Swiper')
-  if (tem('.slick-slider, .owl-carousel, .splide, .flickity-enabled')) movimento.push('carrossel (slick/owl/splide)')
-  if (tem('[data-parallax], .parallax, .jarallax, .rellax')) movimento.push('parallax')
-  const efeitosHover = new Set()
-  const quadros = new Set()
-  const fontes = new Set()
-  for (const folha of document.styleSheets) {
-    let regras
-    try { regras = folha.cssRules } catch { continue }
-    for (const regra of regras || []) {
-      if (regra.type === 7) quadros.add(regra.name)
-      if (regra.type === 5) {
-        const arquivo = (regra.style.src.match(/url\(["']?([^"')]+)/) || [])[1]
-        if (arquivo && !arquivo.startsWith('data:')) fontes.add(`${regra.style.fontFamily.replace(/["']/g, '')} ${regra.style.fontWeight || ''}: ${new URL(arquivo, folha.href || location.href).href}`)
-      }
-      if (regra.selectorText?.includes(':hover') && /transform|box-shadow|translate|scale/.test(regra.cssText)) efeitosHover.add(regra.cssText.replace(/\s+/g, ' ').slice(0, 140))
-    }
-  }
-  if (quadros.size) movimento.push(`@keyframes: ${[...quadros].slice(0, 8).join(', ')}`)
-
-  const fontesExternas = [...document.querySelectorAll('link[href*="fonts.googleapis"], link[href*="typekit"], link[href*="fonts.bunny"]')].map((l) => l.href)
-  const icones = []
-  if (tem('[class*="fa-"], .fa, .fas, .fab')) icones.push('Font Awesome')
-  if (tem('.material-icons, .material-symbols-outlined')) icones.push('Material')
-  if (tem('[class*="eicon"], .elementor-icon')) icones.push('ícones do Elementor')
-  if (tem('.bi[class*="bi-"]')) icones.push('Bootstrap Icons')
-  const svgsPequenos = [...document.querySelectorAll('svg')].filter((s) => { const c = s.getBoundingClientRect(); return c.width > 8 && c.width <= 64 })
-  if (svgsPequenos.length) icones.push(`${svgsPequenos.length} ícones em SVG (${[...new Set(svgsPequenos.map((s) => (getComputedStyle(s).fill !== 'none' && s.getAttribute('fill') !== 'none' ? 'cheio' : 'traço')))].join(' e ')})`)
-
-  return {
-    raio: { botao: top('botaoRaio'), cartao: top('cartaoRaio'), imagem: top('imagemRaio'), campo: top('campoRaio') },
-    sombra: top('cartaoSombra', 2),
-    borda: top('cartaoBorda', 2),
-    botao: top('botaoForma', 2),
-    titulos: { h1: top('h1', 2), h2: top('h2', 2), h3: top('h3', 2) },
-    coluna: top('coluna', 2),
-    transicoes: [...top('botaoTransicao', 2), ...top('cartaoTransicao', 2)],
-    movimento,
-    efeitosHover: [...efeitosHover].slice(0, 6),
-    fontes: { arquivos: [...fontes].filter((f) => !/^\s*:/.test(f)).slice(0, 10), externas: fontesExternas },
-    icones,
   }
 }
 

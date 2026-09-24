@@ -1,9 +1,14 @@
 # Quando falta conteúdo
 
 O cliente muitas vezes manda pouco ou nada: "faz uma página de franquia, segue a identidade da
-marca". **Não pare, e não entregue lorem ipsum.** Página cheia de texto latino não mostra nada a
-ninguém — o cliente não consegue aprovar o que não entende. O valor está em chegar com uma página
-que já parece dele e já diz algo verdadeiro, com os buracos **visíveis e nomeados**.
+marca". **Não pare.** O valor está em chegar com uma página que já parece dele e já diz algo
+verdadeiro, com os buracos **visíveis e nomeados**.
+
+**Lorem ipsum, só se a pessoa pedir** — é comum para aprovar o desenho com o cliente antes de ter o
+texto. Nesse caso ele vai **sempre dentro de um `data-rascunho`** que diz o que entra ali
+(`<blockquote data-rascunho="depoimento de gestor de hotel: texto, nome, cargo, foto">Lorem
+ipsum…</blockquote>`): a prévia lista o trecho, e a página com lorem ipsum **nunca vai ao ar**.
+Sem o pedido, escreva o rascunho com o que é verdadeiro, como abaixo.
 
 ## De onde tirar o conteúdo, em ordem
 
