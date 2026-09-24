@@ -317,6 +317,21 @@ await caso('previa: compara com o site (canto, borda superior) e aceita lorem ip
   confere(/lorem ipsum fora de rascunho em 1 lugar/.test(r.saida), `lorem ipsum: devia acusar só o solto:\n${r.saida}`)
 })
 
+await caso('previa: formulário com canto diferente dos cartões e cidade em texto livre são acusados', async () => {
+  writeFileSync(join(PASTA, 'pagina', 'form-destoa.html'), `<style>html,body{margin:0} .c{width:320px;height:180px;background:#fff;border-radius:16px}</style>
+<main><section><h1>Oi</h1><div style="display:flex;gap:20px"><div class="c">um</div><div class="c">dois</div></div><div class="lp-formulario"></div></section></main>`)
+  writeFileSync(join(PASTA, 'pagina', 'form-destoa.json'), JSON.stringify({
+    definition: { id: 'frm_previa', type: 'create', fields: [
+      { key: 'title', kind: 'text', label: 'Nome', required: true },
+      { key: 'cf_local', kind: 'text', label: 'Cidade / UF' },
+    ], settings: { theme: { radius: 0 } } },
+  }))
+  const r = await roda('previa.mjs', [join('pagina', 'form-destoa.html'), `--formulario=${join('pagina', 'form-destoa.json')}`, '--capturar', '--porta=0'])
+  confere(r.codigo === 0, r.saida)
+  confere(/formulário: campo com canto reto, os cartões pedem 12px/.test(r.saida), `não acusou o canto do campo:\n${r.saida}`)
+  confere(/"Cidade \/ UF" em texto livre/.test(r.saida), `não acusou a cidade em texto:\n${r.saida}`)
+})
+
 await caso('icone: procura pelo nome e entrega o <svg> no padrão da página', async () => {
   const busca = await roda('icone.mjs', ['buscar', 'timer'])
   confere(busca.codigo === 0 && /timer:.*\btimer\b/.test(busca.saida), busca.saida)

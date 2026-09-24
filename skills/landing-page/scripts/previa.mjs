@@ -11,7 +11,7 @@ import { createServer } from 'node:http'
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, extname, join, normalize, resolve } from 'node:path'
 import { abrirNavegador, argumentos, dependencia, falha } from './lib.mjs'
-import { comparar, consolidar, medirSistema } from './sistema.mjs'
+import { comparar, compararFormulario, consolidar, medirSistema } from './sistema.mjs'
 
 const { posicionais, opcoes } = argumentos()
 const [corpoArquivo, cabecaArquivo] = posicionais
@@ -358,6 +358,18 @@ if (opcoes.capturar) {
     if (!movel) {
       const daPagina = consolidar([await pagina.evaluate(medirSistema)])
       if (doSite) for (const aviso of comparar(doSite, daPagina)) problemas.push(aviso)
+      const formulario = await pagina.evaluate(() => {
+        const raiz = [...document.querySelectorAll('*')].map((el) => el.shadowRoot).find((r) => r?.querySelector('.lf-input'))
+        if (!raiz) return null
+        const campo = raiz.querySelector('.lf-input')
+        const botao = raiz.querySelector('.lf-button')
+        const localEmTexto = [...raiz.querySelectorAll('label')]
+          .filter((rotulo) => /(^|[^a-zà-ú])(cidade|estado|uf)([^a-zà-ú]|$)/i.test(rotulo.textContent || ''))
+          .filter((rotulo) => { const alvo = rotulo.htmlFor ? raiz.getElementById(rotulo.htmlFor) : rotulo.parentElement?.querySelector('input, select'); return alvo?.tagName === 'INPUT' && !['checkbox', 'radio', 'hidden'].includes(alvo.type) })
+          .map((rotulo) => rotulo.textContent.replace(/\*/g, '').trim())
+        return { campo: getComputedStyle(campo).borderTopLeftRadius, botao: botao ? getComputedStyle(botao).borderTopLeftRadius : null, localEmTexto }
+      })
+      for (const aviso of compararFormulario(doSite, daPagina, formulario)) problemas.push(aviso)
       if (!doSite && daPagina.bordaTopo) problemas.push(`borda superior grossa em ${daPagina.bordaTopo} cartão(ões) — é a marca mais comum de página feita por IA (SKILL.md, regra 3); só fica se o site do cliente usa`)
       riqueza = await pagina.evaluate(medirRiqueza)
       for (const aviso of riqueza.avisos) problemas.push(aviso)

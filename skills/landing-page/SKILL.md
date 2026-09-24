@@ -143,7 +143,9 @@ Peça o "pode ir". O que evitar: [references/design.md](references/design.md).
 **Antes da primeira linha de HTML, leia inteiros, com a ferramenta Read:**
 [html.md](references/html.md), [marca.md](references/marca.md) ("o sistema do site"),
 [riqueza.md](references/riqueza.md), [movimento.md](references/movimento.md),
-[acabamento.md](references/acabamento.md) e [design.md](references/design.md). Não é opcional: numa
+[acabamento.md](references/acabamento.md), [design.md](references/design.md) e
+[formulario.md](references/formulario.md) (tudo o que o formulário do Cubo faz, e os tipos de campo).
+Não é opcional: numa
 rodada em que essas leituras foram puladas, a página saiu com borda grossa nos cartões, cantos
 diferentes dos do site e quase sem ícone — tudo o que elas proíbem.
 
@@ -159,8 +161,9 @@ Sempre pela API ([references/api.md](references/api.md)):
 2. **Campos personalizados** que faltarem — e-mail é campo personalizado, não campo base.
 3. **Formulário** — antes, `node "<scripts>/cubo.mjs" destino <funil> [etapa]`: funil sem usuário
    ativo (ou sem etapa) recusa **todo** envio, e só se descobre com a página no ar. Deu `PROBLEMA`,
-   avise a pessoa e não publique até resolver. Depois `POST /api/forms`, com funil e etapa. Guarde o
-   `publicId` (`frm_…`).
+   avise a pessoa e não publique até resolver. Depois `POST /api/forms`, com funil e etapa, os campos
+   do **tipo certo** (estado e cidade são `state` e `city`, nunca texto) e o tema com a cara do site.
+   Guarde o `publicId` (`frm_…`).
    [references/formulario.md](references/formulario.md).
 4. **Domínio** — `GET /api/domains`; se não existir, cadastre e entregue o CNAME.
 5. **Prévia local**, com captura:
