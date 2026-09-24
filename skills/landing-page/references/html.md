@@ -24,7 +24,7 @@ Então:
 
 | Campo da API | O que vai nele |
 |---|---|
-| `html` | **só o corpo**: `<header>`, `<section>`, `<footer>`, o `<div id="form">` e o trecho do SDK |
+| `html` | **só o corpo**: `<header>`, `<section>`, `<footer>`, os `<div class="lp-formulario">` e o trecho do SDK |
 | `head` | `<link>` das fontes e **o `<style>` com o CSS da página** |
 | `codeHead` / `codeBody` | script de terceiro que o cliente pediu, e só |
 | `metaDescription`, `robots`, `favicon` | campos próprios, não escreva no HTML |
@@ -58,14 +58,15 @@ decisão de verba em cima desse número.
 
     <div class="lp-oferta__form">
       <h2>Fale com a gente</h2>
-      <div id="form"></div>
+      <div class="lp-formulario"></div>
     </div>
   </section>
 
-  <section class="lp-prova">…</section>
-  <section class="lp-objecoes">…</section>
-  <section class="lp-fechamento">
-    <a class="lp-cta" href="#form">Quero começar</a>
+  <section class="lp-prova">… <a class="lp-cta" href="#contato">Quero começar</a></section>
+  <section class="lp-objecoes">… <a class="lp-cta" href="#contato">Quero começar</a></section>
+  <section class="lp-fechamento" id="contato">
+    <h2>A frase de fechamento</h2>
+    <div class="lp-formulario"></div>
   </section>
 
   <footer class="lp-rodape">…</footer>
@@ -74,10 +75,14 @@ decisão de verba em cima desse número.
 <script src="https://SEU-CRM/sdk/form.js" defer></script>
 <script>
   addEventListener('DOMContentLoaded', function () {
-    new Form({ form: 'frm_XXXXXXXXXXXXXXXX', target: '#form', minHeight: 420, inheritPageStyles: true })
+    document.querySelectorAll('.lp-formulario').forEach(function (alvo) {
+      new Form({ form: 'frm_XXXXXXXXXXXXXXXX', target: alvo, minHeight: 420, inheritPageStyles: true })
+    })
   })
 </script>
 ```
+
+O formulário aparece **no topo e no fim** — o mesmo, desenhado duas vezes ([riqueza.md](riqueza.md)).
 
 Três coisas sobre o trecho do formulário:
 

@@ -164,6 +164,16 @@ function medir() {
     .filter((v) => v.src && !v.src.startsWith('blob:'))
   for (const quadro of document.querySelectorAll('iframe[src*="youtube"], iframe[src*="vimeo"]')) videos.push({ src: absoluta(quadro.src), poster: '' })
 
+  // A matéria-prima rica (linha de produtos com dados, cases, galeria) quase nunca está na home:
+  // as páginas internas são o próximo passo do raio-x (riqueza.md).
+  const PISTAS = /produt|solu[cç]|servi[cç]|equipament|linha|modelo|cat[aá]logo|portf|case|cliente|depoiment|galeria|projeto|obra|loja|unidade|sobre|quem-somos|hist[oó]ria|tratament|plano|curso|product|service|gallery|about/i
+  const paginas = [...document.querySelectorAll('a[href]')]
+    .map((a) => ({ url: absoluta(a.getAttribute('href')), texto: a.innerText.replace(/\s+/g, ' ').trim().slice(0, 60) }))
+    .filter((p) => p.url && p.url.startsWith(location.origin) && !/#|\.(pdf|jpe?g|png|webp|zip)$/i.test(p.url) && p.url.replace(/\/$/, '') !== location.href.replace(/\/$/, ''))
+    .filter((p) => PISTAS.test(`${p.url} ${p.texto}`))
+    .filter((p, i, lista) => lista.findIndex((o) => o.url === p.url) === i)
+    .slice(0, 20)
+
   const meta = (nome) => document.querySelector(`meta[property="${nome}"], meta[name="${nome}"]`)?.content || ''
   const textoDe = (seletor, limite) => [...document.querySelectorAll(seletor)]
     .map((el) => el.innerText.replace(/\s+/g, ' ').trim())
@@ -184,6 +194,7 @@ function medir() {
     fontesTexto: ordena(fontesTexto, null, 4),
     logotipos,
     videos: videos.slice(0, 10),
+    paginas,
     imagens: [...imagens.filter((i) => i.alt === '(fundo de seção)'), ...imagens.filter((i) => i.alt !== '(fundo de seção)')].slice(0, 60),
     titulos: textoDe('h1, h2, h3', 40),
     chamadas: textoDe('a[class*="btn" i], a[class*="button" i], button, [role="button"]', 20),
@@ -228,9 +239,11 @@ for (const url of posicionais) {
     console.log(`  botões:          ${lista(medidas.botoes)}`)
     console.log(`  fonte de título: ${lista(medidas.fontesTitulo)}`)
     console.log(`  fonte de texto:  ${lista(medidas.fontesTexto)}`)
-    console.log(`  logotipo:        ${medidas.logotipos.map((l) => l.src || l.arquivo).join(' | ') || 'não achei — procure na captura'}`)
+    const nomeDoLogo = (l) => (l.src?.startsWith('data:') ? `(imagem embutida na página, ${Math.round(l.src.length / 1365)} KB — está no marca.json)` : l.src || l.arquivo)
+    console.log(`  logotipo:        ${[...new Set(medidas.logotipos.map(nomeDoLogo))].join(' | ') || 'não achei — procure na captura'}`)
     console.log(`  imagens grandes: ${medidas.imagens.length}`)
     if (medidas.videos.length) console.log(`  vídeos:          ${medidas.videos.map((v) => v.src).slice(0, 3).join(' | ')}`)
+    if (medidas.paginas.length) console.log(`  páginas internas com matéria-prima (rode o marca.mjs nelas também):\n${medidas.paginas.slice(0, 12).map((p) => `    ${p.url}${p.texto ? `  (${p.texto})` : ''}`).join('\n')}`)
     console.log(`  capturas:        ${destino}`)
     resumo.push(destino)
   } catch (erro) {

@@ -39,8 +39,9 @@ Evite, a menos que a marca peça:
 - emoji ou símbolo no lugar de ícone;
 - parede de logotipos desbotados em cinza — dois a quatro, na cor original e com uma linha dizendo
   quem é cada um, valem mais;
-- carrossel de depoimentos — um depoimento real, grande, com nome, foto e o que a pessoa faz, vale
-  mais que cinco rodando;
+- carrossel de depoimentos **que roda sozinho** — um depoimento real, grande, com nome, foto e o que
+  a pessoa faz, vale mais que cinco rodando. Com três ou mais reais, uma faixa que **a pessoa** rola
+  está certa ([riqueza.md](riqueza.md));
 - uma palavra só do título pintada de outra cor ou em itálico;
 - uma seta `→` colada no fim de todo botão e link;
 - **cada seção com um efeito diferente** ao rolar, ou animação no que está na primeira tela. Um

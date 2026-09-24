@@ -25,7 +25,8 @@ if (!corpoArquivo) {
   --capturar   tira as capturas em ./previa/ e encerra (junte --servir para continuar servindo)
   --limpa      esconde os números dos trechos em rascunho (a lista sai no terminal de qualquer jeito)
   --formulario=arquivo.json
-               desenha o formulário do Cubo de verdade no #form, a partir de uma definição local,
+               desenha o formulário do Cubo de verdade em cada .lp-formulario (ou #form), a partir
+               de uma definição local,
                antes de ele existir no CRM (veja references/formulario.md)
 
 Imagem com caminho relativo (ex.: imagens/topo.webp) é servida da pasta do corpo.html.`)
@@ -113,10 +114,12 @@ function formularioLocal() {
   return `<script src="${SDK_PUBLICO}"></script>
 <script>
 addEventListener('DOMContentLoaded', function () {
-  var alvo = document.querySelector('#form')
-  if (!alvo) return console.error('previa: a página não tem <div id="form">')
-  alvo.innerHTML = ''
-  new Form(Object.assign({ minHeight: 420, inheritPageStyles: true }, ${JSON.stringify(configuracao)}, { target: alvo, preview: true }))
+  var alvos = document.querySelectorAll('.lp-formulario, #form')
+  if (!alvos.length) return console.error('previa: a página não tem <div class="lp-formulario">')
+  alvos.forEach(function (alvo) {
+    alvo.innerHTML = ''
+    new Form(Object.assign({ minHeight: 420, inheritPageStyles: true }, ${JSON.stringify(configuracao)}, { target: alvo, preview: true }))
+  })
 })
 </script>`
 }
@@ -219,6 +222,28 @@ function medirAcabamento(largura) {
   return [...new Set(achados)].slice(0, 12)
 }
 
+// Roda dentro da página. Conta o que a página usa do que a deixa rica (riqueza.md) e aponta o que
+// costuma faltar: formulário só no topo, lista sem ícone, bloco que termina sem botão.
+function medirRiqueza() {
+  const blocos = [...document.querySelectorAll('section')].filter((s) => !s.parentElement.closest('section'))
+  const formularios = document.querySelectorAll('.lp-formulario, #form').length
+  const svgs = [...document.querySelectorAll('svg')].filter((s) => s.getBoundingClientRect().width <= 64).length
+  const fotos = [...document.images].filter((i) => i.naturalWidth >= 200 && !/logo/i.test(`${i.src} ${i.alt}`)).length
+  const conta = {
+    blocos: blocos.length, formularios, icones: svgs, fotos, videos: document.querySelectorAll('video, iframe[src*="youtube"], [data-video]').length,
+    chegada: document.querySelectorAll('.lp-revela').length, contadores: document.querySelectorAll('[data-contar]').length,
+    perguntas: document.querySelectorAll('details').length, abas: document.querySelectorAll('[role="tab"]').length,
+  }
+  const avisos = []
+  if (blocos.length > 3 && formularios < 2) avisos.push('formulário só em um lugar — ponha também no último bloco (riqueza.md, "formulário no topo e no fim")')
+  if (!svgs && document.querySelectorAll('li').length >= 3) avisos.push('nenhum ícone na página — lista de benefícios, recursos ou etapas leva ícone (icone.mjs)')
+  if (blocos.length > 2 && !conta.chegada) avisos.push('página parada: nenhum bloco com a chegada suave (lp-revela, movimento.md)')
+  const acao = (s) => s.querySelector('a[href^="#"], button, .lp-formulario, #form')
+  const semBotao = blocos.slice(1).filter((s) => !acao(s) && s.innerText.trim().length > 200).length
+  if (semBotao >= 3) avisos.push(`${semBotao} blocos terminam sem botão — cada bloco que fecha um argumento leva ao formulário (movimento.md)`)
+  return { conta, avisos }
+}
+
 const TIPOS = { '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml', '.gif': 'image/gif', '.css': 'text/css', '.js': 'text/javascript', '.woff2': 'font/woff2' }
 
 const servidor = createServer((pedido, resposta) => {
@@ -262,6 +287,7 @@ const rascunhos = [...readFileSync(corpoArquivo, 'utf8').matchAll(/data-rascunho
 if (opcoes.capturar) {
   const { navegador } = await abrirNavegador()
   const problemas = []
+  let riqueza = null
   for (const [nome, viewport, movel] of [['desktop', { width: 1366, height: 860 }, false], ['celular', { width: 390, height: 844 }, true]]) {
     const pagina = await navegador.newPage({ viewport, isMobile: movel, hasTouch: movel })
     pagina.on('console', (msg) => msg.type() === 'error' && problemas.push(`[${nome}] console: ${msg.text().slice(0, 200)}`))
@@ -280,8 +306,10 @@ if (opcoes.capturar) {
 
     // No modo celular o navegador alarga a janela até caber o conteúdo, então comparar com
     // `innerWidth` nunca acusa nada: a régua é a largura que pedimos.
+    // Faixa que rola de lado de propósito (galeria, depoimentos) pode ter filhos além da tela.
     const vazando = await pagina.evaluate((largura) => [...document.querySelectorAll('body *:not(.previa-selo)')]
       .filter((el) => el.getBoundingClientRect().right > largura + 1)
+      .filter((el) => { for (let pai = el.parentElement; pai; pai = pai.parentElement) if (/auto|scroll/.test(getComputedStyle(pai).overflowX)) return false; return true })
       .filter((el, _, todos) => !todos.some((outro) => outro !== el && outro.contains(el)))
       .slice(0, 3)
       .map((el) => `<${el.tagName.toLowerCase()}${el.className ? ` class="${el.className}"` : ''}> até ${Math.round(el.getBoundingClientRect().right)}px`), viewport.width)
@@ -297,6 +325,10 @@ if (opcoes.capturar) {
     const margem = await pagina.evaluate(() => getComputedStyle(document.body).margin)
     if (margem !== '0px') problemas.push(`[${nome}] a página tem uma borda em volta (margem do body: ${margem}) — ponha html, body { margin: 0 } no CSS da página: o template do Cubo não zera para página em HTML`)
     for (const achado of await pagina.evaluate(medirAcabamento, viewport.width)) problemas.push(`[${nome}] ${achado}`)
+    if (!movel) {
+      riqueza = await pagina.evaluate(medirRiqueza)
+      for (const aviso of riqueza.avisos) problemas.push(aviso)
+    }
     const semAlt = await pagina.evaluate(() => [...document.images].filter((i) => !i.hasAttribute('alt')).length)
     if (semAlt) problemas.push(`[${nome}] ${semAlt} imagem(ns) sem alt`)
 
@@ -310,7 +342,15 @@ if (opcoes.capturar) {
   for (const nome of ['desktop-topo', 'desktop-pagina', 'celular-topo', 'celular-pagina']) console.log(`  ${join(SAIDA, `${nome}.jpg`)}`)
   console.log('')
   if (inseguros.length) problemas.push(`endereço http:// na página (a publicada é https e o navegador bloqueia): ${inseguros.slice(0, 4).join(', ')}`)
-  console.log(problemas.length ? `o que achei:\n  ${[...new Set(problemas)].join('\n  ')}` : 'nenhum problema técnico encontrado.')
+  if (riqueza) {
+    const c = riqueza.conta
+    console.log(`o que a página usa: ${c.blocos} blocos · ${c.formularios} formulário(s) · ${c.icones} ícones · ${c.fotos} fotos · ${c.videos} vídeo(s) · ${c.chegada} com chegada · ${c.contadores} contador(es) · ${c.abas} abas · ${c.perguntas} perguntas`)
+    console.log('  (compare com a matéria-prima do dossiê: o que existe e não entrou precisa de um motivo — riqueza.md)')
+    console.log('')
+  }
+  const unicos = [...new Set(problemas)]
+  console.log(unicos.length ? `o que achei (${unicos.length}):\n  ${unicos.join('\n  ')}` : 'nenhum problema encontrado.')
+  if (unicos.length) console.log(`\n${unicos.length} aviso(s) em aberto. NÃO mostre à pessoa ainda: corrija e capture de novo. O que ficar de propósito, diga qual é e por quê ao mostrar.`)
   console.log('')
   console.log(rascunhos.length ? `trechos em RASCUNHO (${rascunhos.length}) — precisam de conteúdo real antes de publicar:\n${rascunhos.map((texto, indice) => `  R${indice + 1}  ${texto}`).join('\n')}` : 'nenhum trecho em rascunho.')
   if (!opcoes.servir) {

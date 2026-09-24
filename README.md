@@ -92,6 +92,7 @@ A skill adapta, reescritas para landing page de captação em português, ideias
   recusar, e o cuidado com o que o navegador pinta sozinho;
 - [marketingskills](https://github.com/coreyhaines31/marketingskills) (MIT) — achar a linguagem do
   cliente final em avaliações e comentários.
+- [Lucide](https://lucide.dev) (ISC) — os ícones que o `icone.mjs` entrega prontos.
 
 As regras de conversão citam a pesquisa de onde vêm, em `references/conversao.md`.
 
@@ -102,10 +103,10 @@ As regras de conversão citam a pesquisa de onde vêm, em `references/conversao.
 skills/landing-page/
   SKILL.md            o fluxo
   references/         requisitos, acesso, dossiê, marca, questionário, estruturas, conversão,
-                      rascunho, design, acabamento, movimento, crítica, html, formulário, api,
+                      rascunho, design, acabamento, movimento, riqueza, crítica, html, formulário, api,
                       seo, pagespeed
   scripts/            Node: requisitos, cubo (API), marca (raio-x), anuncios (Biblioteca
-                      de Anúncios da Meta), imagem, video, previa, backup e pagespeed
+                      de Anúncios da Meta), imagem, video, icone (Lucide), previa, backup e pagespeed
 testes/fumaca.mjs     teste dos scripts, que o CI roda em Windows, macOS e Linux
 ```
 

@@ -112,6 +112,12 @@ Não achou o negócio? Pegue uma de cada família: uma **de pessoa** (Carta, Dep
 uma **de prova** (Foto primeiro, Relatório, Vitrine) e uma **de conversa** (Perguntas e respostas,
 Jornada, Antes e depois).
 
+## Dentro da estrutura: os blocos
+
+A estrutura é o esqueleto; o que enche a página é a matéria-prima do cliente — mostruário, galeria,
+vídeo, depoimentos, perguntas ([riqueza.md](riqueza.md)). Qualquer estrutura recebe esses blocos: numa
+**Carta**, a galeria entra entre dois parágrafos; num **Relatório**, o mostruário vira tabela.
+
 ## Dentro da estrutura: variar a composição
 
 Escolhida a estrutura, **duas seções seguidas não podem ter a mesma composição.** Texto à esquerda e
