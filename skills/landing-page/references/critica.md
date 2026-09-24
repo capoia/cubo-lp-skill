@@ -19,6 +19,7 @@ volta para o trabalho** antes de seguir para a lista.
 | **Hierarquia** | Em 2 segundos dá para saber o que é principal, secundário e terciário? |
 | **Execução** | Espaços, quebras, contraste, alinhamentos — tudo no lugar, ou tem desleixo? |
 | **Especificidade** | Parece **deste** cliente, ou de qualquer um da categoria? |
+| **Parentesco** | Lado a lado com o site do cliente (`previa/lado-a-lado.jpg`), parece uma página dele? Mesmos cantos, botão, títulos, fontes, movimento? |
 | **Contenção** | Sobrou alguma coisa que só está ali porque ficou bonito? |
 | **Conversão** | A ação é óbvia, está visível sem rolar, e a prova aparece cedo? |
 | **Riqueza** | A página usa o que o cliente tem de real (produtos com dados, fotos, vídeo, depoimentos), ou parece feita só com o briefing? |
@@ -52,6 +53,11 @@ volta para o trabalho** antes de seguir para a lista.
      cor dando ritmo?
 16b. Algum conteúdo da primeira tela está escondido esperando animação?
 16c. Mais de um tipo de efeito na página, ou algum efeito que não desliga com `prefers-reduced-motion`?
+
+**Parentesco com o site** ([marca.md](marca.md), "o sistema do site")
+16h. Algum canto, sombra, botão ou título diferente do que o site usa, sem motivo?
+16i. A fonte do site não carregou e ninguém avisou a pessoa?
+16j. O site tem vídeo, fotos ou ícones aproveitáveis que a página não usou?
 
 **Riqueza** ([riqueza.md](riqueza.md))
 16d. Algum item da matéria-prima do dossiê ficou de fora sem motivo escrito?

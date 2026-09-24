@@ -12,7 +12,9 @@ sair com a mesma cara — e sairão, se você escolher pelo que costuma ficar bo
 
 Puxe do universo do cliente: material, cor do produto, vocabulário da área, o que o público já vê o
 dia inteiro. Se a marca tem cor e fonte, elas mandam; seu trabalho é fazê-las funcionar, não
-substituí-las. O raio-x ([marca.md](marca.md)) costuma achar também um **elemento da marca** — um
+substituí-las. **Se o cliente tem site com cara própria, a landing é uma página dele**: cantos,
+botão, títulos, fontes, sombra e movimento vêm do site ([marca.md](marca.md), "o sistema do site"),
+e a lista abaixo cede ao que o site já faz. O raio-x ([marca.md](marca.md)) costuma achar também um **elemento da marca** — um
 formato, um ornamento, um jeito de enquadrar foto — e ele é o melhor candidato a carregar a
 personalidade da página: ninguém confunde com a de um concorrente.
 

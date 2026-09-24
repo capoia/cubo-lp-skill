@@ -51,9 +51,13 @@ const paginaDaMarca = `<!doctype html><html><head><title>Marca Teste</title><met
 <body style="margin:0;background:#123456;font-family:Georgia">
 <header><a href="/"><img src="/logo.png" alt="Logo da Marca Teste" width="120" height="40"></a></header>
 <h1 style="color:#ffffff">Título da marca</h1><p style="color:#eeeeee">Um parágrafo com texto suficiente para contar como parágrafo.</p>
-<a class="btn" style="background:#ff8800;color:#000;padding:10px">Comprar agora</a>
+<a class="btn" style="background:#ff8800;color:#000;padding:10px;border-radius:999px;display:inline-block">Comprar agora</a>
+<div class="cartao" style="width:300px;height:200px;background:#fff;border-radius:16px;margin:20px">cartão</div>
 <nav><a href="/produtos/lavadora">Lavadoras</a> <a href="/contato">Fale</a></nav>
 <section style="width:600px;height:400px;background-image:linear-gradient(#0000,#0000),url('/foto.png')"></section>
+<style>.chega{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}.chega.visto{opacity:1;transform:none}</style>
+<div style="height:900px"></div><div class="chega" style="width:400px;height:120px;background:#fff">chega ao rolar</div>
+<script>new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting)i.target.classList.add('visto')})}).observe(document.querySelector('.chega'))</script>
 </body></html>`
 
 let sharp
@@ -270,6 +274,19 @@ await caso('marca: mede cor, fonte, logotipo e foto de fundo com degradê por ci
   confere(existsSync(join(pasta, 'celular-topo.jpg')), 'faltou a captura')
   confere(medidas.paginas.some((p) => p.url.endsWith('/produtos/lavadora')), `não listou a página de produtos: ${JSON.stringify(medidas.paginas)}`)
   confere(!medidas.paginas.some((p) => p.url.endsWith('/contato')), 'listou página sem matéria-prima')
+  confere(medidas.sistema.raio.botao.some((r) => r.startsWith('999px')), `não mediu o botão em pílula: ${JSON.stringify(medidas.sistema.raio)}`)
+  confere(medidas.sistema.raio.cartao.some((r) => r.startsWith('16px')), `não mediu o canto do cartão: ${JSON.stringify(medidas.sistema.raio)}`)
+  confere(medidas.sistema.chegada.elementos >= 1 && /aparece e sobe 24px em 0.6s/.test(medidas.sistema.chegada.efeitos.join()), `não viu a chegada ao rolar: ${JSON.stringify(medidas.sistema.chegada)}`)
+  confere(/o jeito do site/.test(r.saida), r.saida)
+})
+
+await caso('previa: monta o lado a lado com o site e acusa a fonte do site que não carregou', async () => {
+  writeFileSync(join(PASTA, 'pagina', 'fonte.html'), `<style>html,body{margin:0} @font-face{font-family:"Da Marca";src:url("${BASE}/nao-existe.woff2")} h1{font-family:"Da Marca",sans-serif}</style><main><h1>Oi</h1><a href="#" style="background:#333;color:#fff;padding:9px">Quero</a></main>`)
+  const site = join(PASTA, 'raio-x', readdirSync(join(PASTA, 'raio-x'))[0])
+  const r = await roda('previa.mjs', [join('pagina', 'fonte.html'), '--capturar', '--porta=0', `--site=${site}`])
+  confere(r.codigo === 0, r.saida)
+  confere(existsSync(join(PASTA, 'previa', 'lado-a-lado.jpg')), `não montou o lado a lado:\n${r.saida}`)
+  confere(/fonte que não carregou.*Da Marca/.test(r.saida), `não acusou a fonte:\n${r.saida}`)
 })
 
 await caso('icone: procura pelo nome e entrega o <svg> no padrão da página', async () => {
