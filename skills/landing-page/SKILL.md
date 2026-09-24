@@ -157,7 +157,10 @@ Sempre pela API ([references/api.md](references/api.md)):
    `POST /api/landings/assets`. Regras em
    [references/html.md](references/html.md).
 2. **Campos personalizados** que faltarem — e-mail é campo personalizado, não campo base.
-3. **Formulário** — `POST /api/forms`, com funil e etapa. Guarde o `publicId` (`frm_…`).
+3. **Formulário** — antes, `node "<scripts>/cubo.mjs" destino <funil> [etapa]`: funil sem usuário
+   ativo (ou sem etapa) recusa **todo** envio, e só se descobre com a página no ar. Deu `PROBLEMA`,
+   avise a pessoa e não publique até resolver. Depois `POST /api/forms`, com funil e etapa. Guarde o
+   `publicId` (`frm_…`).
    [references/formulario.md](references/formulario.md).
 4. **Domínio** — `GET /api/domains`; se não existir, cadastre e entregue o CNAME.
 5. **Prévia local**, com captura:

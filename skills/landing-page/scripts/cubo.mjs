@@ -11,6 +11,7 @@ const config = configuracao()
 const USO = `uso:
   cubo.mjs configurar --base=https://… --chave=sk_… [--pagespeed=…]
   cubo.mjs check
+  cubo.mjs destino <funil> [etapa]   confere se o funil recebe leads (etapa e usuário ativo)
   cubo.mjs get    <caminho>
   cubo.mjs post   <caminho> [json|@arquivo.json]
   cubo.mjs put    <caminho> [json|@arquivo.json]
@@ -92,6 +93,37 @@ switch (comando) {
       const estado = codigo >= 200 && codigo < 300 ? 'ok' : codigo === 403 ? 'FALTA PERMISSÃO' : codigo === 401 ? 'CHAVE INVÁLIDA' : `HTTP ${codigo}`
       console.log(`  ${recurso.padEnd(14)} ${estado}`)
     }
+    break
+  }
+  // Formulário apontado para funil sem usuário ativo recusa TODO envio, e só se descobre quando o
+  // primeiro lead de verdade bate na página publicada (foi o que aconteceu na Girbau).
+  case 'destino': {
+    exigeAcesso(config)
+    const funilId = Number(caminho)
+    const etapaId = dado ? Number(dado) : null
+    if (!funilId) falha('informe o id do funil: cubo.mjs destino <funil> [etapa]', 2)
+    let funil = null
+    for (let pagina = 1; !funil && pagina <= 20; pagina++) {
+      const { codigo, texto } = await chamar('GET', `/api/pipes?perPage=100&page=${pagina}`)
+      if (codigo < 200 || codigo > 299) falha(`HTTP ${codigo} ao listar os funis: ${texto.slice(0, 200)}`)
+      const resposta = JSON.parse(texto)
+      const lista = Array.isArray(resposta) ? resposta : resposta.data ?? []
+      funil = lista.find((item) => item.id === funilId) ?? null
+      if (!lista.length || (resposta.meta && pagina >= (resposta.meta.lastPage ?? 1))) break
+    }
+    if (!funil) falha(`o funil ${funilId} não existe, ou o usuário da chave não participa dele`)
+    const etapas = funil.stages ?? []
+    const usuarios = funil.users ?? []
+    console.log(`funil ${funil.name}: ${etapas.length} etapa(s), ${usuarios.length} usuário(s) ativo(s)${usuarios.length ? ` (${usuarios.map((u) => u.name).slice(0, 4).join(', ')})` : ''}`)
+    const problemas = []
+    if (!etapas.length) problemas.push('o funil não tem etapa: o formulário recusa todo envio')
+    if (etapaId && !etapas.some((e) => e.id === etapaId)) problemas.push(`a etapa ${etapaId} não é deste funil`)
+    if (!usuarios.length) problemas.push('o funil não tem nenhum usuário ativo: o formulário recusa todo envio. Peça para adicionarem alguém ao funil (configurações do funil) antes de publicar')
+    if (problemas.length) {
+      console.log(problemas.map((p) => `PROBLEMA: ${p}`).join('\n'))
+      process.exit(1)
+    }
+    console.log('ok: o funil recebe leads')
     break
   }
   case 'get':
