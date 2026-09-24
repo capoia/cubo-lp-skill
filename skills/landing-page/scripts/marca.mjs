@@ -33,6 +33,18 @@ async function carregar(pagina, url) {
   // Página de construtor (RD Station, Wix, Elementor) raramente chega ao "load" em tempo útil:
   // esperar por ele trava. Damos um prazo e seguimos com o que já desenhou.
   await pagina.waitForLoadState('load', { timeout: 10_000 }).catch(() => {})
+  // Antes de rolar, anota como está o que ainda não apareceu: depois de rolar dá para ver quem
+  // chegou animando (opacidade, deslocamento) e como — é o jeito de se mexer do site.
+  await pagina.evaluate(() => {
+    let n = 0
+    for (const el of document.querySelectorAll('body *')) {
+      const c = el.getBoundingClientRect()
+      if (c.top < window.innerHeight || c.width < 40 || c.height < 20 || n > 3000) continue
+      const e = getComputedStyle(el)
+      el.dataset.rxAntes = `${e.opacity}|${e.transform}|${el.className && typeof el.className === 'string' ? el.className : ''}`
+      n++
+    }
+  }).catch(() => {})
   await pagina.evaluate(async () => {
     const passo = Math.max(400, Math.floor(window.innerHeight * 0.8))
     for (let y = 0; y < Math.min(document.body.scrollHeight, 14000); y += passo) {
@@ -202,6 +214,154 @@ function medir() {
   }
 }
 
+
+// Roda dentro da página. O "jeito" do site, além da cor e da fonte: o raio dos cantos, a sombra, o
+// botão, os títulos, a largura da coluna, como as coisas se mexem e de onde vêm as fontes e os
+// ícones. É o que faz a landing parecer uma página do próprio site, e não um tema de IA.
+function medirSistema() {
+  const conta = new Map()
+  const soma = (grupo, valor, peso = 1) => {
+    if (!valor) return
+    const mapa = conta.get(grupo) || new Map()
+    mapa.set(valor, (mapa.get(valor) || 0) + peso)
+    conta.set(grupo, mapa)
+  }
+  const top = (grupo, quantos = 3) => [...(conta.get(grupo) || new Map()).entries()].sort((a, b) => b[1] - a[1]).slice(0, quantos).map(([v, n]) => `${v} (${n}×)`)
+  const visivel = (el) => { const c = el.getBoundingClientRect(); const e = getComputedStyle(el); return c.width > 0 && c.height > 0 && e.display !== 'none' && e.visibility !== 'hidden' }
+  const raio = (e) => (e.borderTopLeftRadius === '0px' && e.borderBottomRightRadius === '0px' ? '0' : e.borderRadius)
+  const temFundo = (e) => !/rgba\(0, 0, 0, 0\)|transparent/.test(e.backgroundColor)
+
+  for (const el of document.querySelectorAll('a, button, [role="button"], input[type="submit"]')) {
+    if (!visivel(el)) continue
+    const e = getComputedStyle(el)
+    const c = el.getBoundingClientRect()
+    if (!temFundo(e) && e.borderTopWidth === '0px') continue
+    if (c.height < 28 || c.width < 60 || el.innerText.trim().length > 40) continue
+    soma('botaoRaio', raio(e))
+    soma('botaoForma', `${Math.round(c.height)}px de altura, padding ${e.paddingTop} ${e.paddingRight}, ${e.fontWeight} ${e.fontSize}${e.textTransform !== 'none' ? `, ${e.textTransform}` : ''}${e.letterSpacing !== 'normal' ? `, espaçamento ${e.letterSpacing}` : ''}${!temFundo(e) ? ', só contorno' : ''}`)
+    if (e.transitionDuration !== '0s') soma('botaoTransicao', `${e.transitionProperty} ${e.transitionDuration}`)
+  }
+
+  // Cartão: bloco médio com fundo próprio, borda ou sombra, com texto ou imagem dentro.
+  for (const el of document.querySelectorAll('body div, body article, body li, body a, body figure')) {
+    const c = el.getBoundingClientRect()
+    if (c.width < 160 || c.height < 120 || c.width > document.documentElement.clientWidth * 0.7 || !visivel(el)) continue
+    const e = getComputedStyle(el)
+    const sombra = e.boxShadow !== 'none'
+    if (!sombra && !temFundo(e) && e.borderTopWidth === '0px') continue
+    soma('cartaoRaio', raio(e))
+    if (sombra) soma('cartaoSombra', e.boxShadow)
+    if (e.borderTopWidth !== '0px') soma('cartaoBorda', `${e.borderTopWidth} ${e.borderTopStyle}`)
+    if (e.transitionDuration !== '0s') soma('cartaoTransicao', `${e.transitionProperty} ${e.transitionDuration} ${e.transitionTimingFunction}`)
+  }
+
+  for (const img of document.querySelectorAll('img, video')) {
+    const c = img.getBoundingClientRect()
+    if (c.width < 150 || !visivel(img)) continue
+    soma('imagemRaio', raio(getComputedStyle(img.closest('figure, picture') && raio(getComputedStyle(img)) === '0' ? img.closest('figure, picture') : img)))
+  }
+  for (const el of document.querySelectorAll('input, select, textarea')) if (visivel(el)) soma('campoRaio', raio(getComputedStyle(el)))
+
+  for (const nivel of ['h1', 'h2', 'h3']) {
+    for (const el of document.querySelectorAll(nivel)) {
+      if (!visivel(el)) continue
+      const e = getComputedStyle(el)
+      soma(nivel, `${e.fontFamily.split(',')[0].replace(/["']/g, '')} ${e.fontWeight} ${e.fontSize}/${e.lineHeight}${e.textTransform !== 'none' ? ` ${e.textTransform}` : ''}${e.letterSpacing !== 'normal' ? ` espaçamento ${e.letterSpacing}` : ''}`)
+    }
+  }
+
+  // Coluna de conteúdo: a largura em que o texto e as grades se alinham.
+  const largura = document.documentElement.clientWidth
+  for (const el of document.querySelectorAll('body *')) {
+    const c = el.getBoundingClientRect()
+    if (c.width < 700 || c.width > largura - 40 || Math.abs(c.left - (largura - c.right)) > 4 || el.children.length < 1) continue
+    soma('coluna', `${Math.round(c.width)}px`)
+  }
+
+  // Movimento: biblioteca de animação ao rolar, efeitos por classe, carrosséis e o que o CSS declara.
+  const movimento = []
+  const tem = (seletor) => document.querySelector(seletor)
+  if (tem('[data-aos]')) movimento.push(`AOS (animação ao rolar): ${[...new Set([...document.querySelectorAll('[data-aos]')].map((e) => e.dataset.aos))].slice(0, 6).join(', ')}`)
+  if (tem('.wow')) movimento.push('WOW.js (animação ao rolar)')
+  const elementor = [...document.querySelectorAll('[data-settings*="animation"]')].map((e) => (e.dataset.settings.match(/"_?animation":"([^"]+)"/) || [])[1]).filter(Boolean)
+  if (elementor.length) movimento.push(`Elementor, chegada ao rolar: ${[...new Set(elementor)].slice(0, 6).join(', ')} (${elementor.length} elementos)`)
+  if (tem('[class*="animate__"], .animated')) movimento.push('animate.css')
+  if (window.gsap || window.TweenMax || window.ScrollTrigger) movimento.push('GSAP')
+  if (window.lottie || tem('lottie-player, dotlottie-player')) movimento.push('Lottie (animação desenhada)')
+  if (tem('.swiper, .swiper-container')) movimento.push('carrossel Swiper')
+  if (tem('.slick-slider, .owl-carousel, .splide, .flickity-enabled')) movimento.push('carrossel (slick/owl/splide)')
+  if (tem('[data-parallax], .parallax, .jarallax, .rellax')) movimento.push('parallax')
+  const efeitosHover = new Set()
+  const quadros = new Set()
+  const fontes = new Set()
+  for (const folha of document.styleSheets) {
+    let regras
+    try { regras = folha.cssRules } catch { continue }
+    for (const regra of regras || []) {
+      if (regra.type === 7) quadros.add(regra.name)
+      if (regra.type === 5) {
+        const arquivo = (regra.style.src.match(/url\(["']?([^"')]+)/) || [])[1]
+        if (arquivo && !arquivo.startsWith('data:')) fontes.add(`${regra.style.fontFamily.replace(/["']/g, '')} ${regra.style.fontWeight || ''}: ${new URL(arquivo, folha.href || location.href).href}`)
+      }
+      if (regra.selectorText?.includes(':hover') && /transform|box-shadow|translate|scale/.test(regra.cssText)) efeitosHover.add(regra.cssText.replace(/\s+/g, ' ').slice(0, 140))
+    }
+  }
+  if (quadros.size) movimento.push(`@keyframes: ${[...quadros].slice(0, 8).join(', ')}`)
+
+  const fontesExternas = [...document.querySelectorAll('link[href*="fonts.googleapis"], link[href*="typekit"], link[href*="fonts.bunny"]')].map((l) => l.href)
+  const icones = []
+  if (tem('[class*="fa-"], .fa, .fas, .fab')) icones.push('Font Awesome')
+  if (tem('.material-icons, .material-symbols-outlined')) icones.push('Material')
+  if (tem('[class*="eicon"], .elementor-icon')) icones.push('ícones do Elementor')
+  if (tem('.bi[class*="bi-"]')) icones.push('Bootstrap Icons')
+  const svgsPequenos = [...document.querySelectorAll('svg')].filter((s) => { const c = s.getBoundingClientRect(); return c.width > 8 && c.width <= 64 })
+  if (svgsPequenos.length) icones.push(`${svgsPequenos.length} ícones em SVG (${[...new Set(svgsPequenos.map((s) => (getComputedStyle(s).fill !== 'none' && s.getAttribute('fill') !== 'none' ? 'cheio' : 'traço')))].join(' e ')})`)
+
+  return {
+    raio: { botao: top('botaoRaio'), cartao: top('cartaoRaio'), imagem: top('imagemRaio'), campo: top('campoRaio') },
+    sombra: top('cartaoSombra', 2),
+    borda: top('cartaoBorda', 2),
+    botao: top('botaoForma', 2),
+    titulos: { h1: top('h1', 2), h2: top('h2', 2), h3: top('h3', 2) },
+    coluna: top('coluna', 2),
+    transicoes: [...top('botaoTransicao', 2), ...top('cartaoTransicao', 2)],
+    movimento,
+    efeitosHover: [...efeitosHover].slice(0, 6),
+    fontes: { arquivos: [...fontes].filter((f) => !/^\s*:/.test(f)).slice(0, 10), externas: fontesExternas },
+    icones,
+  }
+}
+
+
+// Roda dentro da página, depois de rolar: quem estava escondido ou deslocado antes e agora está no
+// lugar chegou animando. Devolve quantos, o efeito, a duração e a classe que o script do site põe.
+function medirChegada() {
+  const achados = []
+  const classesNovas = new Map()
+  for (const el of document.querySelectorAll('[data-rx-antes]')) {
+    const [opacidade, transformacao, classes] = el.dataset.rxAntes.split('|')
+    const e = getComputedStyle(el)
+    const sumiu = Number(opacidade) < 0.9 && Number(e.opacity) > Number(opacidade)
+    const moveu = transformacao !== 'none' && transformacao !== e.transform
+    if (!sumiu && !moveu) continue
+    if (el.parentElement?.closest('[data-rx-chegou]')) continue
+    el.dataset.rxChegou = '1'
+    const antes = new Set(classes.split(/\s+/))
+    for (const nova of (typeof el.className === 'string' ? el.className : '').split(/\s+/)) if (nova && !antes.has(nova)) classesNovas.set(nova, (classesNovas.get(nova) || 0) + 1)
+    const m = transformacao.match(/matrix\(([^)]+)\)/)
+    const partes = m ? m[1].split(',').map(Number) : []
+    const desloc = partes.length === 6 ? `${partes[5] ? `sobe ${Math.round(partes[5])}px` : ''}${partes[4] ? ` desliza ${Math.round(partes[4])}px` : ''}${partes[0] && partes[0] !== 1 ? ` escala ${partes[0].toFixed(2)}` : ''}`.trim() : ''
+    achados.push(`${sumiu ? 'aparece' : ''}${sumiu && desloc ? ' e ' : ''}${desloc}`.trim() + ` em ${e.transitionDuration !== '0s' ? e.transitionDuration : e.animationDuration} ${e.transitionDuration !== '0s' ? e.transitionTimingFunction : e.animationName}`)
+  }
+  const tipos = new Map()
+  for (const a of achados) tipos.set(a, (tipos.get(a) || 0) + 1)
+  return {
+    elementos: achados.length,
+    efeitos: [...tipos.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([v, n]) => `${v} (${n}×)`),
+    classe: [...classesNovas.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([v]) => v),
+  }
+}
+
 const { navegador, qual } = await abrirNavegador()
 console.log(`navegador: ${qual}`)
 const resumo = []
@@ -216,6 +376,8 @@ for (const url of posicionais) {
     const desktop = await navegador.newPage({ viewport: { width: 1366, height: 860 } })
     await carregar(desktop, url)
     const medidas = await desktop.evaluate(medir)
+    medidas.sistema = await desktop.evaluate(medirSistema)
+    medidas.sistema.chegada = await desktop.evaluate(medirChegada)
     await capturar(desktop, destino, 'desktop')
     await desktop.close()
 
@@ -244,6 +406,19 @@ for (const url of posicionais) {
     console.log(`  imagens grandes: ${medidas.imagens.length}`)
     if (medidas.videos.length) console.log(`  vídeos:          ${medidas.videos.map((v) => v.src).slice(0, 3).join(' | ')}`)
     if (medidas.paginas.length) console.log(`  páginas internas com matéria-prima (rode o marca.mjs nelas também):\n${medidas.paginas.slice(0, 12).map((p) => `    ${p.url}${p.texto ? `  (${p.texto})` : ''}`).join('\n')}`)
+    const si = medidas.sistema
+    const junta = (lista) => lista.join(' · ') || '—'
+    console.log('  o jeito do site (é isto que a landing herda — references/marca.md, "o sistema do site"):')
+    console.log(`    cantos:        botão ${junta(si.raio.botao)} | cartão ${junta(si.raio.cartao)} | imagem ${junta(si.raio.imagem)} | campo ${junta(si.raio.campo)}`)
+    console.log(`    sombra:        ${junta(si.sombra)}${si.borda.length ? ` | borda: ${junta(si.borda)}` : ''}`)
+    console.log(`    botão:         ${junta(si.botao)}`)
+    console.log(`    títulos:       h1 ${junta(si.titulos.h1)} | h2 ${junta(si.titulos.h2)}`)
+    console.log(`    coluna:        ${junta(si.coluna)}`)
+    if (si.chegada.elementos) console.log(`    chegada:       ${si.chegada.elementos} blocos chegam animando ao rolar — ${junta(si.chegada.efeitos)}${si.chegada.classe.length ? ` (classe: ${si.chegada.classe.join(', ')})` : ''}`)
+    console.log(`    movimento:     ${junta(si.movimento)}${si.transicoes.length ? ` | transições: ${junta(si.transicoes)}` : ''}`)
+    if (si.efeitosHover.length) console.log(`    ao passar o mouse: ${si.efeitosHover.slice(0, 3).join('  ||  ')}`)
+    console.log(`    fontes:        ${junta([...si.fontes.externas, ...si.fontes.arquivos])}`)
+    console.log(`    ícones:        ${junta(si.icones)}`)
     console.log(`  capturas:        ${destino}`)
     resumo.push(destino)
   } catch (erro) {

@@ -65,8 +65,18 @@ grátis, não pede cartão e leva dois minutos. Passe para a pessoa:
 > 3. Com o projeto selecionado, abra
 >    https://console.cloud.google.com/apis/library/pagespeedonline.googleapis.com e clique em
 >    **Ativar**.
-> 4. Vá em **APIs e serviços → Credenciais → Criar credenciais → Chave de API**. Copie a chave
->    (começa com `AIza`) e me mande.
+> 4. Vá em **APIs e serviços → Credenciais → Criar credenciais → Chave de API**.
+> 5. Na janela que abre:
+>    - **Nome**: qualquer um ("Landing pages");
+>    - **Selecionar restrições da API**: abra a lista e marque **PageSpeed Insights API** (é a única
+>      que precisa; se ela não aparecer na lista, o passo 3 não foi feito — volte e clique em
+>      **Ativar**);
+>    - **Restrições do aplicativo**: deixe **Nenhum**;
+>    - clique em **Criar**.
+> 6. Copie a chave (começa com `AIza`) e me mande.
+
+Passe **o passo a passo inteiro**, com o 5 — quem nunca abriu o Google Cloud trava na janela de
+restrições, que pede uma escolha obrigatória e não diz qual.
 
 Guarde com:
 

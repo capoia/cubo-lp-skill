@@ -31,6 +31,8 @@ ramo, não copiar layout nem texto. Se a busca só trouxer páginas feias, diga 
 
 ## Identidade
 - cores (com a função de cada uma), fontes, logotipo (arquivo), elemento da marca
+- o jeito do site, em tokens com os valores: cantos (botão, cartão, imagem), sombra, botão, títulos,
+  coluna, chegada e efeito ao passar o mouse, fontes (endereços), ícones ([marca.md](marca.md))
 - capturas: dossie/marca/...
 
 ## Concorrentes

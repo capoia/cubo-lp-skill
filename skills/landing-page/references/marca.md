@@ -28,6 +28,41 @@ principal antes de descrever a marca.** Neste tipo de página aparece o que nenh
 - **o estilo das fotos**: gente ou produto, estúdio ou vida real, fundo claro ou escuro;
 - **o tom do texto**: próximo, técnico, luxuoso, divertido.
 
+## O sistema do site: a landing é uma página dele
+
+Quando o cliente tem um site com cara própria, **a landing tem que parecer uma página desse site**.
+Colocada ao lado dele, ela encaixa: mesmos cantos, mesmo botão, mesmas fontes, mesmo jeito de
+título, o mesmo tipo de movimento. Quem clica no anúncio e depois abre o site precisa reconhecer a
+marca — e é isso que separa a página feita por quem estudou o cliente da página "bonita" que podia
+ser de qualquer um.
+
+O `marca.mjs` imprime "o jeito do site" e grava em `marca.json` (`sistema`):
+
+| O que mede | O que a landing faz com isso |
+|---|---|
+| **cantos** do botão, do cartão, da imagem, do campo | os **mesmos valores**. Botão em pílula (`999px`) fica pílula; cartão de 16px fica 16px; foto reta fica reta |
+| **sombra** e **borda** dos cartões | a mesma, ou nenhuma se o site não usa |
+| **botão**: altura, padding, peso, caixa alta, só contorno | o botão da landing é o botão do site, na cor de ação da marca |
+| **títulos** h1/h2: família, peso, tamanho, caixa alta, espaçamento | a mesma família e o mesmo tratamento (se o site titula em caixa alta, a landing também) |
+| **coluna**: a largura em que o site alinha tudo | a mesma largura máxima |
+| **chegada**: blocos que aparecem animando ao rolar (e como) | o mesmo efeito, com a mesma duração e curva, no sistema único de [movimento.md](movimento.md). Site parado → chegada discreta, sem inventar efeito que ele não tem |
+| **ao passar o mouse**: o efeito dos cartões e das imagens | o mesmo efeito nos cartões da landing |
+| **fontes**: os arquivos e os links do Google Fonts | as **mesmas fontes** ([html.md](html.md), "fontes do site") |
+| **ícones**: traço ou cheio, qual jogo | o `icone.mjs` (Lucide) é traço; se o site usa ícone cheio, reaproveite os SVG do próprio site |
+| **vídeos** e **fotos** | matéria-prima: `video.mjs` e `imagem.mjs` aceitam o endereço direto ([riqueza.md](riqueza.md)) |
+
+Escreva isso no dossiê como tokens, com os valores ("botão: pílula 999px, 48px, contorno, 600 14px;
+cartão: 16px sem sombra; h2: Gotham 700 36px caixa alta") — é daí que sai o `:root` da página.
+
+**O site manda sobre as regras de estilo desta skill.** A lista de "cara de IA" de
+[design.md](design.md) e o par de fontes de [acabamento.md](acabamento.md) valem para quando **não**
+há um sistema a seguir. Se o site usa cartão arredondado, Inter no texto ou título em caixa alta, a
+landing usa — é a marca, não um padrão. O que continua valendo sempre: a estrutura escolhida, o
+acabamento (quebras, espaço, proporção), a conversão e o que é proibido inventar.
+
+Só não herde o que o site faz **mal**: texto sem contraste, fonte ilegível no celular, carrossel que
+roda sozinho, pop-up. Aí vale a regra, e diga à pessoa o que mudou e por quê.
+
 ## Por que não confiar só nos números
 
 - Página de construtor (RD Station, Wix, Elementor, Nuvemshop) carrega o CSS do framework inteiro:
@@ -73,6 +108,8 @@ Antes da entrevista, em poucas linhas, para a pessoa confirmar:
 Identidade que encontrei (site + LP atual):
 - cores: sálvia escuro #384e46 (fundo de faixa), sálvia #7f9c90, claro #f2f4f0; rosé #ea9e95 nos botões
 - fontes: Instrument Sans nos títulos, Figtree no texto
+- o jeito do site: botão pílula com contorno, cartões de 12px sem sombra, títulos em caixa baixa,
+  blocos chegam subindo 20px em 0,6s
 - elemento da marca: arco — nas fotos de categoria do site e nos nichos do showroom
 - fotos aproveitáveis: fachada da fábrica, matérias na imprensa, showroom (confirmar se é real)
 - tom: próximo e caloroso, fala com mulheres

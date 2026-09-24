@@ -107,6 +107,18 @@ Em `head`, num `<style>` só. Regras práticas:
 - reserve `width` e `height` em toda imagem: é a causa número um de nota baixa por deslocamento;
 - fonte do sistema não custa nada e é aceitável quando a marca não tem fonte própria. Se usar Google
   Fonts, **um** peso ou dois, com `display=swap`, e `preconnect` antes.
+- **fontes do site**: se o site do cliente usa Google Fonts, use o mesmo link. Se usa arquivo próprio
+  (o raio-x lista os endereços), declare o `@font-face` apontando para o arquivo **no site do
+  cliente**, com `font-display: swap` e uma alternativa parecida do Google Fonts na pilha. Muitos
+  servidores bloqueiam fonte usada em outro domínio: o `previa.mjs --capturar` acusa a fonte que não
+  carregou, e aí fica a alternativa — diga à pessoa qual, e que dá para liberar no servidor do site
+  (cabeçalho `Access-Control-Allow-Origin`).
+
+```css
+@font-face { font-family: "HTF Gotham"; font-weight: 700; font-display: swap;
+  src: url("https://www.cliente.com.br/wp-content/themes/cliente/fonts/Gotham-Ultra.ttf"); }
+:root { --fonte-titulo: "HTF Gotham", "Montserrat", system-ui, sans-serif; }
+```
 
 ```html
 <!-- head -->

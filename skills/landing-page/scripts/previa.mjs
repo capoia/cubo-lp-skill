@@ -10,7 +10,7 @@
 import { createServer } from 'node:http'
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, extname, join, normalize, resolve } from 'node:path'
-import { abrirNavegador, argumentos, falha } from './lib.mjs'
+import { abrirNavegador, argumentos, dependencia, falha } from './lib.mjs'
 
 const { posicionais, opcoes } = argumentos()
 const [corpoArquivo, cabecaArquivo] = posicionais
@@ -24,6 +24,8 @@ if (!corpoArquivo) {
   sem opção    serve em http://127.0.0.1:<porta>/ até Ctrl+C, para a pessoa abrir no navegador
   --capturar   tira as capturas em ./previa/ e encerra (junte --servir para continuar servindo)
   --limpa      esconde os números dos trechos em rascunho (a lista sai no terminal de qualquer jeito)
+  --site=pasta  a pasta do raio-x do site do cliente (dossie/marca/<site>): monta previa/lado-a-lado.jpg
+               com o topo do site e o da landing, para ver se ela parece uma página dele
   --formulario=arquivo.json
                desenha o formulário do Cubo de verdade em cada .lp-formulario (ou #form), a partir
                de uma definição local,
@@ -329,6 +331,10 @@ if (opcoes.capturar) {
       riqueza = await pagina.evaluate(medirRiqueza)
       for (const aviso of riqueza.avisos) problemas.push(aviso)
     }
+    // Fonte apontada para o servidor do cliente costuma ser bloqueada em outro domínio: a página
+    // cai na alternativa e perde a cara do site sem ninguém notar.
+    const fontesFalhas = await pagina.evaluate(() => [...new Set([...document.fonts].filter((f) => f.status === 'error').map((f) => `${f.family.replace(/["']/g, '')} ${f.weight}`))])
+    if (fontesFalhas.length) problemas.push(`fonte que não carregou (ficou a alternativa): ${fontesFalhas.join(', ')} — o servidor do site bloqueia uso em outro domínio? Diga à pessoa qual alternativa ficou (html.md, "fontes do site")`)
     const semAlt = await pagina.evaluate(() => [...document.images].filter((i) => !i.hasAttribute('alt')).length)
     if (semAlt) problemas.push(`[${nome}] ${semAlt} imagem(ns) sem alt`)
 
@@ -338,8 +344,19 @@ if (opcoes.capturar) {
   }
   await navegador.close()
 
+  if (opcoes.site) {
+    const doSite = join(resolve(opcoes.site), 'desktop-topo.jpg')
+    if (!existsSync(doSite)) problemas.push(`--site: não achei ${doSite} (rode o marca.mjs no site antes)`)
+    if (existsSync(doSite)) {
+      const sharp = (await dependencia('sharp')).default
+      const metade = async (arquivo) => sharp(arquivo).resize({ width: 800, height: 504, fit: 'cover', position: 'top' }).toBuffer()
+      await sharp({ create: { width: 1616, height: 504, channels: 3, background: '#888' } })
+        .composite([{ input: await metade(doSite), left: 0, top: 0 }, { input: await metade(join(SAIDA, 'desktop-topo.jpg')), left: 816, top: 0 }])
+        .jpeg({ quality: 75 }).toFile(join(SAIDA, 'lado-a-lado.jpg'))
+    }
+  }
   console.log(`capturas em ${SAIDA}:`)
-  for (const nome of ['desktop-topo', 'desktop-pagina', 'celular-topo', 'celular-pagina']) console.log(`  ${join(SAIDA, `${nome}.jpg`)}`)
+  for (const nome of ['desktop-topo', 'desktop-pagina', 'celular-topo', 'celular-pagina', ...(existsSync(join(SAIDA, 'lado-a-lado.jpg')) && opcoes.site ? ['lado-a-lado'] : [])]) console.log(`  ${join(SAIDA, `${nome}.jpg`)}`)
   console.log('')
   if (inseguros.length) problemas.push(`endereço http:// na página (a publicada é https e o navegador bloqueia): ${inseguros.slice(0, 4).join(', ')}`)
   if (riqueza) {

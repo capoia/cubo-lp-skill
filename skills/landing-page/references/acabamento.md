@@ -14,12 +14,15 @@ página só usa os tokens — nunca um valor solto.
 **Um par, não uma fonte.** Uma fonte de **título** e uma de **texto**, bem diferentes entre si — o
 contraste entre as duas é boa parte do que faz a página parecer desenhada.
 
-- Se a marca tem uma fonte (o raio-x diz qual), ela fica — quase sempre como a de **texto**. Dê a ela
+- **Se o site do cliente tem fonte de título e de texto, são essas** — mesmo que seja Inter,
+  mesmo que as duas sejam parecidas. A landing é uma página do site ([marca.md](marca.md), "o sistema
+  do site"). O par abaixo é para quando o site não tem sistema.
+- Se a marca tem **uma** fonte só (o raio-x diz qual), ela fica — quase sempre como a de **texto**. Dê a ela
   um par de título que contraste: uma serifa para uma marca de sans, uma sans forte para uma marca de
   serifa. Ex.: marca em *Instrument Sans* → títulos em *Instrument Serif*; marca em *Montserrat* →
   títulos em *Fraunces* ou *Newsreader*.
 - Três famílias é o teto (a terceira só para um momento: o logotipo em texto, uma citação).
-- **Evite as fontes que toda IA escolhe** quando não há motivo: Inter, Roboto, Open Sans, Lato,
+- **Evite as fontes que toda IA escolhe** quando não há motivo (a marca usar é motivo): Inter, Roboto, Open Sans, Lato,
   Poppins, Montserrat, Nunito, Raleway, DM Sans; e Playfair Display como texto. Boas escolhas
   gratuitas no Google Fonts: títulos — Fraunces, Newsreader, Instrument Serif, DM Serif Display,
   Cormorant Garamond (luxo), Bricolage Grotesque (forte), Cabinet Grotesk; texto — Instrument Sans,

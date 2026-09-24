@@ -37,6 +37,11 @@ sobrevive de um comando para o outro, e `$CLAUDE_PLUGIN_ROOT` não existe no ter
 
 Valem sempre, e estão aqui (e não só nas referências) de propósito:
 
+0. **Com site próprio, a landing é uma página do site.** Cantos, botão, títulos, fontes, sombra,
+   movimento, ícones, vídeos e fotos vêm do site do cliente — medidos pelo `marca.mjs`, não
+   imaginados. Lado a lado com o site, ela tem que encaixar. Onde o site tem um jeito, ele manda
+   sobre as preferências de estilo abaixo ([references/marca.md](references/marca.md), "o sistema
+   do site").
 1. **A estrutura é escolhida, não sai sozinha.** No plano, ofereça **três estruturas de famílias
    diferentes** do catálogo ([references/estruturas.md](references/estruturas.md)), com um desenho
    em texto de cada uma. O "texto de um lado, imagem do outro, até o rodapé" é o molde que denuncia.
@@ -124,8 +129,9 @@ Antes de escrever uma linha:
 
 1. **três estruturas** de famílias diferentes ([references/estruturas.md](references/estruturas.md)),
    cada uma com o desenho em texto da primeira dobra e uma frase de por que serve — a pessoa escolhe;
-2. a direção visual: paleta com valores, tipografia com nomes, o elemento que carrega a
-   personalidade (de preferência um que o raio-x achou);
+2. a direção visual: com site próprio, **os tokens do site** (cantos, botão, títulos, fontes,
+   sombra, movimento) com os valores medidos; sem site, paleta com valores, tipografia com nomes. E
+   o elemento que carrega a personalidade (de preferência um que o raio-x achou);
 3. a promessa principal, e em que o concorrente fica para trás;
 4. **o mapa de blocos**: cada item da matéria-prima e o bloco em que ele entra (mostruário, galeria,
    vídeo, depoimentos, perguntas…), e o que fica de fora, com o motivo.
@@ -147,8 +153,11 @@ Sempre pela API ([references/api.md](references/api.md)):
 5. **Prévia local**, com captura:
 
    ```bash
-   node "<scripts>/previa.mjs" corpo.html cabeca.html --capturar
+   node "<scripts>/previa.mjs" corpo.html cabeca.html --capturar --site=dossie/marca/<pasta-do-site>
    ```
+
+   Com `--site`, ele também monta `previa/lado-a-lado.jpg`: o topo do site e o da landing, um ao
+   lado do outro.
 
    Corrija tudo que o script apontar (ele mede acabamento também: título em linhas demais, frase
    espremida, colunas desproporcionais, tamanhos de letra demais) e confira a linha "o que a página
