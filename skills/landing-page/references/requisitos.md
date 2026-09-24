@@ -10,8 +10,8 @@ que ela precisa, e só isso:
 | **Chave do PageSpeed** (grátis) | medir a nota no fim | na prática, sim — sem ela a medição falha quase todo dia |
 | Chrome ou Edge | tirar as capturas das páginas | não: o Edge já vem no Windows, e sem nenhum dos dois a skill baixa um navegador sozinha |
 
-O resto (conversão de imagem, navegador para captura) o `requisitos.mjs` instala sozinho na
-primeira vez, sem pedir senha de administrador.
+O resto (conversão de imagem e de vídeo, navegador para captura) o `requisitos.mjs` instala sozinho
+na primeira vez, sem pedir senha de administrador.
 
 ## Conferir
 
@@ -81,7 +81,8 @@ que falta (precisa de `sudo`). No Windows e no macOS isso não acontece.
 
 ## Espaço em disco
 
-~40 MB para as dependências, dentro da pasta da skill. Se a máquina não tiver Chrome nem Edge, mais
+~110 MB para as dependências, dentro da pasta da skill (o conversor de vídeo, o `ffmpeg`, é a maior
+parte). Se a máquina não tiver Chrome nem Edge, mais
 ~150 MB do navegador que a skill baixa — esse vai para a pasta padrão do Playwright no perfil do
 usuário (`%LOCALAPPDATA%\ms-playwright` no Windows, `~/Library/Caches/ms-playwright` no macOS,
 `~/.cache/ms-playwright` no Linux), e fica lá entre uma atualização e outra da skill.

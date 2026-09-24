@@ -108,8 +108,13 @@ node "<scripts>/imagem.mjs" foto.jpg topo topo.webp
 node "<scripts>/cubo.mjs" upload /api/landings/assets topo.webp
 ```
 
-Formatos aceitos pela API: `jpg`, `jpeg`, `png`, `gif`, `svg`, `webp` — mas **a skill sobe webp**
-(ou SVG, quando for vetor). Veja [html.md](html.md).
+Formatos aceitos: imagem `jpg`, `jpeg`, `png`, `gif`, `svg`, `webp` até **1 MB** — a skill sobe
+webp (ou SVG, quando for vetor), veja [html.md](html.md); e **vídeo `mp4` ou `webm` até 25 MB**,
+sempre preparado pelo `video.mjs` antes ([movimento.md](movimento.md)). Arquivo acima do limite do
+seu tipo volta 422 com o motivo.
+
+Se o Cubo da pessoa ainda recusar o `mp4` por formato, ele é de antes do upload de vídeo: use o vídeo
+do YouTube do próprio cliente, com a capa no lugar e o player entrando só no clique.
 
 ⚠️ **Cada arquivo consome a cota de armazenamento da empresa**, o mesmo balde dos anexos: a chamada
 passa por `checkStorageQuota` e registra o arquivo. Estourando, vem 422 com

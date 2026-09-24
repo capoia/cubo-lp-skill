@@ -16,7 +16,7 @@ Funciona em **Windows, macOS e Linux**, numa instalação limpa do Claude Code, 
 | **Chave do PageSpeed** (grátis, sem cartão) | a skill ensina a pegar em 2 minutos. Sem ela, a nota final falha quase todo dia |
 | um **domínio** apontado para o Cubo, ou vontade de apontar um | a skill cadastra e entrega o CNAME |
 
-O resto — conversão de imagem, navegador para as capturas — a skill instala sozinha na primeira vez,
+O resto — conversão de imagem e de vídeo, navegador para as capturas — a skill instala sozinha na primeira vez,
 sem pedir senha de administrador. Chrome ou Edge ajudam (o Edge já vem no Windows); sem nenhum dos
 dois, ela baixa um navegador (~150 MB).
 
@@ -102,9 +102,10 @@ As regras de conversão citam a pesquisa de onde vêm, em `references/conversao.
 skills/landing-page/
   SKILL.md            o fluxo
   references/         requisitos, acesso, dossiê, marca, questionário, estruturas, conversão,
-                      rascunho, design, acabamento, crítica, html, formulário, api, seo, pagespeed
+                      rascunho, design, acabamento, movimento, crítica, html, formulário, api,
+                      seo, pagespeed
   scripts/            Node: requisitos, cubo (API), marca (raio-x), anuncios (Biblioteca
-                      de Anúncios da Meta), imagem, previa, backup e pagespeed
+                      de Anúncios da Meta), imagem, video, previa, backup e pagespeed
 testes/fumaca.mjs     teste dos scripts, que o CI roda em Windows, macOS e Linux
 ```
 

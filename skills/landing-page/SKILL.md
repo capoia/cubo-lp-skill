@@ -41,9 +41,9 @@ Valem sempre, e estão aqui (e não só nas referências) de propósito:
    diferentes** do catálogo ([references/estruturas.md](references/estruturas.md)), com um desenho
    em texto de cada uma. O "texto de um lado, imagem do outro, até o rodapé" é o molde que denuncia.
 2. **Duas seções seguidas nunca têm a mesma composição.**
-3. **Proibido, a não ser que a marca peça:** faixa de números grandes com legenda, grade de cartões
-   iguais com ícone, rótulo pequeno acima do título, "01/02/03" no que não é sequência, carrossel de
-   depoimentos, menu de navegação.
+3. **Proibido, a não ser que a marca peça:** número solto sem fonte em faixa, grade de cartões
+   iguais com ícone, borda superior grossa colorida nos cartões, rótulo pequeno acima do título,
+   "01/02/03" no que não é sequência, carrossel de depoimentos, menu de navegação.
 4. **Gente e coisa real.** Peça e procure foto de quem atende, do lugar, de clientes reais — e use as
    **fotos de produto** do próprio site, que são reais e dão vida à página. Procure depoimentos
    públicos (YouTube e Google do cliente). Banco de imagem genérico, nunca; sem foto de gente, avise
@@ -56,6 +56,10 @@ Valem sempre, e estão aqui (e não só nas referências) de propósito:
    que case com ela), uma escala de tamanhos e de espaços em tokens, título de até 50 caracteres e
    no máximo 3 linhas, `text-wrap: balance` nos títulos, colunas lado a lado de altura parecida,
    rodapé com formato ([references/acabamento.md](references/acabamento.md)).
+9. **Página viva, não parada**: um sistema único de chegada suave dos blocos, números reais que sobem
+   até o valor, o botão ao fim de cada bloco (e fixo no celular), tons da cor principal dando ritmo
+   aos fundos, ícones de uma família só, vídeo da marca quando houver. Nada da primeira tela anima,
+   e tudo desliga para quem pediu menos movimento ([references/movimento.md](references/movimento.md)).
 
 O porquê de cada uma, com as fontes: [references/conversao.md](references/conversao.md) e
 [references/design.md](references/design.md).
@@ -122,8 +126,9 @@ Peça o "pode ir". O que evitar: [references/design.md](references/design.md).
 
 Sempre pela API ([references/api.md](references/api.md)):
 
-1. **Imagens**: toda imagem passa pelo `imagem.mjs` (aceita arquivo ou endereço; devolve webp no
-   tamanho e peso certos) e sobe por `POST /api/landings/assets`. Regras em
+1. **Imagens e vídeo**: toda imagem passa pelo `imagem.mjs` (aceita arquivo ou endereço; devolve webp
+   no tamanho e peso certos), todo vídeo pelo `video.mjs` (mp4 comprimido e pôster), e sobem por
+   `POST /api/landings/assets`. Regras em
    [references/html.md](references/html.md).
 2. **Campos personalizados** que faltarem — e-mail é campo personalizado, não campo base.
 3. **Formulário** — `POST /api/forms`, com funil e etapa. Guarde o `publicId` (`frm_…`).
@@ -198,6 +203,7 @@ guarda. Nesse caso, diga isso à pessoa em vez de escrever por cima.
 | [references/marca.md](references/marca.md) | Raio-x da marca e dos concorrentes, e a linguagem do cliente final |
 | [references/acabamento.md](references/acabamento.md) | Tipos, quebras de linha, espaço, proporção, rodapé, contraste |
 | [references/critica.md](references/critica.md) | A rodada de crítica antes de mostrar |
+| [references/movimento.md](references/movimento.md) | Chegada dos blocos, contador, botão fixo, tons, vídeo, parallax, ícones |
 | [references/questionario.md](references/questionario.md) | Os seis blocos da entrevista |
 | [references/estruturas.md](references/estruturas.md) | As estruturas de página, e qual oferecer para cada negócio |
 | [references/conversao.md](references/conversao.md) | O que converte, com a evidência e a fonte |

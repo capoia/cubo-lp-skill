@@ -53,6 +53,14 @@ try {
   registra('FALTA', 'conversão de imagem (sharp)', `não carregou neste sistema: ${String(erro.message).split('\n')[0]}`)
 }
 
+try {
+  const ffmpeg = (await import('ffmpeg-static')).default
+  if (!ffmpeg || !existsSync(ffmpeg)) throw new Error('binário não baixado')
+  registra('ok', 'conversão de vídeo (ffmpeg)')
+} catch (erro) {
+  registra('aviso', 'conversão de vídeo (ffmpeg)', `não instalou (${String(erro.message).split('\n')[0]}). A página sai sem vídeo próprio; imagem e o resto funcionam.`)
+}
+
 async function tentaNavegador() {
   const { chromium } = await import('playwright')
   for (const channel of ['chrome', 'msedge', undefined]) {

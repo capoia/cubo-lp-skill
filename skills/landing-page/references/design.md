@@ -24,7 +24,11 @@ Evite, a menos que a marca peça:
 - fundo quase preto com um único verde-limão ou vermelho vivo;
 - tudo picado em cartões arredondados iguais, com a mesma sombra cinza em cada um — e cartão dentro
   de cartão, nunca;
-- a **faixa de números**: três ou quatro números grandes com legenda pequena embaixo;
+- a **faixa de números** com números soltos: três ou quatro números grandes com um rótulo de duas
+  palavras embaixo. Com número **publicado pela marca**, com fonte e uma frase que diz o que ele
+  significa, ela vale — e ganha o contador ([movimento.md](movimento.md));
+- **borda superior grossa na cor principal** nos cartões — a menos que seja um traço da identidade
+  da marca, é o enfeite que mais denuncia página gerada;
 - a mesma composição seção após seção (texto de um lado, imagem do outro, espelhando até o fim) —
   ver [estruturas.md](estruturas.md);
 - rótulo pequeno acima do título ("SOBRE NÓS" em cima de "Sobre nós"). Este não tem exceção: o título
@@ -39,7 +43,8 @@ Evite, a menos que a marca peça:
   mais que cinco rodando;
 - uma palavra só do título pintada de outra cor ou em itálico;
 - uma seta `→` colada no fim de todo botão e link;
-- animação de "sobe e aparece" em cada seção ao rolar.
+- **cada seção com um efeito diferente** ao rolar, ou animação no que está na primeira tela. Um
+  sistema único e suave de chegada é outra coisa, e é bem-vindo ([movimento.md](movimento.md)).
 
 Nenhuma dessas coisas é errada em si. O problema é que aparecem **independentemente do assunto** —
 são o padrão, não uma escolha. Se você for usar uma delas, saiba dizer por que ela serve a **esta**

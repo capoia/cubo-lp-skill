@@ -220,6 +220,26 @@ await caso('previa: acusa título em linhas demais e colunas desproporcionais', 
   confere(/colunas desproporcionais/.test(r.saida), `não acusou as colunas:\n${r.saida}`)
 })
 
+await caso('video: comprime para mp4 sem áudio, corta e gera o pôster em webp', async () => {
+  const ffmpeg = createRequire(join(SCRIPTS, 'package.json'))('ffmpeg-static')
+  await new Promise((pronto, erro) => {
+    const f = spawn(ffmpeg, ['-hide_banner', '-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'testsrc=size=1920x1080:rate=30', '-f', 'lavfi', '-i', 'sine=frequency=440', '-t', '20', '-c:v', 'libx264', '-c:a', 'aac', join(PASTA, 'bruto.mp4')])
+    f.on('close', (c) => (c === 0 ? pronto() : erro(new Error(`ffmpeg saiu com ${c}`))))
+  })
+  const r = await roda('video.mjs', ['bruto.mp4', 'fundo', '--saida=fundo'])
+  confere(r.codigo === 0, r.saida)
+  confere(existsSync(join(PASTA, 'fundo.mp4')) && existsSync(join(PASTA, 'fundo-poster.webp')), 'faltou o vídeo ou o pôster')
+  confere(/sem áudio, 15s/.test(r.saida), `não cortou nem tirou o áudio:\n${r.saida}`)
+  confere((await sharp(join(PASTA, 'fundo-poster.webp')).metadata()).format === 'webp', 'pôster não é webp')
+})
+
+await caso('previa: acusa conteúdo da primeira tela escondido por animação', async () => {
+  writeFileSync(join(PASTA, 'pagina', 'escondido.html'), '<style>html,body{margin:0} h1{opacity:0}</style><main><h1>Oi</h1><a href="#" style="background:#333;color:#fff;padding:9px">Quero</a></main>')
+  const r = await roda('previa.mjs', [join('pagina', 'escondido.html'), '--capturar', '--porta=0'])
+  confere(r.codigo === 0, r.saida)
+  confere(/primeira tela invisíveis ao abrir/.test(r.saida), `não acusou o topo escondido:\n${r.saida}`)
+})
+
 await caso('marca: mede cor, fonte, logotipo e foto de fundo com degradê por cima', async () => {
   const r = await roda('marca.mjs', [`${BASE}/marca`, '--pasta=raio-x'])
   confere(r.codigo === 0, r.saida)

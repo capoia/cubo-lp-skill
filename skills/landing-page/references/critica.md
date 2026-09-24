@@ -45,6 +45,12 @@ volta para o trabalho** antes de seguir para a lista.
 14. Faixa de números, grade de cartões iguais, rótulo acima do título, "01/02/03" sem sequência?
 15. Rodapé sem formato — itens empilhados de um lado e o resto vazio, ou colunas de links?
 
+**Vida** ([movimento.md](movimento.md))
+16a. A página está parada — sem chegada suave dos blocos, sem botão ao fim dos blocos, sem os tons da
+     cor dando ritmo?
+16b. Algum conteúdo da primeira tela está escondido esperando animação?
+16c. Mais de um tipo de efeito na página, ou algum efeito que não desliga com `prefers-reduced-motion`?
+
 **Conteúdo**
 16. Algum número, prazo, depoimento ou compromisso que não veio do material do cliente?
 17. Alguma imagem sem ser do cliente, ou suspeita de render usada como foto real?

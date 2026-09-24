@@ -122,8 +122,9 @@ frase só.
 
 Três proibições que valem em qualquer estrutura (a não ser que a marca peça, com todas as letras):
 
-- **faixa de números** — três ou quatro números grandes com legenda pequena embaixo. Número bom vai
-  **dentro de uma frase**, perto da afirmação que ele prova;
+- **faixa de números solta** — número grande com rótulo de duas palavras. Número bom vai perto da
+  afirmação que ele prova; em faixa, só se for publicado pela marca, com fonte e uma frase de
+  sentido para cada um;
 - **grade de cartões iguais** com ícone + título + frase. Se os itens não são pares de verdade, vire
   lista, texto ou um item em destaque;
 - **rótulo em cima do título** (o "SOBRE NÓS" pequenininho acima de "Sobre nós"). O título se

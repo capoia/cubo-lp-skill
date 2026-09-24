@@ -158,6 +158,12 @@ function medir() {
     if (noTopo) logotipos.push({ tipo: 'imagem', src: absoluta(noTopo.currentSrc || noTopo.src), palpite: 'primeira imagem do topo — confirme na captura' })
   }
 
+  // Vídeo próprio do cliente (fundo do topo, institucional) é matéria-prima: o video.mjs aceita o endereço.
+  const videos = [...document.querySelectorAll('video')]
+    .map((v) => ({ src: absoluta(v.currentSrc || v.getAttribute('src') || v.querySelector('source')?.getAttribute('src') || ''), poster: absoluta(v.poster || '') || '' }))
+    .filter((v) => v.src && !v.src.startsWith('blob:'))
+  for (const quadro of document.querySelectorAll('iframe[src*="youtube"], iframe[src*="vimeo"]')) videos.push({ src: absoluta(quadro.src), poster: '' })
+
   const meta = (nome) => document.querySelector(`meta[property="${nome}"], meta[name="${nome}"]`)?.content || ''
   const textoDe = (seletor, limite) => [...document.querySelectorAll(seletor)]
     .map((el) => el.innerText.replace(/\s+/g, ' ').trim())
@@ -177,6 +183,7 @@ function medir() {
     fontesTitulo: ordena(fontesTitulo, null, 4),
     fontesTexto: ordena(fontesTexto, null, 4),
     logotipos,
+    videos: videos.slice(0, 10),
     imagens: [...imagens.filter((i) => i.alt === '(fundo de seção)'), ...imagens.filter((i) => i.alt !== '(fundo de seção)')].slice(0, 60),
     titulos: textoDe('h1, h2, h3', 40),
     chamadas: textoDe('a[class*="btn" i], a[class*="button" i], button, [role="button"]', 20),
@@ -223,6 +230,7 @@ for (const url of posicionais) {
     console.log(`  fonte de texto:  ${lista(medidas.fontesTexto)}`)
     console.log(`  logotipo:        ${medidas.logotipos.map((l) => l.src || l.arquivo).join(' | ') || 'não achei — procure na captura'}`)
     console.log(`  imagens grandes: ${medidas.imagens.length}`)
+    if (medidas.videos.length) console.log(`  vídeos:          ${medidas.videos.map((v) => v.src).slice(0, 3).join(' | ')}`)
     console.log(`  capturas:        ${destino}`)
     resumo.push(destino)
   } catch (erro) {

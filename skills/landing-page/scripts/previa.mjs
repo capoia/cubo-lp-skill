@@ -204,6 +204,13 @@ function medirAcabamento(largura) {
   if (tamanhos.size > 7) achados.push(`${tamanhos.size} tamanhos de letra diferentes (${[...tamanhos].sort((a, b) => a - b).join(', ')}px) — use uma escala de no máximo cinco`)
   if (familias.size > 3) achados.push(`${familias.size} famílias de fonte: ${[...familias].join(', ')} — três é o teto`)
 
+  // Animação de chegada na primeira tela esconde o que o Lighthouse mede como maior conteúdo.
+  const escondidos = [...document.querySelectorAll('h1, h2, p, img, a, button, video')].filter((el) => {
+    const c = el.getBoundingClientRect()
+    return c.top < window.innerHeight && c.bottom > 0 && c.width > 0 && parseFloat(getComputedStyle(el).opacity) < 0.1
+  })
+  if (escondidos.length) achados.push(`${escondidos.length} elemento(s) da primeira tela invisíveis ao abrir (animação de chegada no topo?): ${escondidos.slice(0, 3).map(nome).join(', ')} — o topo não anima (movimento.md)`)
+
   const primeiraTela = [...document.querySelectorAll('input, select, textarea, a, button')]
     .some((el) => { const c = el.getBoundingClientRect(); return visivel(el) && c.top < window.innerHeight && !el.closest('header, nav') && texto(el).length < 60 && (el.tagName !== 'A' || getComputedStyle(el).backgroundColor !== 'rgba(0, 0, 0, 0)') })
   const noShadow = [...document.querySelectorAll('*')].some((el) => el.shadowRoot && el.getBoundingClientRect().top < window.innerHeight && el.shadowRoot.querySelector('input, button'))
