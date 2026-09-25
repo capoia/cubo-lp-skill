@@ -23,6 +23,7 @@ Instrução para passar à pessoa, com estas palavras:
 > - **Formulários** — leitura, criar, atualizar
 > - **Domínios** — leitura, criar
 > - **Campos personalizados** — leitura, criar
+> - **Funis e motivos de perda** — leitura (para escolher o funil em que o lead vai cair)
 > - **Negócios** — leitura (só para o teste final conferir a negociação que o lead de teste criou)
 >
 > Salve e **copie a chave** (começa com `sk_`). Ela aparece inteira na tela de criação; depois dá
@@ -63,5 +64,6 @@ Falhas comuns:
 |---|---|
 | `401 API key inválida ou ausente` | chave errada, ou colada com espaço no fim |
 | `403 Missing required scope: landings:create` | falta marcar a permissão na chave |
+| `403 Missing required scope: pipes:read` | falta marcar **Funis e motivos de perda — leitura** na chave |
 | `404` em tudo | endereço do CRM errado (domínio de outro parceiro, ou com `/` sobrando) |
 | `402`/mensagem de assinatura | a conta está bloqueada por cobrança; quem resolve é a pessoa |

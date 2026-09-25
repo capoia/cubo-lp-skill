@@ -12,7 +12,7 @@ Funciona em **Windows, macOS e Linux**, numa instalação limpa do Claude Code, 
 |---|---|
 | **Node.js 20.9 ou mais novo** | Windows: `winget install OpenJS.NodeJS.LTS` no PowerShell (ou o instalador LTS de https://nodejs.org). macOS: instalador LTS de https://nodejs.org. Depois, **feche e abra o Claude Code**. |
 | **Cubo** com os módulos de landing pages, formulários e domínios | a sua conta do Cubo |
-| **Chave de API do Cubo** com permissões de landing pages, formulários, domínios e campos personalizados | no Cubo, **Configurações → Chaves de API** — a skill ensina o passo a passo e confere as permissões |
+| **Chave de API do Cubo** com permissões de landing pages, formulários, domínios, campos personalizados e funis | no Cubo, **Configurações → Chaves de API** — a skill ensina o passo a passo e confere as permissões |
 | **Chave do PageSpeed** (grátis, sem cartão) | a skill ensina a pegar em 2 minutos. Sem ela, a nota final falha quase todo dia |
 | um **domínio** apontado para o Cubo, ou vontade de apontar um | a skill cadastra e entrega o CNAME |
 
